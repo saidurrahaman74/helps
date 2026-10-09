@@ -1,0 +1,924 @@
+<resources>
+    <string name="app_name">Smart Help</string>
+    <string name="welcome_title">Welcome</string>
+    <string name="get_started">Get Started</string>
+    <string name="language_toggle">English</string>
+    <string name="no_internet">No internet connection. Please check and try again.</string>
+    <string name="welcome_home">Smart Help Dashboard</string>
+    <string name="app_slogan">Smart Health Hub</string>
+    <string name="good_morning">Good Morning</string>
+    <string name="good_noon">Good Noon</string>
+    <string name="good_afternoon">Good Afternoon</string>
+    <string name="good_evening">Good Evening</string>
+    <string name="good_night">Good Night</string>
+    <string name="special_day_new_year">Happy New Year!</string>
+    <string name="developed_by">Developed by SRcreation</string>
+    <string name="patient_help_title">Patient Tool</string>
+    <string name="nurse_help_title">Nurse Tool</string>
+
+    <!-- Medical Disclaimer -->
+    <string name="disclaimer_title">Medical Disclaimer</string>
+    <string name="disclaimer_msg">Smart Help is created for educational reference, information, and personal tracking purposes only. It does not provide professional medical advice, diagnosis, treatment, or clinical recommendations. Always consult a qualified registered physician before making any health or medical decisions. Use of this app implies full user responsibility.</string>
+    <string name="accept_agree">I Agree</string>
+    <string name="safety_warning">Warning: Verify all results with hospital guidelines and a registered doctor.</string>
+
+    <!-- Account Management -->
+    <string name="delete_all_data">Delete All Data</string>
+    <string name="delete_data_confirm">Are you sure? This will permanently delete all your health records, profile, and settings. This cannot be undone.</string>
+    <string name="delete_action">Delete All</string>
+
+    <!-- Role Selection -->
+    <string name="patient">Patient Tool</string>
+    <string name="patient_subtitle">Family Care Center</string>
+    <string name="nurse">Nurse Tool</string>
+    <string name="nurse_subtitle">Professional Toolkit</string>
+    <string name="women_care">Women Care</string>
+    <string name="women_care_subtitle">Women Health &amp; Wellness</string>
+    <string name="women_care_tools_title">Essential Women Care Tools</string>
+    <string name="personal_wellness_hub">Personal Wellness Hub</string>
+    <string name="women_care_welcome">Welcome to your special care space.</string>
+    <string name="nav_nurse_id">Nurse ID</string>
+    <string name="nurse_id_title">Nurse Profile ID</string>
+    <string name="hospital_name">Hospital Name</string>
+    <string name="department_label">Department</string>
+    <string name="designation_label">Designation</string>
+    <string name="employee_id">Employee ID / Registration Number</string>
+    <string name="period_tracker_desc">Track your menstrual cycle</string>
+    <string name="pregnancy_care_desc">Maternal Care Guide</string>
+    <string name="choose_workspace">Choose Your Workspace</string>
+    <string name="tap_to_choose">Tap to choose workspace</string>
+
+    <!-- Navigation & Drawer -->
+    <string name="nav_home">Home</string>
+    <string name="nav_info">Info</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_medical_id">Medical ID</string>
+    <string name="nav_emergency_qr">Emergency QR</string>
+    <string name="nav_nurse_toolkit">Nurse Pro Toolkit</string>
+    <string name="nav_emergency_sos">Emergency SOS</string>
+    <string name="nav_notifications">Notifications</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_master_report">Master Report</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_patient_vault">Patient Vault</string>
+    <string name="nav_medicine_short">Medicine</string>
+    <string name="nav_sos_short">SOS</string>
+    <string name="nav_family_short">Family</string>
+    <string name="patient_pro_toolkit">Patient Pro Toolkit</string>
+    <string name="care_id">Care ID</string>
+    <string name="consult_specialist">Specialist Consultation</string>
+    <string name="gyne_personal_marital">Personal &amp; Marital</string>
+    <string name="gyne_obstetric_history">Obstetric History (GPAL)</string>
+    <string name="gyne_menstrual_health">Menstrual &amp; Health</string>
+    <string name="gyne_health_records">Health &amp; Records</string>
+    <string name="lmp_date_label">Last Menstrual Period (LMP)</string>
+    <string name="cycle_length_days">Cycle Length (Days)</string>
+    <string name="contraceptive_method">Contraceptive Method</string>
+    <string name="gyne_history_input">Gynecological History</string>
+    <string name="last_checkup_date">Last Checkup Date</string>
+    <string name="save_care_id">Save Care ID</string>
+    <string name="obstetric_summary">Obstetric History (GPAL)</string>
+    <string name="intl_format">International Format</string>
+    <string name="gravida">Gravida</string>
+    <string name="para">Para</string>
+    <string name="abortus">Abortus</string>
+    <string name="living">Living Children</string>
+    <string name="marital_status">Marital Status</string>
+    <string name="lmp_date">LMP Date</string>
+    <string name="cycle_length_label">Cycle Length</string>
+    <string name="contraceptive">Contraceptive Method</string>
+    <string name="gyne_history">Medical History</string>
+    <string name="last_checkup">Last Checkup</string>
+    <string name="pregnancy_care">Pregnancy Care</string>
+    <string name="gestational_age">Gestational Age</string>
+    <string name="trimester_label">Trimester %d</string>
+    <string name="weeks_label">Weeks</string>
+    <string name="days_label">Days</string>
+    <string name="days_remaining_label">%d Days Remaining</string>
+    <string name="edd_display">Estimated Due Date (EDD): %s</string>
+    <string name="kick_counter_title">Baby Kick Counter</string>
+    <string name="due_date_title">Due Date</string>
+    <string name="kick_history_title">Kick History</string>
+    <string name="baby_size_title">Baby is the size of a %s</string>
+    <string name="approx_length_title">Approx Length: %s</string>
+    <string name="kick_counter_instruction">Tap the heart whenever you feel movement.</string>
+    <string name="movements_detected">Movements Detected</string>
+    <string name="finish_save">Finish &amp; Save</string>
+    <string name="movement_saved">Movement Session Saved!</string>
+    <string name="kick_log_entry">%d Kicks in %d mins</string>
+    <string name="setup_pregnancy_title">Set Up Pregnancy Tracker</string>
+    <string name="setup_pregnancy_desc">Automatic calculation using LMP data from Period Tracker or Care ID.</string>
+    <string name="pregnancy_setup_guide">Please update your LMP in Care ID or Period Tracker</string>
+    <string name="status_not_set">Not Set</string>
+    <string name="status_none">None</string>
+    <string name="status_never">Never</string>
+    <string name="status_not_available">Not Available</string>
+
+    <!-- Milestones -->
+    <string name="fruit_seed">Seed</string>
+    <string name="fruit_blueberry">Blueberry</string>
+    <string name="fruit_lemon">Lemon</string>
+    <string name="fruit_avocado">Avocado</string>
+    <string name="fruit_banana">Banana</string>
+    <string name="fruit_corn">Corn</string>
+    <string name="fruit_eggplant">Eggplant</string>
+    <string name="fruit_pineapple">Pineapple</string>
+    <string name="fruit_watermelon">Watermelon</string>
+    <string name="fruit_pumpkin">Pumpkin</string>
+    <string name="nurse_hub_subtitle">Clinical Excellence</string>
+    <string name="tool_desc_dose">Pediatric &amp; Adult</string>
+    <string name="tool_desc_iv">Flow &amp; Drop Rate</string>
+    <string name="tool_desc_gcs">Glasgow Coma Scale</string>
+    <string name="tool_desc_braden">Bed Sore Risk</string>
+    <string name="tool_desc_pain">Intensity &amp; Expression</string>
+    <string name="tool_desc_ecg">Rhythm Analysis</string>
+    <string name="tool_desc_apgar">Newborn Health</string>
+    <string name="tool_desc_bsa">Body Surface Area</string>
+    <string name="tool_desc_dilution">Preparation Guide</string>
+    <string name="tool_desc_io">Fluid Balance</string>
+    <string name="tool_desc_burn">TBSA Rule of Nines</string>
+    <string name="tool_desc_oxygen">Cylinder Duration</string>
+    <string name="tool_desc_bp">Blood Pressure Log</string>
+    <string name="tool_desc_insulin">Glucose Tracking</string>
+    <string name="tool_desc_insulin_calc">Dose Requirements</string>
+    <string name="tool_desc_lab">Normal Ranges</string>
+    <string name="tool_desc_dictionary">Terms &amp; Latin</string>
+    <string name="tool_desc_abbr">Terms &amp; Shortcuts</string>
+    <string name="tool_desc_imaging">Procedure Guide</string>
+    <string name="tool_desc_encyclopedia">Health Knowledge</string>
+    <string name="tool_desc_vault">Medical Information</string>
+    <string name="tool_desc_med_rem">Clinical Schedule</string>
+    <string name="tool_desc_bmi">Body Mass Index</string>
+    <string name="tool_desc_period">Menstrual Cycle Tracker</string>
+    <string name="tool_desc_weight">Weight Chart</string>
+    <string name="tool_desc_diet">Nutrition Plan</string>
+    <string name="tool_desc_aid">Emergency Guide</string>
+    <string name="tool_desc_hospitals">Nearby Centers</string>
+    <string name="coming_soon_msg">%s Coming Soon!</string>
+    <string name="health_assistant">Your Health Assistant</string>
+
+    <!-- Health Tips -->
+    <string name="tip_hydration">Stay Hydrated</string>
+    <string name="tip_hydration_desc">Drink at least 8 glasses of water today.</string>
+    <string name="tip_walk">Daily Walk</string>
+    <string name="tip_walk_desc">A 15-minute walk can boost your mood.</string>
+    <string name="tip_sleep">Healthy Sleep</string>
+    <string name="tip_sleep_desc">Aim for 7-8 hours of quality sleep.</string>
+    <string name="tip_bp">Check BP</string>
+    <string name="tip_bp_desc">Regular monitoring is key to health.</string>
+
+    <string name="weight_label">Weight</string>
+    <string name="height_label">Height</string>
+    <string name="pdf_id_title">Smart Help - Medical ID Profile</string>
+    <string name="pdf_generated_at">Generated at: %s</string>
+    <string name="pdf_personal_info">Personal Info:</string>
+    <string name="pdf_medical_history_title">Medical History:</string>
+    <string name="pdf_emergency_title">Emergency Contacts:</string>
+    <string name="pdf_saved_at">PDF saved in Downloads/SmartHelp folder</string>
+    <string name="pdf_error">Error saving PDF: %s</string>
+
+    <!-- App Lock & Security -->
+    <string name="enter_pin">Enter Security PIN</string>
+    <string name="forgot_pin">Forgot PIN?</string>
+    <string name="reset_pin">Reset PIN</string>
+    <string name="your_answer">Your Answer</string>
+    <string name="confirm_reset">Confirm &amp; Reset</string>
+    <string name="security_not_set">Security question not set.</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+
+    <!-- Appointment -->
+    <string name="appointment_title">Doctor Appointments</string>
+    <string name="add_appointment">Add Appointment</string>
+    <string name="btn_add_to_calendar">Add to Calendar</string>
+    <string name="doctor_name">Doctor Name</string>
+    <string name="specialty_label">Specialty (e.g. Cardiologist)</string>
+    <string name="chamber_name">Chamber / Hospital Name</string>
+    <string name="date_label">Date</string>
+    <string name="time_label">Time</string>
+    <string name="note_label">Notes / Follow-up Info</string>
+    <string name="btn_schedule">Schedule</string>
+    <string name="status_visited">Visited</string>
+    <string name="status_mark_completed">Mark as Completed</string>
+    <string name="no_appointments">No appointments scheduled</string>
+    <string name="tap_to_add_appointment">Tap \'+\' to add an appointment.</string>
+
+    <!-- Medicine Reminder Status -->
+    <string name="status_taken">Status: Taken</string>
+    <string name="status_pending">Status: Pending</string>
+    <string name="all_done">All Done! 🌟</string>
+    <string name="keep_going">Keep Going! 💪</string>
+    <string name="todays_progress">Today\'s Progress</string>
+    <string name="med_taken_count">%1$d of %2$d taken</string>
+    <string name="active_schedule">Active Schedule</string>
+    <string name="low_stock_msg">Low stock for %d medicines!</string>
+
+    <!-- SOS -->
+    <string name="emergency_helplines_title">Emergency Helplines</string>
+    <string name="gov_helplines_label">Government Helplines</string>
+    <string name="official_notice_sos">Official Notice: This application is an independent health toolkit built by SRcreation. It is not affiliated with or representing any government agency. All helpline numbers are sourced from publicly available official domains for user convenience.</string>
+    <string name="sos_national_emergency">National Emergency Service</string>
+    <string name="sos_desc_national_emergency">Police, Fire Service, Ambulance</string>
+    <string name="sos_national_helpline">National Helpline</string>
+    <string name="sos_desc_national_helpline">Information &amp; Services</string>
+    <string name="sos_health_helpline">Health Batayon</string>
+    <string name="sos_desc_health_helpline">Health Care Center</string>
+    <string name="sos_child_helpline">Child Helpline</string>
+    <string name="sos_desc_child_helpline">Protection and Support</string>
+    <string name="sos_anti_corruption">Anti-Corruption Commission</string>
+    <string name="sos_desc_anti_corruption">ACC Helpline</string>
+    <string name="sos_disaster_alert">Disaster Early Warning</string>
+    <string name="sos_desc_disaster_alert">Early Alert</string>
+    <string name="sos_legal_aid">Legal Aid</string>
+    <string name="sos_desc_legal_aid">National Legal Aid</string>
+    <string name="sos_agriculture">Agriculture Batayon</string>
+    <string name="sos_desc_agriculture">Agriculture Advisory Center</string>
+    <string name="sos_election_commission">Election Commission</string>
+    <string name="sos_desc_election_commission">NID Information</string>
+
+    <!-- Notifications & Alarms -->
+    <string name="notif_take_tab">Take Medicine</string>
+    <string name="notif_use_med">Use Medicine</string>
+    <string name="notif_period_tomorrow">Period starts tomorrow</string>
+    <string name="notif_period_overdue">Period overdue</string>
+    <string name="alarm_taken">Medicine Intake Completed</string>
+    <string name="alarm_info">Time to take your %s medicine</string>
+    <string name="alarm_stop_instruction">Click \'Medicine Taken\' to stop</string>
+
+    <string name="medicine_reminder">Medicine Reminder</string>
+    <string name="age_label">Age</string>
+    <string name="weight_unit_label">Weight Unit:</string>
+    <string name="height_unit_label">Height Unit:</string>
+    <string name="btn_calculate_bmi">Calculate BMI</string>
+    <string name="btn_calculate_ideal">Calculate Ideal Weight</string>
+    <string name="btn_calculate_calories">Calculate Daily Calories</string>
+    <string name="btn_calculate_water">Calculate Water Intake</string>
+    <string name="btn_calculate_ideal_weight">Calculate Ideal Weight</string>
+    <string name="ideal_weight_result_label">Your Ideal Weight:</string>
+    <string name="daily_maintenance_label">Daily Calorie Need: %.0f kcal</string>
+    <string name="activity_level_label">Activity Level:</string>
+    <string name="sedentary">Sedentary</string>
+    <string name="light_active">Light Active</string>
+    <string name="moderate_active">Moderate Active</string>
+    <string name="very_active">Very Active</string>
+    <string name="result_format_label">View Result:</string>
+    <string name="status_ideal_weight">Ideal Weight</string>
+    <string name="select_gender">Select Gender:</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="recommended_water">Recommended Daily Water:</string>
+    <string name="no_fluid_records">No records today. Tap + to add.</string>
+    <string name="bmi_categories">BMI Categories:</string>
+    <string name="what_is_bmi">What is BMI?</string>
+    <string name="water_intake">Water Intake</string>
+    <string name="med_reminder_title">Medicine Reminder</string>
+
+    <!-- Patient Hub Categories -->
+    <string name="cat_hospitals">Hospitals</string>
+    <string name="cat_first_aid">First Aid</string>
+    <string name="cat_health_tips">Health Tips</string>
+    <string name="cat_bmi_calculator">BMI Calculator</string>
+    <string name="cat_weight_chart">Weight Chart</string>
+    <string name="cat_military_hospitals">Military Hospitals</string>
+    <string name="cat_government_hospitals">Govt Hospitals</string>
+    <string name="cat_private_hospitals">Private Hospitals</string>
+    <string name="cat_smart_tool">Smart Tool</string>
+    <string name="daily_health_tips">Daily Health Tips</string>
+    <string name="smart_insights">Smart Insights</string>
+    <string name="daily_trackers">Daily Trackers</string>
+    <string name="quick_services">Quick Services</string>
+    <string name="card_medicine">Medicine Reminder</string>
+    <string name="card_medicine_desc">Dose Reminders</string>
+    <string name="card_bp">BP Tracker</string>
+    <string name="card_bp_desc">Blood Pressure Log</string>
+    <string name="card_insulin">Insulin Chart</string>
+    <string name="card_insulin_desc">Diabetes Tracking</string>
+    <string name="card_steps">Step Counter</string>
+    <string name="card_steps_desc">Daily Walking Counter</string>
+    <string name="card_hospitals">Hospital Info</string>
+    <string name="card_hospitals_desc">Nearby Centers</string>
+    <string name="card_first_aid">First Aid</string>
+    <string name="card_first_aid_desc">Emergency Guidelines</string>
+    <string name="card_encyclopedia">Encyclopedia</string>
+    <string name="card_encyclopedia_desc">Health Knowledge</string>
+    <string name="card_bmi">BMI Tools</string>
+    <string name="card_bmi_desc">Health Calculators</string>
+    <string name="card_weight">Weight Chart</string>
+    <string name="card_weight_desc">Nutrition &amp; Trends</string>
+
+    <!-- BMI & Health Tools -->
+    <string name="tool_bmi_calc">BMI Calculator</string>
+    <string name="weight_unit">Weight Unit</string>
+    <string name="height_unit">Height Unit</string>
+    <string name="your_bmi">Your BMI: %s</string>
+    <string name="underweight">Underweight</string>
+    <string name="normal">Normal</string>
+    <string name="overweight">Overweight</string>
+    <string name="obese">Obese</string>
+    <string name="btn_check_goal">Check Goal</string>
+    <string name="health_progress">Health Progress</string>
+
+    <!-- Medical ID -->
+    <string name="profile_not_setup">Profile Not Setup</string>
+    <string name="active_medical_id">Active Medical ID</string>
+    <string name="blood_group">Blood Group</string>
+    <string name="weight_kg">Weight (kg)</string>
+    <string name="height_cm">Height (cm)</string>
+    <string name="age">Age</string>
+    <string name="allergies">Allergies</string>
+    <string name="chronic_conditions">Chronic Conditions</string>
+    <string name="regular_medications">Regular Medications</string>
+    <string name="emergency_contacts">Emergency Contacts</string>
+    <string name="no_contacts_added">No emergency contacts added yet.</string>
+    <string name="personal_details">Personal Details</string>
+    <string name="full_name">Full Name</string>
+    <string name="medical_history">Medical History</string>
+
+    <!-- Medicine Reminder -->
+    <string name="med_taken_btn">Taken</string>
+    <string name="med_stock_left">Stock Left: %d</string>
+    <string name="med_low_stock">Low Stock!</string>
+    <string name="add_med_title">Add New Medicine</string>
+    <string name="med_name_label">Medicine Name</string>
+    <string name="med_strength_label">Strength</string>
+    <string name="med_strength_placeholder">e.g. 500</string>
+    <string name="med_category_label">Category</string>
+    <string name="med_food_relation">Food Relation</string>
+    <string name="med_dosage_times">Dosage Times</string>
+    <string name="med_duration">Duration</string>
+    <string name="med_continuous">Continuous</string>
+    <string name="med_days_label">Days</string>
+    <string name="med_stock">Stock</string>
+    <string name="med_stock_placeholder">Initial Stock</string>
+
+    <!-- Nurse Hub & Tools -->
+    <string name="tool_dose_calc">Dose Calculator</string>
+    <string name="tool_iv_fluid">IV Fluid Calculator</string>
+    <string name="tool_gcs_calc">GCS Calculator</string>
+    <string name="tool_braden">Braden Scale</string>
+    <string name="tool_pain_scale">Pain Scale</string>
+    <string name="tool_ecg_guide">ECG Guide</string>
+    <string name="tool_apgar">Apgar Score</string>
+    <string name="tool_bsa_calc">BSA Calculator</string>
+    <string name="tool_drug_dilution">Drug Dilution</string>
+    <string name="tool_io_chart">I/O Chart</string>
+    <string name="tool_burn_calc">Burn Calculator</string>
+    <string name="tool_oxygen">Oxygen Duration</string>
+    <string name="tool_bp_tracker">BP Tracker</string>
+    <string name="tool_insulin">Insulin Log</string>
+    <string name="tool_insulin_calc">Insulin Calculator</string>
+    <string name="tool_lab_values">Lab Values</string>
+    <string name="tool_med_dictionary">Medicine Dictionary</string>
+    <string name="tool_medical_abbr">Medical Abbreviations</string>
+    <string name="tool_imaging">Imaging Guide</string>
+    <string name="tool_encyclopedia">Encyclopedia</string>
+    <string name="tool_period">Period Tracker</string>
+    <string name="tool_weight">Weight Tracker</string>
+    <string name="tool_diet">Diet Plan</string>
+    <string name="tool_first_aid">First Aid</string>
+    <string name="tool_hospitals">Hospitals</string>
+    <string name="tool_vault">Medical Vault</string>
+    <string name="duty_roster">Duty Roster</string>
+    <string name="handover_notes">Handover Notes</string>
+    <string name="shift_reminder">Shift Reminder</string>
+    <string name="guidelines">Clinical Guidelines</string>
+    <string name="clinical_calculators">Clinical Calculators</string>
+    <string name="vital_trackers_lab">Vital Trackers &amp; Lab</string>
+    <string name="patient_utilities">Patient Utilities</string>
+
+    <!-- I/O Chart -->
+    <string name="intake_output_chart">Intake and Output Chart</string>
+    <string name="btn_add_record">Add Record</string>
+    <string name="todays_fluid_logs">Today\'s Fluid Logs</string>
+    <string name="total_intake">Total Intake</string>
+    <string name="total_output">Total Output</string>
+    <string name="net_balance">Net Balance</string>
+    <string name="intake">Intake</string>
+    <string name="output">Output</string>
+    <string name="add_fluid_record">Add Fluid Record</string>
+    <string name="select_category">Select Category</string>
+    <string name="amount_ml">Amount (ml)</string>
+    <string name="save_record">Save Record</string>
+
+    <!-- Nurse Assessment Tools -->
+    <string name="braden_scale_title">Braden Scale Assessment</string>
+    <string name="braden_total_score">Total Score: %d</string>
+    <string name="nursing_intervention">Nursing Intervention</string>
+
+    <string name="gcs_eye_opening">Eye Opening (E)</string>
+    <string name="gcs_spontaneous">4 - Spontaneous</string>
+    <string name="gcs_to_speech">3 - To Speech</string>
+    <string name="gcs_to_pain">2 - To Pain</string>
+    <string name="gcs_none">1 - None</string>
+    <string name="gcs_verbal_response">Verbal Response (V)</string>
+    <string name="gcs_oriented">5 - Oriented</string>
+    <string name="gcs_confused">4 - Confused</string>
+    <string name="gcs_inappropriate">3 - Inappropriate</string>
+    <string name="gcs_incomprehensible">2 - Incomprehensible</string>
+    <string name="gcs_motor_response">Motor Response (M)</string>
+    <string name="gcs_obeys_commands">6 - Obeys Commands</string>
+    <string name="gcs_localizes_pain">5 - Localizes Pain</string>
+    <string name="gcs_withdraws">4 - Withdraws</string>
+    <string name="gcs_flexion">3 - Flexion (Pain)</string>
+    <string name="gcs_extension">2 - Extension (Pain)</string>
+    <string name="gcs_mild">Mild (13-15)</string>
+    <string name="gcs_moderate">Moderate (9-12)</string>
+    <string name="gcs_severe">Severe (&lt; 9)</string>
+    <string name="gcs_total_score">GCS Total Score: %d</string>
+
+    <!-- SBAR Handover -->
+    <string name="sbar_handover">SBAR Handover</string>
+    <string name="sbar_subtitle">Provide professional SBAR details for this shift.</string>
+    <string name="situation_label">S - Situation</string>
+    <string name="background_label">B - Background</string>
+    <string name="assessment_label">A - Assessment</string>
+    <string name="recommendation_label">R - Recommendation</string>
+    <string name="btn_copy">Copy</string>
+    <string name="btn_share">Share</string>
+    <string name="placeholder_enter_details">Enter details...</string>
+    <string name="toast_handover_copied">Handover copied</string>
+
+    <!-- Settings & Miscellaneous -->
+    <string name="settings_personalization">Personalization</string>
+    <string name="settings_unit_metric">Use Metric Units (kg, cm)</string>
+    <string name="settings_general">General</string>
+    <string name="settings_app_language">App Language</string>
+    <string name="settings_security">Security &amp; Privacy</string>
+    <string name="settings_app_lock">App Lock (PIN)</string>
+    <string name="settings_biometric_lock">Biometric Lock</string>
+    <string name="settings_account_data">Account &amp; Data</string>
+    <string name="settings_backup">Data Backup</string>
+    <string name="settings_restore">Data Restore</string>
+    <string name="settings_clear_cache">Clear App Cache</string>
+    <string name="settings_help_support">Help &amp; Support</string>
+    <string name="settings_rate_app">Rate App</string>
+    <string name="settings_privacy_policy">Privacy Policy</string>
+    <string name="settings_terms">Terms of Service</string>
+    <string name="settings_feedback">Send Feedback</string>
+    <string name="settings_about">About Smart Help</string>
+    <string name="app_version">Version: %s</string>
+    <string name="exit_app">Exit App</string>
+    <string name="exit_desc">Are you sure you want to exit?</string>
+    <string name="stay">Stay</string>
+    <string name="exit_now">Exit</string>
+    <string name="period_tracker">Period Tracker</string>
+    <string name="card_temp">Temperature Tracker</string>
+    <string name="card_temp_desc">Fever and health logs</string>
+    <string name="temp_method">Method</string>
+    <string name="temp_method_mouth">Mouth</string>
+    <string name="temp_method_armpit">Armpit</string>
+    <string name="temp_method_ear">Ear</string>
+    <string name="temp_method_forehead">Forehead</string>
+    <string name="temp_level_hypo">Hypothermia</string>
+    <string name="temp_level_normal">Normal</string>
+    <string name="temp_level_low_fever">Low Fever</string>
+    <string name="temp_level_high_fever">High Fever</string>
+    <string name="temp_level_hyper">Hyperthermia</string>
+    <string name="temp_action_hypo">Emergency! Keep body warm and seek help.</string>
+    <string name="temp_action_normal">Body is in normal state.</string>
+    <string name="temp_action_low_fever">Body is fighting an infection.</string>
+    <string name="temp_action_high_fever">Confirmed fever. Consult a doctor.</string>
+    <string name="temp_action_hyper">Highly critical! Go to hospital immediately.</string>
+    <string name="temp_age_group">By Age</string>
+    <string name="temp_tab_add">Add Entry</string>
+    <string name="temp_tab_trends">Trends</string>
+    <string name="temp_select_unit">Select Unit</string>
+    <string name="temp_hint_value">Enter Temperature</string>
+    <string name="temp_method_select">Measurement Method</string>
+    <string name="temp_age_select">Select Age Group</string>
+    <string name="temp_btn_save">Save Record</string>
+    <string name="temp_last_checked">Last Checked</string>
+    <string name="temp_trends_title">Medical Trends (Last 7 Checks)</string>
+    <string name="temp_history_title">Recent History</string>
+    <string name="temp_age_newborn">Newborn</string>
+    <string name="temp_age_infant">Infant (3M - 3Y)</string>
+    <string name="temp_age_child">Child (4 - 12Y)</string>
+    <string name="temp_age_adult">Adult (13 - 65Y)</string>
+    <string name="temp_age_senior">Senior (65+Y)</string>
+
+    <!-- Family & Caregiver Connectivity -->
+    <string name="nav_caregiver_sync">Family &amp; Caregiver Tracking</string>
+    <string name="nav_link_caregiver">Link Family Member / Caregiver</string>
+    <string name="caregiver_sync_card_title">Family Sync</string>
+    <string name="caregiver_sync_card_desc">Medicine Tracking &amp; Alerts</string>
+    <string name="pairing_screen_title">Family &amp; Caregiver Pairing</string>
+    <string name="tab_patient_role">Patient Phone</string>
+    <string name="tab_caregiver_role">Caregiver Phone</string>
+    <string name="patient_section_title">Patient Name &amp; Pairing Code</string>
+    <string name="patient_section_desc">Set this phone as patient phone, enter name and generate code.</string>
+    <string name="patient_name_label">Patient Name (e.g. Father)</string>
+    <string name="btn_generate_code">Generate Pairing Code</string>
+    <string name="pairing_code_label">Your 6-Digit Pairing Code:</string>
+    <string name="status_connected">Successfully connected with caregiver! (%s)</string>
+    <string name="status_waiting">Waiting for caregiver connection...</string>
+    <string name="caregiver_section_title">Connect Phone with Patient</string>
+    <string name="caregiver_section_desc">Enter the 6-digit pairing code displayed on patient phone.</string>
+    <string name="caregiver_name_label">Your Name (e.g. Son/Daughter)</string>
+    <string name="enter_code_label">6-Digit Pairing Code</string>
+    <string name="btn_pair_device">Pair Device</string>
+    <string name="dashboard_title_suffix">\'s Health Dashboard</string>
+    <string name="realtime_sync_active">Real-time Sync Active</string>
+    <string name="emergency_alert_title">🚨 %s Alert!</string>
+    <string name="emergency_alert_desc_default">Patient requested emergency help!</string>
+    <string name="section_medicine_tracker">💊 Medicine Tracking Status (Medicine Tracker)</string>
+    <string name="no_medicine_logs">No medicine logs found yet.</string>
+    <string name="section_vitals_tracker">🩺 Patient Vitals (BP &amp; Glucose)</string>
+    <string name="no_vitals_logs">No readings found.</string>
+    <string name="med_status_taken">Medicine Taken</string>
+    <string name="med_status_missed">Medicine Missed</string>
+    <string name="med_status_skipped">Medicine Skipped</string>
+    <string name="med_status_due">Medicine Due</string>
+    <string name="tag_high_bp">High Blood Pressure</string>
+    <string name="tag_low_bp">Low Blood Pressure</string>
+    <string name="tag_normal_bp">Normal</string>
+    <string name="msg_pair_success">Successfully connected!</string>
+    <string name="msg_code_invalid">Invalid code or expired!</string>
+    <string name="voice_reminder_template">%1$s, it is time to take your %2$s %3$s medicine.</string>
+    <string name="settings_voice_reminder">Voice Reminder (Speak medicine name)</string>
+
+    <!-- Doctor Consultation Report -->
+    <string name="btn_generate_doctor_report">Generate 1-Click Doctor Summary PDF Report</string>
+    <string name="pdf_doctor_report_title">Smart Help - Doctor Consultation Health Summary</string>
+    <string name="pdf_adherence_title">Medicine Adherence Rate (Last 30 Days)</string>
+    <string name="pdf_vitals_summary_title">Vitals Summary (Average Values)</string>
+    <string name="pdf_doctor_signature">Doctor Signature &amp; Notes:</string>
+    <string name="pdf_disclaimer">Clinical Notice: This report is generated for doctor visit convenience. Consult your doctor for any treatment decisions.</string>
+
+    <!-- Disease-Specific Clinical Diet & Fluid Advisor -->
+    <string name="clinical_condition_title">Condition &amp; Fluid Guide</string>
+    <string name="condition_ckd">Kidney Disease (CKD)</string>
+    <string name="condition_hypertension">High Blood Pressure</string>
+    <string name="condition_diabetes">Diabetes</string>
+    <string name="condition_standard">Standard Healthy</string>
+    <string name="fluid_warning_near_limit">⚠️ Warning: You are close to your fluid intake limit (%1$d ml / %2$d ml). Excess water may put pressure on kidneys or heart.</string>
+    <string name="diet_guideline_title">🩺 Disease-Specific Nutrition &amp; Diet Guide</string>
+    <string name="diet_ckd_advice">• Measure fluid intake according to nephrologist advice.\n• Avoid high potassium foods (star fruit, excess banana, tomato soup).\n• Consume low sodium foods (less than 1 tsp salt daily).</string>
+    <string name="diet_hypertension_advice">• Follow DASH diet with low sodium (less than 1 tsp salt daily).\n• Avoid chips, dried fish, and processed foods.\n• Drink moderate water.</string>
+    <string name="diet_diabetes_advice">• Drink pure water instead of sugary drinks or juice.\n• Consume low carb and high fiber foods.\n• Monitor blood sugar regularly.</string>
+
+    <!-- Smart Doctor Visit Planner -->
+    <string name="follow_up_date_label">Next Follow-up Date</string>
+    <string name="msg_calendar_synced">Opening app to sync with calendar...</string>
+
+    <!-- Emergency Directory -->
+    <string name="emergency_directory_title">Emergency Ambulance &amp; Blood Bank Directory</string>
+    <string name="tab_ambulance">🚑 Ambulance Service</string>
+    <string name="tab_blood_bank">🩸 Blood Bank &amp; Network</string>
+    <string name="btn_call_now">Call Now 📞</string>
+
+    <!-- Medicine Stock Refill Alert -->
+    <string name="med_refill_alert_title">⚠️ Medicine Stock Running Out!</string>
+    <string name="med_refill_alert_body">Only %1$s left of %3$s! Please refill from pharmacy.</string>
+    <string name="btn_refill_stock">➕ Refill Stock</string>
+    <string name="refill_dialog_title">Refill Medicine Stock</string>
+    <string name="refill_quantity_label">Add quantity (e.g. 10, 20)</string>
+    <string name="current_stock">Current Stock: %1$d %2$s</string>
+
+    <!-- Visual Pill Box Schedule Grid -->
+    <string name="pill_box_title">💊 Daily Visual Pill Box Schedule</string>
+    <string name="slot_morning">☀️ Morning (8:00 AM)</string>
+    <string name="slot_noon">🌤️ Noon (2:00 PM)</string>
+    <string name="slot_evening">⛅ Evening (6:00 PM)</string>
+    <string name="slot_night">🌙 Night (10:00 PM)</string>
+    <string name="btn_mark_slot_taken">✓ Mark Slot Taken</string>
+    <string name="slot_completed">🟢 All medicines taken for this slot</string>
+
+    <!-- Drug Interaction & Overdose Checker -->
+    <string name="drug_conflict_title">⚠️ Drug Overdose &amp; Interaction Warning!</string>
+    <string name="drug_conflict_paracetamol">Warning: Both %1$s and %2$s contain Paracetamol! Taking them together risks severe liver damage.</string>
+    <string name="drug_conflict_nsaid">Advice: Both %1$s and %2$s are painkillers. Taking multiple painkillers together increases gastric ulcer and kidney risks.</string>
+
+    <!-- 10-Min Medicine Snooze -->
+    <string name="btn_snooze_10_mins">⏱️ Remind in 10 Mins (Snooze)</string>
+    <string name="msg_snoozed">⏱️ Snoozed for 10 minutes. Will remind again.</string>
+
+    <!-- International Fever Center Standard Temperature Tracker -->
+    <string name="fever_center_title">International Fever Center Temperature Tracker</string>
+    <string name="core_temp_calibrated">Estimated Core Body Temperature: %1$.1f %2$s</string>
+    <string name="fever_pattern_title">📊 Clinical Fever Pattern &amp; Dengue Risk Analysis</string>
+    <string name="fever_pattern_normal">Body temperature is within normal range.</string>
+    <string name="fever_pattern_high">⚠️ High fever detected (>100.4°F). Paracetamol and cold compress recommended.</string>
+    <string name="fever_pattern_biphasic">🚨 Dengue/Biphasic fever warning! Fever subsided and rising again. Consult doctor immediately and do Dengue NS1 test.</string>
+    <string name="temp_total_entries">Total Entries</string>
+    <string name="temp_chart_header">24-hour Military Time (0600, 0800, 2000) &amp; Core Temperature Trend</string>
+    <string name="temp_hrs_suffix">hrs</string>
+
+    <!-- BP Tracker Localization -->
+    <string name="bp_new_log_title">New BP Entry</string>
+    <string name="bp_save_analysis">Save Record</string>
+    <string name="bp_last_check">Last BP Check:</string>
+    <string name="bp_logs_by_date">BP History (by date)</string>
+    <string name="bp_cat_high">High BP (Consult Doctor)</string>
+    <string name="bp_cat_mild_high">Mild High BP</string>
+    <string name="bp_cat_normal">Normal</string>
+    <string name="bp_cat_optimal">Optimal BP</string>
+    <string name="bp_cat_low">Low BP</string>
+
+    <!-- Insulin Tracker Localization -->
+    <string name="insulin_chart_label">Blood Sugar Trend (mg/dL)</string>
+    <string name="insulin_latest_reading">Latest Sugar &amp; Insulin Reading</string>
+    <string name="insulin_administered">Insulin Administered: %1$s %2$s</string>
+    <string name="insulin_add_title">New Sugar &amp; Insulin Entry</string>
+    <string name="insulin_meal_context">Meal Context:</string>
+    <string name="insulin_time_of_day">Time of Day:</string>
+    <string name="insulin_glucose_unit">Glucose Unit</string>
+    <string name="insulin_unit_label">Insulin Units</string>
+    <string name="insulin_glucose_hint">Glucose (Sugar)</string>
+    <string name="insulin_dose_hint">Insulin Dose</string>
+    <string name="insulin_btn_save">Save Record</string>
+    <string name="insulin_log_history">Sugar &amp; Insulin History</string>
+    <string name="insulin_records_count">%d Records</string>
+    <string name="insulin_label_glucose">Glucose Level</string>
+    <string name="insulin_label_dose">Insulin Dose</string>
+    <string name="insulin_none">None</string>
+    <string name="insulin_fasting">Fasting</string>
+    <string name="insulin_advice_high">Blood sugar is higher than normal. Consult a doctor.</string>
+    <string name="insulin_advice_low">Blood sugar is lower than normal. Consume sweet or sugary food immediately.</string>
+    <string name="insulin_calc_title">Insulin Calculator</string>
+    <string name="insulin_type_actrapid">Actrapid / Soluble Insulin (Sliding Scale)</string>
+    <string name="insulin_select_meal">Select Meal Context:</string>
+    <string name="insulin_dose_sensitivity">Dose Sensitivity:</string>
+    <string name="insulin_sensitivity_low">Low</string>
+    <string name="insulin_sensitivity_medium">Medium</string>
+    <string name="insulin_sensitivity_high">High (Call Doctor)</string>
+    <string name="insulin_sugar_level">Blood Sugar Level</string>
+    <string name="insulin_enter_value">Enter Value</string>
+    <string name="insulin_recommended_dose">Recommended Insulin Dose</string>
+    <string name="insulin_units_actrapid">Units (Actrapid)</string>
+    <string name="insulin_call_doctor">Call Doctor</string>
+    <string name="insulin_disclaimer">Note: International Sliding Scale Insulin (SSI) guidelines. Always follow your doctor\'s specific prescription and advice.</string>
+
+    <!-- Lab Reference Localization -->
+    <string name="lab_screen_title">Lab Reference &amp; Trend Analyzer</string>
+    <string name="lab_tab_reference">Reference Value</string>
+    <string name="lab_tab_trends">My Lab Trends (%d)</string>
+    <string name="lab_search_placeholder">Search test (e.g. Sugar, HbA1c, Creatinine)</string>
+    <string name="lab_no_records">No lab results saved yet.</string>
+    <string name="lab_no_records_hint">Go to Reference Value tab and tap + Lab Result.</string>
+    <string name="lab_recent_trends">📈 Recent Lab Results Trend</string>
+    <string name="lab_history">Past Lab Record History</string>
+    <string name="lab_btn_log">+ Lab Result</string>
+    <string name="lab_normal_range">Normal Range: %1$s - %2$s %3$s</string>
+
+    <!-- Additional First Aid Subcategories -->
+    <string name="sub_dog_bite">Dog &amp; Animal Bite</string>
+    <string name="sub_anaphylaxis">Severe Allergy (Anaphylaxis)</string>
+    <string name="sub_insect_sting">Insect &amp; Bee Sting</string>
+    <string name="sub_asthma_attack">Severe Asthma Attack</string>
+    <string name="sub_drowning">Drowning First Aid</string>
+    <string name="sub_eye_injury">Eye Injury &amp; Chemical Splash</string>
+
+    <!-- Period Tracker Localization -->
+    <string name="period_tracker_title">Period Tracker</string>
+    <string name="period_current_cycle">Current Cycle Log</string>
+    <string name="period_no_date_selected">No date selected</string>
+    <string name="period_btn_update_start">Change Period Start Date</string>
+    <string name="period_predictions">Cycle Predictions</string>
+    <string name="period_next_period">Next Period</string>
+    <string name="period_fertile_window">Fertile Window (Ovulation)</string>
+    <string name="period_symptom_logs">Daily Symptom Logs</string>
+    <string name="period_no_logs_hint">No symptoms recorded yet. Tap + button.</string>
+    <string name="period_cycle_settings">Cycle Settings</string>
+    <string name="period_avg_cycle">Avg Period Cycle: %d Days</string>
+    <string name="period_length">Period Duration: %d Days</string>
+    <string name="period_current_phase">CURRENT PHASE</string>
+    <string name="period_log_symptoms_title">How are you feeling today?</string>
+    <string name="period_mood">Mood:</string>
+    <string name="period_flow">Flow:</string>
+    <string name="period_pain_level">Pain Level:</string>
+    <string name="period_other_symptoms">Other Symptoms (e.g. Cramps)</string>
+    <string name="period_next_in">Next period in</string>
+    <string name="period_overdue_by">Period overdue by</string>
+    <string name="period_days">Days</string>
+
+    <!-- Step Counter Localization -->
+    <string name="step_counter_title">Step Counter</string>
+    <string name="step_goal_format">Goal: %d Steps</string>
+    <string name="step_distance">Distance</string>
+    <string name="step_distance_unit">km</string>
+    <string name="step_calories">Calories</string>
+    <string name="step_calories_unit">kcal</string>
+    <string name="step_tracking_status">Tracking Status</string>
+    <string name="step_live_active">Live Active</string>
+    <string name="step_weekly_activity">Weekly Activity</string>
+    <string name="step_authorize_btn">Authorize Step Counter</string>
+    <string name="step_disclosure_title">Activity Tracking Notice</string>
+    <string name="step_disclosure_body">Smart Help needs physical activity permission to accurately count your daily walks and fitness tracking. This data is processed only on your phone.</string>
+    <string name="step_disclosure_agree">Agree &amp; Proceed</string>
+    <string name="step_disclosure_dismiss">Not Now</string>
+
+    <!-- Weight Chart Localization -->
+    <string name="weight_chart_title">International Weight Guide</string>
+    <string name="tab_underweight">Underweight</string>
+    <string name="tab_normal">Normal</string>
+    <string name="tab_overweight">Overweight</string>
+    <string name="tab_obese">Obese</string>
+    <string name="chart_header_height">Height (ft/in + cm)</string>
+    <string name="chart_header_weight">Ideal Weight (kg + lbs)</string>
+    <string name="chart_who_standard">International WHO Standard: %1$s</string>
+    <string name="bmi_under_range">BMI below 18.5</string>
+    <string name="bmi_normal_range">BMI 18.5 – 24.9</string>
+    <string name="bmi_overweight_range">BMI 25.0 – 29.9</string>
+    <string name="bmi_obese_range">BMI 30.0 or higher</string>
+    <string name="chart_weight_below">Below %1$s kg</string>
+    <string name="chart_weight_above">Above %1$s kg</string>
+    <string name="chart_weight_range">%1$s – %2$s kg</string>
+    <string name="chart_lbs_below">Below %1$s lbs</string>
+    <string name="chart_lbs_above">Above %1$s lbs</string>
+    <string name="chart_lbs_range">%1$s – %2$s lbs</string>
+    <string name="unit_cm">cm</string>
+
+    <!-- BMI Tool Localization -->
+    <string name="bmi_explanation">Body Mass Index (BMI) is a measure of body fat based on height and weight that applies to adult men and women.</string>
+    <string name="weight_current">Current Weight</string>
+    <string name="weight_target">Target Weight</string>
+    <string name="goal_gain">Need to gain %1$.1f %2$s</string>
+    <string name="goal_lose">Need to lose %1$.1f %2$s</string>
+    <string name="goals_and_history">and Health Goal History</string>
+
+    <!-- Sub-Category Grid Buttons -->
+    <string name="sub_calculate">Calculate</string>
+    <string name="sub_history">History</string>
+    <string name="sub_diet_advice">Diet Tips</string>
+    <string name="sub_progress_chart">Progress Chart</string>
+    <string name="sub_pro_tips">Pro Tips</string>
+    <string name="sub_underweight_chart">Underweight Chart</string>
+    <string name="sub_normal_weight">Normal Weight Chart</string>
+    <string name="sub_overweight_chart">Overweight Chart</string>
+    <string name="sub_obesity_guide">Obesity Guide</string>
+    <string name="sub_government_hospital">Govt Hospital</string>
+    <string name="sub_military_hospital">CMH (Military)</string>
+    <string name="sub_private_hospital">Private Hospital</string>
+    <string name="sub_emergency_medicine">Emergency Medicine</string>
+    <string name="sub_wounds">Wounds &amp; Cuts</string>
+    <string name="sub_burns">Burns &amp; Scalds</string>
+    <string name="sub_cpr_guide">CPR Guide</string>
+    <string name="sub_fractures">Fractures</string>
+    <string name="sub_poisoning">Poisoning</string>
+    <string name="sub_choking">Choking</string>
+    <string name="sub_electric_shock">Electric Shock</string>
+    <string name="sub_snake_bite">Snake Bite</string>
+    <string name="sub_heat_stroke">Heat Stroke</string>
+    <string name="sub_heat_exhaustion">Heat Exhaustion</string>
+    <string name="sub_fainting">Fainting</string>
+    <string name="sub_heart_attack">Heart Attack</string>
+    <string name="sub_bleeding">Bleeding</string>
+    <string name="sub_seizure">Seizure</string>
+    <string name="sub_period_tracker">Period &amp; Menstrual Tracker</string>
+    <string name="sub_vaccine">Vaccines</string>
+    <string name="sub_medical_vault">Medical Vault</string>
+    <string name="sub_unified_report">Doctor Summary PDF</string>
+    <string name="sub_fluid_calculator">Fluid Calculator</string>
+    <string name="sub_doctor_appointment">Doctor Appointment</string>
+    <string name="sub_prescription_scanner">Prescription Scanner</string>
+    <string name="sub_wearable_sync">Device Sync</string>
+
+    <!-- Medicine Attributes Localization -->
+    <string name="food_before_meal">Before Meal</string>
+    <string name="food_after_meal">After Meal</string>
+    <string name="time_morning">Morning</string>
+    <string name="time_noon">Noon</string>
+    <string name="time_evening">Evening</string>
+    <string name="time_night">Night</string>
+    <string name="time_4_times">4 times a day (Every 6 hours)</string>
+    <string name="time_set_time">Custom Time Setting</string>
+    <string name="cat_tablet">Tablet</string>
+    <string name="cat_capsule">Capsule</string>
+    <string name="cat_cream">Cream</string>
+    <string name="cat_ointment">Ointment</string>
+    <string name="cat_spray">Spray</string>
+    <string name="cat_drop">Drop</string>
+    <string name="cat_lotion">Lotion</string>
+    <string name="cat_injection">Injection</string>
+    <string name="cat_none">Other</string>
+
+    <!-- Home Dashboard Assistant Strings -->
+    <string name="home_med_time_msg">It is time to take your %1$s medicine today.</string>
+    <string name="home_routine_good_msg">Your health routine is going great today!</string>
+    <string name="health_optimal">Optimal Health</string>
+    <string name="health_good">Good Health</string>
+    <string name="health_needs_attention">Needs Attention</string>
+    <string name="next_med_label">Next: %1$s</string>
+    <string name="smart_health_hub">Smart Health Hub</string>
+    <string name="daily_tracking_active">Daily Tracking Active</string>
+    <string name="time_to_take_dosage">Time to take medicine</string>
+    <string name="btn_take_now">Take Now</string>
+    <string name="search_tools_hint">Search...</string>
+    <string name="nurse_toolkit_ready">Your professional toolkit is ready.</string>
+
+    <!-- Dietitian Advice Strings -->
+    <string name="diet_advice_title">Dietitian Diet Plan</string>
+    <string name="diet_select_category">Choose diet according to your BMI:</string>
+    <string name="diet_macro_title">Recommended Nutrition &amp; Macro Ratio</string>
+    <string name="diet_carbs">Carbs (%1$d%%)</string>
+    <string name="diet_protein">Protein (%1$d%%)</string>
+    <string name="diet_fats">Healthy Fat (%1$d%%)</string>
+    <string name="diet_meal_plan_title">📋 Sample Daily Meal List</string>
+    <string name="diet_breakfast">🌅 Breakfast</string>
+    <string name="diet_lunch">☀️ Lunch</string>
+    <string name="diet_snack">☕ Evening Snack</string>
+    <string name="diet_dinner">🌙 Dinner</string>
+    <string name="diet_swaps_title">🔄 Healthy Food Swap List</string>
+    <string name="diet_golden_rules">✨ Dietitian Golden Rules</string>
+    <string name="diet_btn_view_plan">View Custom Diet Plan</string>
+    <string name="diet_underweight_plan">• Breakfast: Milk-oats, banana, 2 eggs, almonds.\n• Lunch: Brown rice, thick dal, fish/meat, vegetables.\n• Snack: Milkshake or peanut butter toast and fruit.\n• Dinner: Roti/rice, egg/fish, salad and warm milk before bed.</string>
+    <string name="diet_normal_plan">• Breakfast: Red flour Roti or oats, 1 boiled egg, green tea.\n• Lunch: Moderate brown rice, grilled fish or chicken, plenty of salad.\n• Snack: Handful of almonds/raisins, green tea or preferred fruit.\n• Dinner: Light vegetable soup, roti and protein rich food.</string>
+    <string name="diet_overweight_plan">• Breakfast: 1-2 egg whites, oats or 1 red roti, cucumber.\n• Lunch: Small bowl of brown rice, high protein (fish/chicken), cucumber salad.\n• Snack: Cucumber, guava/apple or sugar-free green tea.\n• Dinner: Vegetable soup or boiled chicken/fish and salad (low carbs at night).</string>
+    <string name="diet_obese_plan">• Breakfast: 2 egg whites, boiled vegetables, liquor tea/green tea.\n• Lunch: Skip white rice; cauliflower rice or small oats/brown rice, fish, salad.\n• Snack: Roasted chickpea or pumpkin seeds, green tea.\n• Dinner: Light vegetable soup and boiled egg/chicken by 8 PM.</string>
+    <string name="diet_rule_1">• Drink at least 2.5 to 3 liters of pure water daily.</string>
+    <string name="diet_rule_2">• Avoid sugar, cold drinks, and processed fast food completely.</string>
+    <string name="diet_rule_3">• Chew food slowly and finish dinner 2 hours before sleep.</string>
+    <string name="diet_rule_4">• Maintain 30 minutes of walking daily along with balanced diet.</string>
+
+    <!-- Food Swap Strings -->
+    <string name="swap_from_1">White Rice / Roti</string>
+    <string name="swap_to_1">Brown Rice / Oats</string>
+    <string name="swap_reason_1">Low GI, rich in fiber</string>
+    <string name="swap_from_2">Soybean or Fried Oil</string>
+    <string name="swap_to_2">Olive Oil / Mustard Oil</string>
+    <string name="swap_reason_2">Heart friendly healthy fats</string>
+    <string name="swap_from_3">Sugar or Sugary Drinks</string>
+    <string name="swap_to_3">Lemon Water / Green Tea</string>
+    <string name="swap_reason_3">Calorie-free metabolism booster</string>
+    <string name="swap_from_4">Fast Food / Processed Snacks</string>
+    <string name="swap_to_4">Almonds / Cucumber / Fruits</string>
+    <string name="swap_reason_4">Natural vitamins &amp; protein</string>
+
+    <!-- Progress Chart Localization -->
+    <string name="progress_chart_title">Progress Chart</string>
+    <string name="progress_latest_bmi">Latest BMI</string>
+    <string name="progress_weight_change">Weight Change</string>
+    <string name="progress_total_logs">Total Entries</string>
+    <string name="progress_trend_label">📈 BMI &amp; Weight Trend</string>
+    <string name="progress_zone_spectrum">BMI Spectrum Indicator</string>
+    <string name="progress_no_data">No history recorded yet. Calculate your BMI above to view progress!</string>
+    <string name="progress_deleted_record">Record deleted successfully</string>
+    <string name="progress_goal_target">Goal Achievement Progress</string>
+
+    <!-- Home Pro Tips Card Strings -->
+    <string name="card_pro_tips">Pro Tips &amp; Health Advice</string>
+    <string name="card_pro_tips_desc">Expert Health Guide</string>
+
+    <string name="progress_add_entry_btn">+ Add New Entry</string>
+    <string name="progress_add_entry_dialog_title">➕ New Weight &amp; BMI Entry</string>
+    <string name="progress_entry_saved">BMI record saved successfully! 📊</string>
+    <string name="progress_add_sample_btn">✨ Add Demo Data</string>
+    <string name="progress_demo_added">Demo BMI records added!</string>
+
+    <string name="progress_chart_subtitle">Your body weight &amp; BMI tracker</string>
+    <string name="progress_entries_saved">Entries Saved</string>
+    <string name="progress_entry_count">%d Entries</string>
+    <string name="progress_record_count">%d Records</string>
+    <string name="progress_health_assessment">Smart Health Assessment</string>
+    <string name="insight_underweight_status">BMI Below Normal (Underweight)</string>
+    <string name="insight_underweight_advice">Your body weight is slightly lower than normal. Increasing protein and nutritious food intake is recommended to bring weight to normal range.</string>
+    <string name="insight_normal_status">Your weight is ideal and excellent! (Normal)</string>
+    <string name="insight_normal_advice">Congratulations! Your BMI is in the normal and healthy range. Maintain balanced diet and regular walking.</string>
+    <string name="insight_overweight_status">Weight slightly above normal (Overweight)</string>
+    <string name="insight_overweight_advice">Your BMI is in the overweight zone. Walking at least 30 minutes daily and controlling oily food will help return to normal zone quickly.</string>
+    <string name="insight_obese_status">High BMI &amp; Obesity Risk (Obese)</string>
+    <string name="insight_obese_advice">Your BMI falls into obesity category. Control sweets and fatty foods and consult doctor to reduce heart and metabolic risks.</string>
+
+    <!-- Caregiver & Pairing Localization -->
+    <string name="sync_caregiver_sync_title">Family &amp; Caregiver Sync</string>
+    <string name="sync_patient_mode">🧑‍⚕️ Patient Mode</string>
+    <string name="sync_caregiver_mode">🩺 Caregiver Mode</string>
+    <string name="sync_patient_dashboard_desc">Your health vitals (BP, Pulse, Temperature, etc.) will be visible to your caregiver in real-time.</string>
+    <string name="sync_patient_name_label">Patient Name</string>
+    <string name="sync_generate_pairing_code">Generate Pairing Code</string>
+    <string name="sync_pairing_code_title">Pairing Code:</string>
+    <string name="sync_reset_code">Reset Code</string>
+    <string name="sync_unpair">Unpair</string>
+    <string name="sync_waiting_for_caregiver">Waiting for caregiver connection…</string>
+    <string name="sync_connected_caregiver">Connected Caregiver: %s</string>
+    <string name="sync_caregiver_name_label">Caregiver Name</string>
+    <string name="sync_input_pairing_code">Enter 6-Digit Pairing Code</string>
+    <string name="sync_custom_patient_name">Patient Nickname (Optional)</string>
+    <string name="sync_connect_button">Connect with Patient</string>
+    <string name="sync_linked_patients">Linked Patients:</string>
+    <string name="sync_caregiver_dashboard_title">Caregiver Dashboard</string>
+    <string name="sync_send_message_title">Send Message or Instruction to Patient</string>
+    <string name="sync_message_placeholder">e.g., Take medicine on time…</string>
+    <string name="sync_vitals_logs_title">Real-Time Vitals Logs</string>
+    <string name="sync_no_vitals_logged">No vitals logs recorded yet. Add data from patient mode to view here.</string>
+
+    <!-- Auth & Instructions Localization -->
+    <string name="auth_welcome">Welcome to Smart Help</string>
+    <string name="auth_signin_subtitle">Sign in to continue</string>
+    <string name="auth_email_hint">Email Address</string>
+    <string name="auth_password_hint">Password</string>
+    <string name="auth_login_btn">Login</string>
+    <string name="auth_to_signup">Don\'t have an account? Sign Up</string>
+    <string name="auth_signup_title">Create Account</string>
+    <string name="auth_signup_subtitle">Sign up to get started</string>
+    <string name="auth_name_hint">Full Name</string>
+    <string name="auth_select_role">Select Role:</string>
+    <string name="auth_role_patient">Patient</string>
+    <string name="auth_role_caregiver">Caregiver</string>
+    <string name="auth_signup_btn">Sign Up</string>
+    <string name="auth_to_login">Already have an account? Login</string>
+    <string name="caregiver_dashboard_title">Caregiver Dashboard</string>
+    <string name="link_patient_title">Link Patient</string>
+    <string name="link_family_title">Link Family Member</string>
+    <string name="logout_label">Logout</string>
+</resources>

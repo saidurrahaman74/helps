@@ -1,0 +1,925 @@
+<resources>
+    <string name="app_name">স্মার্ট সেবা </string>
+    <string name="welcome_title">স্বাগতম</string>
+    <string name="get_started">শুরু করুন</string>
+    <string name="language_toggle">বাংলা</string>
+    <string name="no_internet">ইন্টারনেট সংযোগ নেই। দয়া করে চেক করে আবার চেষ্টা করুন।</string>
+    <string name="welcome_home">স্মার্ট হেল্প ড্যাশবোর্ড</string>
+    <string name="app_slogan">বুদ্ধিমান স্বাস্থ্য হাব</string>
+    <string name="good_morning">শুভ সকাল</string>
+    <string name="good_noon">শুভ দুপুর</string>
+    <string name="good_afternoon">শুভ বিকাল</string>
+    <string name="good_evening">শুভ সন্ধ্যা</string>
+    <string name="good_night">শুভ রাত্রি</string>
+    <string name="special_day_new_year">শুভ নববর্ষ!</string>
+    <string name="developed_by">SRcreation দ্বারা তৈরী করা</string>
+    <string name="patient_help_title">পেশেন্ট টুল</string>
+    <string name="nurse_help_title">নার্স টুল</string>
+
+    <!-- Medical Disclaimer -->
+    <string name="disclaimer_title">মেডিকেল ডিসক্লেইমার</string>
+    <string name="disclaimer_msg">স্মার্ট হেল্প (Smart Help) শুধুমাত্র শিক্ষামূলক রেফারেন্স, তথ্য এবং ব্যক্তিগত ট্র্যাকিংয়ের উদ্দেশ্যে তৈরি। এটি কোনো পেশাদার চিকিৎসা পরামর্শ, রোগ নির্ণয় (Diagnosis), চিকিৎসা (Treatment) বা ক্লিনিক্যাল সুপারিশ প্রদান করে না। যেকোনো স্বাস্থ্যগত সমস্যা বা চিকিৎসার সিদ্ধান্তের পূর্বে সর্বদা একজন যোগ্য নিবন্ধিত চিকিৎসকের পরামর্শ নিন। এই অ্যাপে প্রদত্ত যেকোনো তথ্যের ওপর নির্ভর করার সম্পূর্ণ দায়িত্ব ইউজারের নিজের।</string>
+    <string name="accept_agree">আমি সম্মত</string>
+    <string name="safety_warning">সতর্কতা: সমস্ত ফলাফল হাসপাতালের গাইডলাইন এবং একজন রেজিস্টার্ড ডাক্তারের মাধ্যমে যাচাই করে নিন।</string>
+
+    <!-- Account Management -->
+    <string name="delete_all_data">সব তথ্য মুছে ফেলুন</string>
+    <string name="delete_data_confirm">আপনি কি নিশ্চিত? এটি আপনার সমস্ত হেলথ রেকর্ড, প্রোফাইল এবং সেটিংস স্থায়ীভাবে মুছে ফেলবেন, এই তথ্য আর ফিরিয়ে আনা সম্ভব নয়।</string>
+    <string name="delete_action">সব মুছে ফেলুন</string>
+
+    <!-- Role Selection -->
+    <string name="patient">রোগী টুল</string>
+    <string name="patient_subtitle">পরিবার সেবা কেন্দ্র </string>
+    <string name="nurse">নার্স টুল</string>
+    <string name="nurse_subtitle">পেশাদার টুলকিট</string>
+    <string name="women_care">নারীর যত্ন </string>
+    <string name="women_care_subtitle">নারীদের স্বাস্থ্য ও সুস্বাস্থ্য</string>
+    <string name="women_care_tools_title">প্রয়োজনীয় নারীর যত্ন টুলস</string>
+    <string name="personal_wellness_hub">ব্যক্তিগত সুস্বাস্থ্য কেন্দ্র </string>
+    <string name="women_care_welcome">আপনার বিশেষ যত্ন স্পেসে স্বাগতম।</string>
+    <string name="nav_nurse_id">নার্স আইডি</string>
+    <string name="nurse_id_title">নার্স প্রোফাইল আইডি</string>
+    <string name="hospital_name">হাসপাতালের নাম</string>
+    <string name="department_label">বিভাগ</string>
+    <string name="designation_label">পদবী</string>
+    <string name="employee_id">কর্মপরিচিতি নম্বর / রেজিস্ট্রেশন নম্বর</string>
+    <string name="period_tracker_desc">আপনার মাসিক চক্র চিহ্নিত করুন</string>
+    <string name="pregnancy_care_desc">মাতৃত্বকালীন নির্দেশনা </string>
+    <string name="choose_workspace">আপনার কর্মক্ষেত্র বেছে নিন</string>
+    <string name="tap_to_choose">আপনার কর্মক্ষেত্র বেছে নিতে ট্যাপ করুন</string>
+
+    <!-- Navigation & Drawer -->
+    <string name="nav_home">হোম</string>
+    <string name="nav_info">তথ্য</string>
+    <string name="nav_profile">প্রোফাইল</string>
+    <string name="nav_medical_id">মেডিকেল আইডি</string>
+    <string name="nav_emergency_qr">জরুরী কিউআর</string>
+    <string name="nav_nurse_toolkit">নার্স প্রো টুলকিট</string>
+    <string name="nav_emergency_sos">জরুরি এসওএস</string>
+    <string name="nav_notifications">নোটিফিকেশন</string>
+    <string name="nav_search">অনুসন্ধান</string>
+    <string name="nav_master_report">মাস্টার রিপোর্ট</string>
+    <string name="nav_settings">সেটিংস</string>
+    <string name="nav_patient_vault">পেশেন্ট ভল্ট</string>
+    <string name="nav_medicine_short">ঔষধ</string>
+    <string name="nav_sos_short">জরুরি</string>
+    <string name="nav_family_short">পরিবার</string>
+    <string name="patient_pro_toolkit">পেশেন্ট প্রো টুলকিট</string>
+    <string name="care_id">সেবা আইডি</string>
+    <string name="consult_specialist">বিশেষজ্ঞের পরামর্শ</string>
+    <string name="gyne_personal_marital">ব্যক্তিগত ও বৈবাহিক</string>
+    <string name="gyne_obstetric_history">প্রসূতি ইতিহাস (GPAL)</string>
+    <string name="gyne_menstrual_health">মাসিক এবং স্বাস্থ্য</string>
+    <string name="gyne_health_records">স্বাস্থ্য ও রেকর্ড</string>
+    <string name="lmp_date_label">শেষ মাসিকের তারিখ</string>
+    <string name="cycle_length_days">মাসিক চক্রের দৈর্ঘ্য (দিন)</string>
+    <string name="contraceptive_method">জন্ম নিয়ন্ত্রণ পদ্ধতি</string>
+    <string name="gyne_history_input">গাইনোকোলজিক্যাল ইতিহাস</string>
+    <string name="last_checkup_date">শেষ চেকআপের তারিখ</string>
+    <string name="save_care_id">কেয়ার আইডি সেভ করুন</string>
+    <string name="obstetric_summary">প্রসূতি ইতিহাস (GPAL)</string>
+    <string name="intl_format">আন্তর্জাতিক ফরম্যাট</string>
+    <string name="gravida">গর্ভধারণ</string>
+    <string name="para">প্রসব</string>
+    <string name="abortus">গর্ভপাত</string>
+    <string name="living">জীবিত সন্তান</string>
+    <string name="marital_status">বৈবাহিক অবস্থা</string>
+    <string name="lmp_date">শেষ মাসিকের তারিখ</string>
+    <string name="cycle_length_label">মাসিক চক্রের দৈর্ঘ্য</string>
+    <string name="contraceptive">জন্ম নিয়ন্ত্রণ পদ্ধতি</string>
+    <string name="gyne_history">মেডিকেল ইতিহাস</string>
+    <string name="last_checkup">শেষ চেকআপ</string>
+    <string name="pregnancy_care">গর্ভবর্তী সেবা </string>
+    <string name="gestational_age">গর্ভকালীন বয়স</string>
+    <string name="trimester_label">ট্রাইমেস্টার %d</string>
+    <string name="weeks_label">সপ্তাহ</string>
+    <string name="days_label">দিন</string>
+    <string name="days_remaining_label">%d দিন বাকি</string>
+    <string name="edd_display">প্রসবের সম্ভাব্য তারিখ: %s</string>
+    <string name="kick_counter_title">বাচ্চা লাথি গণনার হিসাব </string>
+    <string name="due_date_title">প্রসবের তারিখ</string>
+    <string name="kick_history_title">লাথি গণনার ইতিহাস</string>
+    <string name="baby_size_title">বাচ্চা এখন একটি %s-এর সমান</string>
+    <string name="approx_length_title">আনুমানিক দৈর্ঘ্য: %s</string>
+    <string name="kick_counter_instruction">প্রতিবার নড়াচড়া অনুভব করলে হার্টে ট্যাপ করুন।</string>
+    <string name="movements_detected">নড়াচড়া সনাক্ত হয়েছে</string>
+    <string name="finish_save">সম্পন্ন ও সেভ করুন</string>
+    <string name="movement_saved">মুভমেন্ট সেশন সেভ হয়েছে!</string>
+    <string name="kick_log_entry">%d কিক %d মিনিটে</string>
+    <string name="setup_pregnancy_title">গর্ভবর্তী ট্র্যাকার তৈরি করুন</string>
+    <string name="setup_pregnancy_desc">পিরিয়ড ট্র্যাকার বা কেয়ার আইডি থেকে আপনার এলএমপি ডেটা ব্যবহার করে স্বয়ংক্রিয় গণনা।</string>
+    <string name="pregnancy_setup_guide">দয়া করে কেয়ার আইডি বা পিরিয়ড ট্র্যাকারে আপনার এলএমপি আপডেট করুন</string>
+    <string name="status_not_set">সেট করা নেই</string>
+    <string name="status_none">নেই</string>
+    <string name="status_never">কখনো না</string>
+    <string name="status_not_available">তথ্য নেই</string>
+
+    <!-- Milestones -->
+    <string name="fruit_seed">বীজ</string>
+    <string name="fruit_blueberry">ব্লুবেরি</string>
+    <string name="fruit_lemon">লেবু</string>
+    <string name="fruit_avocado">অ্যাভোকাডো</string>
+    <string name="fruit_banana">কলা</string>
+    <string name="fruit_corn">ভুট্টা</string>
+    <string name="fruit_eggplant">বেগুন</string>
+    <string name="fruit_pineapple">আনারস</string>
+    <string name="fruit_watermelon">তরমুজ</string>
+    <string name="fruit_pumpkin">মিষ্টি কুমড়া</string>
+    <string name="nurse_hub_subtitle">ক্লিনিক্যাল এক্সিলেন্স</string>
+    <string name="tool_desc_dose">শিশু ও প্রাপ্তবয়স্ক</string>
+    <string name="tool_desc_iv">প্রবাহ ও ড্রপ রেট</string>
+    <string name="tool_desc_gcs">গ্লাসগো কোমা স্কেল</string>
+    <string name="tool_desc_braden">বেডশোর ঝুঁকি</string>
+    <string name="tool_desc_pain">তীব্রতা ও মুখভঙ্গি</string>
+    <string name="tool_desc_ecg">রিদম বিশ্লেষণ</string>
+    <string name="tool_desc_apgar">নবজাতকের স্বাস্থ্য</string>
+    <string name="tool_desc_bsa">শরীরের ক্ষেত্রফল</string>
+    <string name="tool_desc_dilution">প্রস্তুতি নির্দেশিকা</string>
+    <string name="tool_desc_io">ফ্লুইড ব্যালেন্স</string>
+    <string name="tool_desc_burn">TBSA রুল অফ নাইনস</string>
+    <string name="tool_desc_oxygen">সিলিন্ডার স্থায়িত্ব</string>
+    <string name="tool_desc_bp">রক্তচাপ লগ</string>
+    <string name="tool_desc_insulin">গ্লুকোজ ট্র্যাকিং</string>
+    <string name="tool_desc_insulin_calc">ডোজের প্রয়োজনীয়তা</string>
+    <string name="tool_desc_lab">স্বাভাবিক মাত্রা</string>
+    <string name="tool_desc_dictionary">শব্দ ও ল্যাটিন</string>
+    <string name="tool_desc_abbr">শব্দ ও শর্টকাট</string>
+    <string name="tool_desc_imaging">পদ্ধতি নির্দেশিকা</string>
+    <string name="tool_desc_med_rem">ক্লিনিক্যাল সিডিউল</string>
+    <string name="tool_desc_bmi">বডি মাস ইনডেক্স</string>
+    <string name="tool_desc_steps">অ্যাক্টিভিটি ট্র্যাকার</string>
+    <string name="tool_desc_encyclopedia">স্বাস্থ্য জ্ঞান</string>
+    <string name="tool_desc_vault">মেডিকেল তথ্য</string>
+    <string name="tool_desc_period">মাসিক চক্র ট্র্যাকার</string>
+    <string name="tool_desc_weight">ওজন চার্ট</string>
+    <string name="tool_desc_diet">পুষ্টি পরিকল্পনা</string>
+    <string name="tool_desc_aid">জরুরি নির্দেশিকা</string>
+    <string name="tool_desc_hospitals">নিকটস্থ কেন্দ্র</string>
+    <string name="coming_soon_msg">%s শীঘ্রই আসছে!</string>
+    <string name="health_assistant">আপনার স্বাস্থ্য সহকারী</string>
+
+    <!-- Health Tips -->
+    <string name="tip_hydration">পর্যাপ্ত পানি পান করুন</string>
+    <string name="tip_hydration_desc">আজ অন্তত ৮ গ্লাস পানি পান করুন।</string>
+    <string name="tip_walk">দৈনিক হাঁটা</string>
+    <string name="tip_walk_desc">১৫ মিনিটের হাঁটা আপনার মন ভালো করতে পারে।</string>
+    <string name="tip_sleep">সুস্থ ঘুম</string>
+    <string name="tip_sleep_desc">৭-৮ ঘণ্টা মানসম্মত ঘুমের লক্ষ্য রাখুন।</string>
+    <string name="tip_bp">বিপি চেক করুন</string>
+    <string name="tip_bp_desc">নিয়মিত পর্যবেক্ষণ স্বাস্থ্যের চাবিকাঠি।</string>
+
+    <string name="weight_label">ওজন</string>
+    <string name="height_label">উচ্চতা</string>
+    <string name="pdf_id_title">স্মার্ট হেল্প - মেডিকেল আইডি প্রোফাইল</string>
+    <string name="pdf_generated_at">তৈরি করা হয়েছে: %s</string>
+    <string name="pdf_personal_info">ব্যক্তিগত তথ্য:</string>
+    <string name="pdf_medical_history_title">মেডিকেল ইতিহাস:</string>
+    <string name="pdf_emergency_title">জরুরি যোগাযোগ:</string>
+    <string name="pdf_saved_at">পিডিএফ Downloads/SmartHelp ফোল্ডারে সেভ হয়েছে</string>
+    <string name="pdf_error">পিডিএফ সেভ করতে সমস্যা হয়েছে: %s</string>
+
+    <!-- App Lock & Security -->
+    <string name="enter_pin">সিকিউরিটি পিন দিন</string>
+    <string name="forgot_pin">পিন ভুলে গেছেন?</string>
+    <string name="reset_pin">পিন রিসেট করুন</string>
+    <string name="your_answer">আপনার উত্তর</string>
+    <string name="confirm_reset">নিশ্চিত এবং রিসেট করুন</string>
+    <string name="security_not_set">সিকিউরিটি প্রশ্ন সেট করা নেই।</string>
+    <string name="cancel">বাতিল</string>
+    <string name="save">সংরক্ষণ করুন</string>
+
+    <!-- Appointment -->
+    <string name="appointment_title">ডাক্তার অ্যাপয়েন্টমেন্ট</string>
+    <string name="add_appointment">অ্যাপয়েন্টমেন্ট যোগ করুন</string>
+    <string name="doctor_name">ডাক্তারের নাম</string>
+    <string name="specialty_label">বিশেষজ্ঞ (যেমন: হৃদরোগ বিশেষজ্ঞ)</string>
+    <string name="chamber_name">চেম্বার / হাসপাতালের নাম</string>
+    <string name="date_label">তারিখ</string>
+    <string name="time_label">সময়</string>
+    <string name="note_label">নোট / ফলো-আপ তথ্য</string>
+    <string name="btn_schedule">সিডিউল করুন</string>
+    <string name="status_visited">দেখা হয়েছে</string>
+    <string name="status_mark_completed">সম্পন্ন হিসেবে চিহ্নিত করুন</string>
+    <string name="no_appointments">কোনো অ্যাপয়েন্টমেন্ট সিডিউল করা নেই</string>
+    <string name="tap_to_add_appointment">নতুন অ্যাপয়েন্টমেন্ট যোগ করতে \'+\' ট্যাপ করুন।</string>
+
+    <!-- Medicine Reminder Status -->
+    <string name="status_taken">অবস্থা: গ্রহণ করা হয়েছে</string>
+    <string name="status_pending">অবস্থা: বাকি আছে</string>
+    <string name="all_done">সব শেষ! 🌟</string>
+    <string name="keep_going">চালিয়ে যান! 💪</string>
+    <string name="todays_progress">আজকের অগ্রগতি</string>
+    <string name="med_taken_count">%2$d এর মধ্যে %1$d টি গ্রহণ করা হয়েছে</string>
+    <string name="active_schedule">সক্রিয় তালিকা</string>
+    <string name="low_stock_msg">%d টি ঔষধের স্টক ফুরিয়ে যাচ্ছে!</string>
+
+    <!-- SOS -->
+    <string name="emergency_helplines_title">জরুরি হেল্পলাইন</string>
+    <string name="gov_helplines_label">সরকারি হেল্পলাইন</string>
+    <string name="official_notice_sos">অফিসিয়াল নোটিশ: এই অ্যাপ্লিকেশনটি SRcreation দ্বারা তৈরি একটি স্বাধীন স্বাস্থ্য টুলকিট। এটি কোনো সরকারি সংস্থার সাথে অনুমোদিত বা প্রতিনিধিত্ব করে না। ব্যবহারকারীর সুবিধার জন্য সমস্ত হেল্পলাইন নম্বর জনসাধারণের জন্য উন্মুক্ত অফিসিয়াল ডোমেইন থেকে নেওয়া হয়েছে।</string>
+    <string name="sos_national_emergency">জাতীয় জরুরি সেবা</string>
+    <string name="sos_desc_national_emergency">পুলিশ, ফায়ার সার্ভিস, অ্যাম্বুলেন্স</string>
+    <string name="sos_national_helpline">জাতীয় হেল্পলাইন</string>
+    <string name="sos_desc_national_helpline">তথ্য ও সেবা</string>
+    <string name="sos_health_helpline">স্বাস্থ্য বাতায়ন</string>
+    <string name="sos_desc_health_helpline">স্বাস্থ্য সেবা কেন্দ্র</string>
+    <string name="sos_child_helpline">শিশু সহায়তা</string>
+    <string name="sos_desc_child_helpline">সুরক্ষা এবং সমর্থন</string>
+    <string name="sos_anti_corruption">দুর্নীতি দমন কমিশন</string>
+    <string name="sos_desc_anti_corruption">দুদক হেল্পলাইন</string>
+    <string name="sos_disaster_alert">দুর্যোগের আগাম বার্তা</string>
+    <string name="sos_desc_disaster_alert">আগাম সতর্কতা</string>
+    <string name="sos_legal_aid">আইনি সহায়তা</string>
+    <string name="sos_desc_legal_aid">জাতীয় আইনগত সহায়তা</string>
+    <string name="sos_agriculture">কৃষি বাতায়ন</string>
+    <string name="sos_desc_agriculture">কৃষি পরামর্শ কেন্দ্র</string>
+    <string name="sos_election_commission">নির্বাচন কমিশন</string>
+    <string name="sos_desc_election_commission">এনআইডি সংক্রান্ত তথ্য</string>
+
+    <!-- Notifications & Alarms -->
+    <string name="notif_take_tab">ওষুধ খেয়ে নিন</string>
+    <string name="notif_use_med">ঔষধ ব্যবহার করুন</string>
+    <string name="notif_period_tomorrow">আগামীকাল পিরিয়ড শুরুর দিন</string>
+    <string name="notif_period_overdue">পিরিয়ড শুরু হয় নাই</string>
+    <string name="alarm_taken">ঔষধ গ্রহণ সম্পন্ন</string>
+    <string name="alarm_info">আপনার %s ঔষধ নেওয়ার সময় হয়েছে</string>
+    <string name="alarm_stop_instruction">বন্ধ করতে \'ওষুধ খাওয়া হয়েছে\' বাটনে ক্লিক করুন</string>
+
+    <string name="medicine_reminder">মেডিসিন রিমাইন্ডার</string>
+    <string name="age_label">বয়স</string>
+    <string name="weight_unit_label">ওজনের একক:</string>
+    <string name="height_unit_label">উচ্চতার একক:</string>
+    <string name="btn_calculate_bmi">বিএমআই হিসাব করুন</string>
+    <string name="btn_calculate_ideal">আদর্শ ওজন হিসাব করুন</string>
+    <string name="btn_calculate_calories">দৈনিক ক্যালরি হিসাব করুন</string>
+    <string name="btn_calculate_water">দৈনিক পানির পরিমাণ হিসাব করুন</string>
+    <string name="btn_calculate_ideal_weight">আদর্শ ওজন হিসাব করুন</string>
+    <string name="ideal_weight_result_label">আপনার আদর্শ ওজন:</string>
+    <string name="daily_maintenance_label">প্রতিদিনের ক্যালরি চাহিদা: %.0f kcal</string>
+    <string name="activity_level_label">পরিশ্রমের মাত্রা:</string>
+    <string name="sedentary">অলস</string>
+    <string name="light_active">হালকা পরিশ্রমী</string>
+    <string name="moderate_active">মাঝারি পরিশ্রমী</string>
+    <string name="very_active">বেশি পরিশ্রমী</string>
+    <string name="result_format_label">ফলাফল দেখুন:</string>
+    <string name="status_ideal_weight">আদর্শ ওজন</string>
+    <string name="select_gender">লিঙ্গ বেছে নিন:</string>
+    <string name="male">পুরুষ</string>
+    <string name="female">মহিলা</string>
+    <string name="recommended_water">প্রতিদিনের প্রয়োজনীয় পানি:</string>
+    <string name="no_fluid_records">আজ কোনো রেকর্ড নেই। যোগ করতে + ট্যাপ করুন।</string>
+    <string name="bmi_categories">বিএমআই ধরন:</string>
+    <string name="what_is_bmi">বিএমআই কি?</string>
+    <string name="water_intake">পানির পরিমাণ</string>
+    <string name="med_reminder_title">মেডিসিন রিমাইন্ডার</string>
+
+    <!-- Patient Hub Categories -->
+    <string name="cat_hospitals">হাসপাতাল</string>
+    <string name="cat_first_aid">প্রাথমিক চিকিৎসা</string>
+    <string name="cat_health_tips">স্বাস্থ্য টিপস</string>
+    <string name="cat_bmi_calculator">বিএমআই ক্যালকুলেটর</string>
+    <string name="cat_weight_chart">ওজন চার্ট</string>
+    <string name="cat_military_hospitals">সামরিক হাসপাতাল</string>
+    <string name="cat_government_hospitals">সরকারি হাসপাতাল</string>
+    <string name="cat_private_hospitals">বেসরকারি হাসপাতাল</string>
+    <string name="cat_smart_tool">স্মার্ট টুল</string>
+    <string name="daily_health_tips">দৈনিক স্বাস্থ্য টিপস</string>
+    <string name="smart_insights">স্মার্ট ইনসাইটস</string>
+    <string name="daily_trackers">দৈনিক ট্র্যাকার</string>
+    <string name="quick_services">দ্রুত সেবা</string>
+    <string name="card_medicine">ওষুধের রিমাইন্ডার</string>
+    <string name="card_medicine_desc">ডোজ রিমাইন্ডারসমূহ</string>
+    <string name="card_bp">বিপি ট্র্যাকার</string>
+    <string name="card_bp_desc">রক্তচাপ লগ</string>
+    <string name="card_insulin">ইনসুলিন চার্ট</string>
+    <string name="card_insulin_desc">ডায়াবেটিস ট্র্যাকিং</string>
+    <string name="card_steps">স্টেপ কাউন্টার</string>
+    <string name="card_steps_desc">দৈনিক হাঁটার কাউন্টার</string>
+    <string name="card_hospitals">হাসপাতালের তথ্য</string>
+    <string name="card_hospitals_desc">নিকটস্থ কেন্দ্রসমূহ</string>
+    <string name="card_first_aid">প্রাথমিক চিকিৎসা</string>
+    <string name="card_first_aid_desc">জরুরি নির্দেশিকাসমূহ</string>
+    <string name="card_encyclopedia">বিশ্বকোষ (এনসাইক্লোপিডিয়া)</string>
+    <string name="card_encyclopedia_desc">স্বাস্থ্য জ্ঞান</string>
+    <string name="card_bmi">বিএমআই টুলস</string>
+    <string name="card_bmi_desc">স্বাস্থ্য ক্যালকুলেটর</string>
+    <string name="card_weight">ওজন চার্ট</string>
+    <string name="card_weight_desc">পুষ্টি এবং ট্রেন্ডস</string>
+
+    <!-- BMI & Health Tools -->
+    <string name="tool_bmi_calc">বিএমআই ক্যালকুলেটর</string>
+    <string name="weight_unit">ওজনের একক</string>
+    <string name="height_unit">উচ্চতার একক</string>
+    <string name="your_bmi">আপনার বিএমআই: %s</string>
+    <string name="underweight">স্বল্প ওজন</string>
+    <string name="normal">স্বাভাবিক</string>
+    <string name="overweight">অতিরিক্ত ওজন</string>
+    <string name="obese">স্থূলতা</string>
+    <string name="btn_check_goal">লক্ষ্য যাচাই করুন</string>
+    <string name="health_progress">স্বাস্থ্যের অগ্রগতি</string>
+
+    <!-- Medical ID -->
+    <string name="profile_not_setup">প্রোফাইল সেটআপ করা নেই</string>
+    <string name="active_medical_id">সক্রিয় মেডিকেল আইডি</string>
+    <string name="blood_group">রক্তের গ্রুপ</string>
+    <string name="weight_kg">ওজন (কেজি)</string>
+    <string name="height_cm">উচ্চতা (সেমি)</string>
+    <string name="age">বয়স</string>
+    <string name="allergies">অ্যালার্জি</string>
+    <string name="chronic_conditions">দীর্ঘস্থায়ী রোগ</string>
+    <string name="regular_medications">নিয়মিত ঔষধ</string>
+    <string name="emergency_contacts">জরুরি যোগাযোগ</string>
+    <string name="no_contacts_added">এখনো কোনো জরুরি যোগাযোগ যোগ করা হয়নি।</string>
+    <string name="personal_details">ব্যক্তিগত তথ্য</string>
+    <string name="full_name">পুরো নাম</string>
+    <string name="medical_history">মেডিকেল ইতিহাস</string>
+
+    <!-- Medicine Reminder -->
+    <string name="med_taken_btn">গ্রহণ করা হয়েছে</string>
+    <string name="med_stock_left">অবশিষ্ট স্টক: %d</string>
+    <string name="med_low_stock">স্টক কম!</string>
+    <string name="add_med_title">নতুন ঔষধ যোগ করুন</string>
+    <string name="med_name_label">ঔষধের নাম</string>
+    <string name="med_strength_label">পাওয়ার / মাত্রা (Strength)</string>
+    <string name="med_strength_placeholder">যেমন: ৫০০</string>
+    <string name="med_category_label">ক্যাটাগরি</string>
+    <string name="med_food_relation">খাবারের সাথে সম্পর্ক</string>
+    <string name="med_dosage_times">ঔষধ সেবনের সময়</string>
+    <string name="med_duration">স্থায়িত্ব</string>
+    <string name="med_continuous">চলমান</string>
+    <string name="med_days_label">দিন</string>
+    <string name="med_stock">স্টক</string>
+    <string name="med_stock_placeholder">প্রাথমিক স্টক</string>
+
+    <!-- Nurse Hub & Tools -->
+    <string name="tool_dose_calc">ডোজ ক্যালকুলেটর</string>
+    <string name="tool_iv_fluid">আইভি ফ্লুইড ক্যালকুলেটর</string>
+    <string name="tool_gcs_calc">জিসিএস ক্যালকুলেটর</string>
+    <string name="tool_braden">ব্রেডেন স্কেল</string>
+    <string name="tool_pain_scale">ব্যথা স্কেল</string>
+    <string name="tool_ecg_guide">ইসিজি গাইড</string>
+    <string name="tool_apgar">আপগার স্কোর</string>
+    <string name="tool_bsa_calc">বিএসএ ক্যালকুলেটর</string>
+    <string name="tool_drug_dilution">ড্রাগ ডাইলুশন</string>
+    <string name="tool_io_chart">আই/ও চার্ট</string>
+    <string name="tool_burn_calc">বার্ন ক্যালকুলেটর</string>
+    <string name="tool_oxygen">অক্সিজেন স্থায়িত্ব</string>
+    <string name="tool_bp_tracker">বিপি ট্র্যাকার</string>
+    <string name="tool_insulin">ইনসুলিন লগ</string>
+    <string name="tool_insulin_calc">ইনসুলিন ক্যালকুলেটর</string>
+    <string name="tool_lab_values">ল্যাব ভ্যালু</string>
+    <string name="tool_med_dictionary">ঔষধ অভিধান</string>
+    <string name="tool_medical_abbr">মেডিকেল সংক্ষিপ্ত রূপ</string>
+    <string name="tool_imaging">ইমেজিং গাইড</string>
+    <string name="tool_encyclopedia">এনসাইক্লোপিডিয়া</string>
+    <string name="tool_period">পিরিয়ড ট্র্যাকার</string>
+    <string name="tool_weight">ওজন ট্র্যাকার</string>
+    <string name="tool_diet">ডায়েট প্ল্যান</string>
+    <string name="tool_first_aid">প্রাথমিক চিকিৎসা</string>
+    <string name="tool_hospitals">হাসপাতাল</string>
+    <string name="tool_vault">মেডিকেল ভল্ট</string>
+    <string name="duty_roster">ডিউটি রোস্টার</string>
+    <string name="handover_notes">হ্যান্ডওভার নোট</string>
+    <string name="shift_reminder">শিফট রিমাইন্ডার</string>
+    <string name="guidelines">ক্লিনিক্যাল গাইডলাইন</string>
+    <string name="clinical_calculators">ক্লিনিক্যাল ক্যালকুলেটর</string>
+    <string name="vital_trackers_lab">ভাইটাল ট্র্যাকার এবং ল্যাব</string>
+    <string name="patient_utilities">রোগীর উপযোগিতা</string>
+
+    <!-- I/O Chart -->
+    <string name="intake_output_chart">ইনটেক এবং আউটপুট চার্ট</string>
+    <string name="btn_add_record">রেকর্ড যোগ করুন</string>
+    <string name="todays_fluid_logs">আজকের ফ্লুইড লগ</string>
+    <string name="total_intake">মোট ইনটেক</string>
+    <string name="total_output">মোট আউটপুট</string>
+    <string name="net_balance">নেট ব্যালেন্স</string>
+    <string name="intake">ইনটেক</string>
+    <string name="output">আউটপুট</string>
+    <string name="add_fluid_record">ফ্লুইড রেকর্ড যোগ করুন</string>
+    <string name="select_category">ক্যাটাগরি বেছে নিন</string>
+    <string name="amount_ml">পরিমাণ (মি.লি.)</string>
+    <string name="save_record">রেকর্ড সেভ করুন</string>
+
+    <!-- Nurse Assessment Tools -->
+    <string name="braden_scale_title">ব্রেডেন স্কেল অ্যাসেসমেন্ট</string>
+    <string name="braden_total_score">মোট স্কোর: %d</string>
+    <string name="nursing_intervention">নার্সিং ইন্টারভেনশন</string>
+
+    <string name="gcs_eye_opening">চোখ খোলা (E)</string>
+    <string name="gcs_spontaneous">৪ - স্বতঃস্ফূর্ত</string>
+    <string name="gcs_to_speech">৩ - কথায় সাড়া দিলে</string>
+    <string name="gcs_to_pain">২ - ব্যথায় সাড়া দিলে</string>
+    <string name="gcs_none">১ - কোনো সাড়া নেই</string>
+    <string name="gcs_verbal_response">মৌখিক প্রতিক্রিয়া (V)</string>
+    <string name="gcs_oriented">৫ - সচেতন</string>
+    <string name="gcs_confused">৪ - বিভ্রান্ত</string>
+    <string name="gcs_inappropriate">৩ - অসংলগ্ন কথা</string>
+    <string name="gcs_incomprehensible">২ - অস্পষ্ট শব্দ</string>
+    <string name="gcs_motor_response">মোটর প্রতিক্রিয়া (M)</string>
+    <string name="gcs_obeys_commands">৬ - নির্দেশ পালন করে</string>
+    <string name="gcs_localizes_pain">৫ - ব্যথা অনুভব করে</string>
+    <string name="gcs_withdraws">৪ - ব্যথা থেকে সরে যায়</string>
+    <string name="gcs_flexion">৩ - ফ্লেক্সিয়ন (ব্যথা)</string>
+    <string name="gcs_extension">২ - এক্সটেনশন (ব্যথা)</string>
+    <string name="gcs_mild">সামান্য (১৩-১৫)</string>
+    <string name="gcs_moderate">মাঝারি (৯-১২)</string>
+    <string name="gcs_severe">গুরুতর (&lt; ৯)</string>
+    <string name="gcs_total_score">জিসিএস মোট স্কোর: %d</string>
+
+    <!-- SBAR Handover -->
+    <string name="sbar_handover">এসবিএআর হ্যান্ডওভার</string>
+    <string name="sbar_subtitle">এই শিফটের জন্য পেশাদার SBAR বিবরণ দিন।</string>
+    <string name="situation_label">এস - পরিস্থিতি (Situation)</string>
+    <string name="background_label">বি - পটভূমি (Background)</string>
+    <string name="assessment_label">এ - মূল্যায়ন (Assessment)</string>
+    <string name="recommendation_label">আর - সুপারিশ (Recommendation)</string>
+    <string name="btn_copy">কপি করুন</string>
+    <string name="btn_share">শেয়ার করুন</string>
+    <string name="placeholder_enter_details">বিবরণ লিখুন...</string>
+    <string name="toast_handover_copied">হ্যান্ডওভার কপি করা হয়েছে</string>
+
+    <!-- Settings & Miscellaneous -->
+    <string name="settings_personalization">ব্যক্তিগতকরণ</string>
+    <string name="settings_unit_metric">মেট্রিক ইউনিট ব্যবহার করুন (কেজি, সেমি)</string>
+    <string name="settings_general">সাধারণ</string>
+    <string name="settings_app_language">অ্যাপের ভাষা</string>
+    <string name="settings_security">নিরাপত্তা ও গোপনীয়তা</string>
+    <string name="settings_app_lock">অ্যাপ লক (পিন)</string>
+    <string name="settings_biometric_lock">বায়োমেট্রিক লক</string>
+    <string name="settings_account_data">অ্যাকাউন্ট ও তথ্য</string>
+    <string name="settings_backup">তথ্য ব্যাকআপ</string>
+    <string name="settings_restore">তথ্য পুনরুদ্ধার</string>
+    <string name="settings_clear_cache">অ্যাপ ক্যাশে মুছুন</string>
+    <string name="settings_help_support">সাহায্য ও সহযোগিতা</string>
+    <string name="settings_rate_app">অ্যাপ রেট করুন</string>
+    <string name="settings_privacy_policy">গোপনীয়তা নীতি</string>
+    <string name="settings_terms">ব্যবহারের শর্তাবলী</string>
+    <string name="settings_feedback">মতামত পাঠান</string>
+    <string name="settings_about">স্মার্ট সেবা সম্পর্কে</string>
+    <string name="app_version">সংস্করণ: %s</string>
+    <string name="exit_app">অ্যাপ থেকে বের হন</string>
+    <string name="exit_desc">আপনি কি নিশ্চিত যে আপনি বের হতে চান?</string>
+    <string name="stay">থাকুন</string>
+    <string name="exit_now"> বের হন</string>
+    <string name="period_tracker">পিরিয়ড ট্র্যাকার</string>
+    <string name="card_temp">তাপমাত্রা ট্র্যাকার</string>
+    <string name="card_temp_desc">জ্বর এবং স্বাস্থ্য লগ</string>
+    <string name="temp_method">পদ্ধতি</string>
+    <string name="temp_method_mouth">মুখ</string>
+    <string name="temp_method_armpit">বগল</string>
+    <string name="temp_method_ear">কান</string>
+    <string name="temp_method_forehead">কপাল</string>
+    <string name="temp_level_hypo">হাইপোথার্মিয়া</string>
+    <string name="temp_level_normal">স্বাভাবিক</string>
+    <string name="temp_level_low_fever">হালকা জ্বর</string>
+    <string name="temp_level_high_fever">উচ্চ জ্বর</string>
+    <string name="temp_level_hyper">অতিরিক্ত উচ্চ জ্বর</string>
+    <string name="temp_action_hypo">জরুরি অবস্থা! শরীর গরম রাখুন এবং সাহায্য নিন।</string>
+    <string name="temp_action_normal">শরীর স্বাভাবিক অবস্থায় আছে।</string>
+    <string name="temp_action_low_fever">শরীর কোনো ইনফেকশনের বিরুদ্ধে লড়ছে।</string>
+    <string name="temp_action_high_fever">নিশ্চিত জ্বর। চিকিৎসকের পরামর্শ নিন।</string>
+    <string name="temp_action_hyper">অত্যন্ত ঝুঁকিপূর্ণ! দ্রুত হাসপাতালে যান।</string>
+    <string name="temp_age_group">বয়স অনুযায়ী</string>
+    <string name="temp_tab_add">এন্ট্রি যোগ করুন</string>
+    <string name="temp_tab_trends">ট্রেন্ডস</string>
+    <string name="temp_select_unit">ইউনিট নির্বাচন করুন</string>
+    <string name="temp_hint_value">তাপমাত্রা লিখুন</string>
+    <string name="temp_method_select">পরিমাপের পদ্ধতি</string>
+    <string name="temp_age_select">বয়স গ্রুপ নির্বাচন করুন</string>
+    <string name="temp_btn_save">রেকর্ড সংরক্ষণ করুন</string>
+    <string name="temp_last_checked">সর্বশেষ চেক</string>
+    <string name="temp_trends_title">মেডিকেল ট্রেন্ডস (শেষ ৭টি চেক)</string>
+    <string name="temp_history_title">সাম্প্রতিক ইতিহাস</string>
+    <string name="temp_age_newborn">নবজাতক</string>
+    <string name="temp_age_infant">শিশু (৩ মাস - ৩ বছর)</string>
+    <string name="temp_age_child">বড় শিশু (৪ - ১২ বছর)</string>
+    <string name="temp_age_adult">প্রাপ্তবয়স্ক (১৩ - ৬৫ বছর)</string>
+    <string name="temp_age_senior">বৃদ্ধ (৬৫+ বছর)</string>
+
+    <!-- Family & Caregiver Connectivity -->
+    <string name="nav_caregiver_sync">ফ্যামিলি ও কেয়ারগিভার ট্র্যাকিং</string>
+    <string name="nav_link_caregiver">পরিবার বা কেয়ারগিভার লিঙ্ক করুন</string>
+    <string name="caregiver_sync_card_title">ফ্যামিলি সিঙ্ক</string>
+    <string name="caregiver_sync_card_desc">মেডিসিন ট্র্যাকিং ও এলার্ট</string>
+    <string name="pairing_screen_title">ফ্যামিলি ও কেয়ারগিভার পেয়ারিং</string>
+    <string name="tab_patient_role">রোগীর ফোন</string>
+    <string name="tab_caregiver_role">কেয়ারগিভার ফোন</string>
+    <string name="patient_section_title">রোগীর নাম ও পেয়ারিং কোড</string>
+    <string name="patient_section_desc">এই ফোনটি রোগীর ফোন হিসেবে সেট করতে নিচে রোগীর নাম দিন ও কোড জেনারেট করুন।</string>
+    <string name="patient_name_label">রোগীর নাম (যেমন: বাবা)</string>
+    <string name="btn_generate_code">পেয়ারিং কোড তৈরি করুন</string>
+    <string name="pairing_code_label">আপনার ৬-ডিজিট পেয়ারিং কোড:</string>
+    <string name="status_connected">কেয়ারগিভারের সাথে সফলভাবে সংযুক্ত! (%s)</string>
+    <string name="status_waiting">কেয়ারগিভারের সংযোগের জন্য অপেক্ষা করা হচ্ছে...</string>
+    <string name="caregiver_section_title">রোগীর সাথে ফোন সংযুক্ত করুন</string>
+    <string name="caregiver_section_desc">রোগীর ফোনে প্রদর্শিত ৬-ডিজিটের পেয়ারিং কোডটি নিচে দিন।</string>
+    <string name="caregiver_name_label">আপনার পরিচয় (যেমন: ছেলে/মেয়ে)</string>
+    <string name="enter_code_label">৬-ডিজিট পেয়ারিং কোড</string>
+    <string name="btn_pair_device">ডিভাইস পেয়ার করুন</string>
+    <string name="dashboard_title_suffix">-এর হেলথ ড্যাশবোর্ড</string>
+    <string name="realtime_sync_active">রিয়েলটাইম সিঙ্ক চালু</string>
+    <string name="emergency_alert_title">🚨 %s এলার্ট!</string>
+    <string name="emergency_alert_desc_default">রোগী জরুরি সাহায্য চেয়েছেন!</string>
+    <string name="section_medicine_tracker">💊 ওষুধ গ্রহণের স্ট্যাটাস (Medicine Tracker)</string>
+    <string name="no_medicine_logs">এখনো কোনো মেডিসিন লগ পাওয়া যায়নি।</string>
+    <string name="section_vitals_tracker">🩺 রোগীর শারীরিক অবস্থা (BP &amp; Glucose)</string>
+    <string name="no_vitals_logs">কোনো রিডিং পাওয়া যায়নি।</string>
+    <string name="med_status_taken">মেডিসিন খেয়েছেন</string>
+    <string name="med_status_missed">মেডিসিন মিসড</string>
+    <string name="med_status_skipped">মেডিসিন স্কিপ করেছেন</string>
+    <string name="med_status_due">মেডিসিন নেওয়ার সময় হয়েছে</string>
+    <string name="tag_high_bp">উচ্চ রক্তচাপ</string>
+    <string name="tag_low_bp">নিম্ন রক্তচাপ</string>
+    <string name="tag_normal_bp">স্বাভাবিক</string>
+    <string name="msg_pair_success">সফলভাবে সংযোগ তৈরি করা হয়েছে!</string>
+    <string name="msg_code_invalid">কোডটি সঠিক নয় বা মেয়াদ শেষ হয়ে গেছে!</string>
+    <string name="voice_reminder_template">%1$s, আপনার এখন %2$s %3$s ওষুধ খাওয়ার সময় হয়েছে।</string>
+    <string name="settings_voice_reminder">ভয়েস রিমাইন্ডার (মেডিসিনের নাম ডেকে বলবে)</string>
+
+    <!-- Doctor Consultation Report -->
+    <string name="btn_generate_doctor_report">১-ক্লিক ডাক্তার সামারি পিডিএফ রিপোর্ট তৈরি করুন</string>
+    <string name="pdf_doctor_report_title">স্মার্ট সেবা - ডাক্তার পরামর্শ স্বাস্থ্য সামারি</string>
+    <string name="pdf_adherence_title">ওষুধ গ্রহণের নিয়মিততার হার (গত ৩০ দিন)</string>
+    <string name="pdf_vitals_summary_title">শারীরিক ভাইটালস সামারি (গড় মান)</string>
+    <string name="pdf_doctor_signature">ডাক্তারের স্বাক্ষর ও মন্তব্য:</string>
+    <string name="pdf_disclaimer">ক্লিনিক্যাল নোটিশ: এই রিপোর্টটি ডাক্তার দেখানোর সুবিধার জন্য তৈরি। কোনো চিকিৎসার সিদ্ধান্ত গ্রহণে ডাক্তারের পরামর্শ নিন।</string>
+
+    <!-- Disease-Specific Clinical Diet & Fluid Advisor -->
+    <string name="clinical_condition_title">রোগের ধরন ও ফ্লুইড গাইড</string>
+    <string name="condition_ckd">কিডনি রোগ (CKD)</string>
+    <string name="condition_hypertension">উচ্চ রক্তচাপ</string>
+    <string name="condition_diabetes">ডায়াবেটিস</string>
+    <string name="condition_standard">সাধারণ সুস্থ</string>
+    <string name="fluid_warning_near_limit">⚠️ সতর্কতা: আপনি আপনার আজকের ফ্লুইড গ্রহণের সীমা (%1$d ml / %2$d ml) কাছাকাছি চলে এসেছেন। অতিরিক্ত পানি গ্রহণে কিডনি বা হার্টে চাপ পড়তে পারে।</string>
+    <string name="diet_guideline_title">🩺 রোগভিত্তিক পুষ্টি ও খাবার গাইড</string>
+    <string name="diet_ckd_advice">• কিডনি বিশেষজ্ঞের পরামর্শ অনুযায়ী তরল খাবার মেপে পান করুন।\n• অতিরিক্ত পটাশিয়াম যুক্ত খাবার (কামরাঙ্গা, অতিরিক্ত কলা, টমেটো স্যুপ) এড়িয়ে চলুন।\n• কম লবণযুক্ত খাবার গ্রহণ করুন (দিনে ১ চা-চামচের কম)।</string>
+    <string name="diet_hypertension_advice">• কম লবণযুক্ত ড্যাশ ডায়েট মেনে চলুন (দিনে ১ চা-চামচের কম খাঁটি লবণ)।\n• চিপস, শুঁটকি ও প্রসেসড খাবার এড়িয়ে চলুন।\n• পরিমিত পানি পান করুন।</string>
+    <string name="diet_diabetes_advice">• মিষ্টি পানীয় বা জুসের বদলে বিশুদ্ধ পানি পান করুন।\n• কম শর্করা ও বেশি আঁশযুক্ত খাবার গ্রহণ করুন।\n• নিয়মিত রক্তের সুগার পরীক্ষা করুন।</string>
+
+    <!-- Smart Doctor Visit Planner -->
+    <string name="btn_add_to_calendar">গুগল ক্যালেন্ডারে সিঙ্ক করুন 📅</string>
+    <string name="follow_up_date_label">পরবর্তী ফলো-আপ তারিখ</string>
+    <string name="msg_calendar_synced">ক্যালেন্ডারে সিঙ্ক করার জন্য অ্যাপ চালু হচ্ছে...</string>
+
+    <!-- Emergency Directory -->
+    <string name="emergency_directory_title">জরুরি অ্যাম্বুলেন্স ও ব্লাড ব্যাংক ডিরেক্টরি</string>
+    <string name="tab_ambulance">🚑 অ্যাম্বুলেন্স সার্ভিস</string>
+    <string name="tab_blood_bank">🩸 ব্লাড ব্যাংক ও নেটওয়ার্ক</string>
+    <string name="btn_call_now">সরাসরি কল দিন 📞</string>
+
+    <!-- Medicine Stock Refill Alert -->
+    <string name="med_refill_alert_title">⚠️ ওষুধ স্টক ফুরিয়ে আসছে!</string>
+    <string name="med_refill_alert_body">%3$s ওষুধ মাত্র %1$dটি বাকি আছে! অনুগ্রহ করে ফার্মেসি থেকে রিফিল করুন।</string>
+    <string name="btn_refill_stock">➕ স্টক রিফিল করুন</string>
+    <string name="refill_dialog_title">ওষুধ স্টক রিফিল করুন</string>
+    <string name="refill_quantity_label">নতুন ওষুধের সংখ্যা যোগ করুন (যেমন: ১০, ২০)</string>
+    <string name="current_stock">বর্তমান স্টক: %1$d %2$s</string>
+
+    <!-- Visual Pill Box Schedule Grid -->
+    <string name="pill_box_title">💊 দৈনিক ভিজ্যুয়াল ঔষধ সময়সূচী</string>
+    <string name="slot_morning">☀️ সকাল (সকাল ৮:০০)</string>
+    <string name="slot_noon">🌤️ দুপুর (দুপুর ২:০০)</string>
+    <string name="slot_evening">⛅ বিকাল (সন্ধ্যা ৬:০০)</string>
+    <string name="slot_night">🌙 রাত (রাত ১০:০০)</string>
+    <string name="btn_mark_slot_taken">✓ বেলার ওষুধ সেবন সম্পন্ন</string>
+    <string name="slot_completed">🟢 এই বেলার সব ওষুধ খাওয়া হয়েছে</string>
+
+    <!-- Drug Interaction & Overdose Checker -->
+    <string name="drug_conflict_title">⚠️ ড্রাগ ওভারডোজ ও ইন্টারঅ্যাকশন সতর্কতা!</string>
+    <string name="drug_conflict_paracetamol">সতর্কতা: %1$s এবং %2$s দুটোতেই প্যারাসিটামল উপাদান রয়েছে! দুটো একসাথে খেলে লিভারের ক্ষতির মারাত্মক ঝুঁকি থাকে।</string>
+    <string name="drug_conflict_nsaid">পরামর্শ: %1$s এবং %2$s দুটোই ব্যথানাশক ওষুধ। একাধিক ব্যথানাশক একসাথে খেলে গ্যাস্ট্রিক আলসার ও কিডনির ঝুঁকি বাড়ে।</string>
+
+    <!-- 10-Min Medicine Snooze -->
+    <string name="btn_snooze_10_mins">⏱️ ১০ মিনিট পর আবার মনে করাও (Snooze)</string>
+    <string name="msg_snoozed">⏱️ ১০ মিনিটের জন্য স্নুজ করা হয়েছে। আবার মনে করিয়ে দেওয়া হবে।</string>
+
+    <!-- International Fever Center Standard Temperature Tracker -->
+    <string name="fever_center_title">আন্তর্জাতিক ফিভার সেন্টার টেম্পারেচার ট্র্যাকার</string>
+    <string name="core_temp_calibrated">আনুমানিক মূল বডি তাপমাত্রা: %1$.1f %2$s</string>
+    <string name="fever_pattern_title">📊 ক্লিনিক্যাল ফেভার প্যাটার্ন ও ডেঙ্গু রিস্ক অ্যানালাইসিস</string>
+    <string name="fever_pattern_normal">শরীরের তাপমাত্রা স্বাভাবিক সীমার মধ্যে আছে।</string>
+    <string name="fever_pattern_high">⚠️ উচ্চ জ্বর শনাক্ত করা হয়েছে (>১০০.৪°F)। প্যারাসিটামল ও জলপট্টি দেওয়ার পরামর্শ দেওয়া হচ্ছে।</string>
+    <string name="fever_pattern_biphasic">🚨 ডেঙ্গু/বাইফেজিক জ্বর সতর্কতা! জ্বর কমে পুনরায় বাড়ছে। অবিলম্বে ডাক্তার দেখান এবং এনএস১ (Dengue NS1) টেস্ট করুন।</string>
+    <string name="temp_total_entries">মোট এন্ট্রি</string>
+    <string name="temp_chart_header">২৪ ঘণ্টা মিলিটারি টাইম (০৬০০, ০৮০০, ২০০০) ও শরীরের মূল তাপমাত্রা ট্রেন্ড</string>
+    <string name="temp_hrs_suffix">ঘণ্টা</string>
+
+    <!-- BP Tracker Localization -->
+    <string name="bp_new_log_title">নতুন বিপি এন্ট্রি</string>
+    <string name="bp_save_analysis">রেকর্ড সেভ করুন</string>
+    <string name="bp_last_check">সর্বশেষ বিপি চেক:</string>
+    <string name="bp_logs_by_date">বিপি ইতিহাস (তারিখ অনুযায়ী)</string>
+    <string name="bp_cat_high">উচ্চ রক্তচাপ (ডাক্তার দেখান)</string>
+    <string name="bp_cat_mild_high">আংশিক উচ্চ রক্তচাপ</string>
+    <string name="bp_cat_normal">স্বাভাবিক</string>
+    <string name="bp_cat_optimal">উত্তম রক্তচাপ</string>
+    <string name="bp_cat_low">নিম্ন রক্তচাপ</string>
+
+    <!-- Insulin Tracker Localization -->
+    <string name="insulin_chart_label">রক্তের শর্করার ট্রেন্ড (mg/dL)</string>
+    <string name="insulin_latest_reading">সর্বশেষ সুগার ও ইনসুলিন রিডিং</string>
+    <string name="insulin_administered">দেওয়া ইনসুলিন: %1$s %2$s</string>
+    <string name="insulin_add_title">নতুন সুগার ও ইনসুলিন এন্ট্রি</string>
+    <string name="insulin_meal_context">খাবারের সময়:</string>
+    <string name="insulin_time_of_day">দিনের সময়:</string>
+    <string name="insulin_glucose_unit">গ্লুকোজ ইউনিট</string>
+    <string name="insulin_unit_label">ইনসুলিন ইউনিট</string>
+    <string name="insulin_glucose_hint">গ্লুকোজ (সুগার)</string>
+    <string name="insulin_dose_hint">ইনসুলিন ডোজ</string>
+    <string name="insulin_btn_save">রেকর্ড সেভ করুন</string>
+    <string name="insulin_log_history">সুগার ও ইনসুলিন ইতিহাস</string>
+    <string name="insulin_records_count">%dটি রেকর্ড</string>
+    <string name="insulin_label_glucose">গ্লুকোজ মাত্রা</string>
+    <string name="insulin_label_dose">ইনসুলিন ডোজ</string>
+    <string name="insulin_none">দেওয়া হয়নি</string>
+    <string name="insulin_fasting">খালি পেটে</string>
+    <string name="insulin_advice_high">রক্তের সুগার স্বাভাবিকের চেয়ে বেশি। ডাক্তারের পরামর্শ নিন।</string>
+    <string name="insulin_advice_low">রক্তের সুগার স্বাভাবিকের চেয়ে কম। দ্রুত মিষ্টি বা শর্করা জাতীয় খাবার খান।</string>
+    <string name="insulin_calc_title">ইনসুলিন ক্যালকুলেটর</string>
+    <string name="insulin_type_actrapid">অ্যাক্ট্রাপিড / সলুবল ইনসুলিন (স্লাইডিং স্কেল)</string>
+    <string name="insulin_select_meal">খাবারের সময় নির্বাচন করুন:</string>
+    <string name="insulin_dose_sensitivity">ডোজের সংবেদনশীলতা (Sensitivity):</string>
+    <string name="insulin_sensitivity_low">কম (Low)</string>
+    <string name="insulin_sensitivity_medium">সাধারণ (Medium)</string>
+    <string name="insulin_sensitivity_high">উচ্চ (High - ডাক্তার ডাকুন)</string>
+    <string name="insulin_sugar_level">রক্তে শর্করার পরিমাণ (Sugar Level)</string>
+    <string name="insulin_enter_value">মান টাইপ করুন</string>
+    <string name="insulin_recommended_dose">সুপারিশকৃত ইনসুলিন ডোজ</string>
+    <string name="insulin_units_actrapid">ইউনিট (অ্যাক্ট্রাপিড)</string>
+    <string name="insulin_call_doctor">ডাক্তারকে কল করুন</string>
+    <string name="insulin_disclaimer">নোট: এটি আন্তর্জাতিক স্লাইডিং স্কেল ইনসুলিন (SSI) নির্দেশিকা। সর্বদা আপনার ডাক্তারের নির্দিষ্ট প্রেসক্রিপশন ও পরামর্শ অনুসরণ করুন।</string>
+
+    <!-- Lab Reference Localization -->
+    <string name="lab_screen_title">ল্যাব রেফারেন্স ও ট্রেন্ড এনালাইজার</string>
+    <string name="lab_tab_reference">রেফারেন্স ভ্যালু</string>
+    <string name="lab_tab_trends">আমার ল্যাব ট্রেন্ড (%d)</string>
+    <string name="lab_search_placeholder">পরীক্ষা খুঁজুন (যেমন: সুগার, HbA1c, ক্রিয়েটিনিন)</string>
+    <string name="lab_no_records">এখনো কোনো ল্যাব ফলাফল সেভ করা হয়নি।</string>
+    <string name="lab_no_records_hint">রেফারেন্স ভ্যালু ট্যাবে গিয়ে + ল্যাব রেজাল্ট ট্যাপ করুন।</string>
+    <string name="lab_recent_trends">📈 সাম্প্রতিক ল্যাব রেজাল্টের ট্রেন্ড</string>
+    <string name="lab_history">পুরানো ল্যাব রেকর্ড হিস্ট্রি</string>
+    <string name="lab_btn_log">+ ল্যাব রেজাল্ট</string>
+    <string name="lab_normal_range">স্বাভাবিক মান: %1$s - %2$s %3$s</string>
+
+    <!-- Additional First Aid Subcategories -->
+    <string name="sub_dog_bite">কুকুর ও পশুর কামড়</string>
+    <string name="sub_anaphylaxis">তীব্র এলার্জি (অ্যানাফাইলাক্সিস)</string>
+    <string name="sub_insect_sting">পোকা ও মৌমাছির কামড়</string>
+    <string name="sub_asthma_attack">তীব্র অ্যাজমা অ্যাটাক</string>
+    <string name="sub_drowning">পানিতে ডোবা প্রাথমিক চিকিৎসা</string>
+    <string name="sub_eye_injury">চোখে আঘাত ও রাসায়নিক স্প্ল্যাশ</string>
+
+    <!-- Period Tracker Localization -->
+    <string name="period_tracker_title">পিরিয়ড ট্র্যাকার</string>
+    <string name="period_current_cycle">চলতি পিরিয়ড সাইকেল লগ</string>
+    <string name="period_no_date_selected">কোনো তারিখ সিলেক্ট করা হয়নি</string>
+    <string name="period_btn_update_start">পিরিয়ড শুরুর তারিখ পরিবর্তন</string>
+    <string name="period_predictions">সাইকেলের পূর্বাভাস</string>
+    <string name="period_next_period">পরবর্তী পিরিয়ড</string>
+    <string name="period_fertile_window">গর্ভধারণের উর্বর দিন (Ovulation)</string>
+    <string name="period_symptom_logs">দৈনিক শারীরিক লক্ষণসমূহের লগ</string>
+    <string name="period_no_logs_hint">এখনো কোনো লক্ষণ রেকর্ড করা হয়নি। + বাটনে ট্যাপ করুন।</string>
+    <string name="period_cycle_settings">সাইকেল সেটিংস</string>
+    <string name="period_avg_cycle">গড় পিরিয়ড সাইকেল: %d দিন</string>
+    <string name="period_length">পিরিয়ডের স্থায়ীত্ব: %d দিন</string>
+    <string name="period_current_phase">বর্তমান দশা (CURRENT PHASE)</string>
+    <string name="period_log_symptoms_title">আজ কেমন অনুভব করছেন?</string>
+    <string name="period_mood">মানসিক অনুভূতি (Mood):</string>
+    <string name="period_flow">রক্তপ্রবাহ (Flow):</string>
+    <string name="period_pain_level">ব্যথার মাত্রা:</string>
+    <string name="period_other_symptoms">অন্যান্য লক্ষণ (যেমন পেটে মোচড়)</string>
+    <string name="period_next_in">পরবর্তী পিরিয়ড হতে বাকি</string>
+    <string name="period_overdue_by">পিরিয়ড বিলম্বিত</string>
+    <string name="period_days">দিন</string>
+
+    <!-- Step Counter Localization -->
+    <string name="step_counter_title">স্টেপ কাউন্টার (হাঁটা গণনা)</string>
+    <string name="step_goal_format">লক্ষ্য: %d স্টেপ</string>
+    <string name="step_distance">দূরত্ব</string>
+    <string name="step_distance_unit">কিমি</string>
+    <string name="step_calories">ক্যালোরি</string>
+    <string name="step_calories_unit">ক্যালোরি</string>
+    <string name="step_tracking_status">ট্র্যাকিং স্ট্যাটাস</string>
+    <string name="step_live_active">সক্রিয় চলছে</string>
+    <string name="step_weekly_activity">সাপ্তাহিক অ্যাক্টিভিটি</string>
+    <string name="step_authorize_btn">স্টেপ কাউন্টার অনুমোদন দিন</string>
+    <string name="step_disclosure_title">অ্যাক্টিভিটি ট্র্যাকিং নোটিশ</string>
+    <string name="step_disclosure_body">আপনার দৈনিক হাঁটা সঠিকভাবে গণনা ও ফিটনেস ট্র্যাকিংয়ের জন্য স্মার্ট সেবার ফিজিক্যাল অ্যাক্টিভিটি পারমিশন প্রয়োজন। এই তথ্য কেবল আপনার ফোনেই প্রক্রিয়াজাত হবে।</string>
+    <string name="step_disclosure_agree"> সম্মত ও এগিয়ে যান</string>
+    <string name="step_disclosure_dismiss">এখন নয়</string>
+
+    <!-- Weight Chart Localization -->
+    <string name="weight_chart_title">আন্তর্জাতিক ওজন নির্দেশিকা</string>
+    <string name="tab_underweight">ওজন কম</string>
+    <string name="tab_normal">স্বাভাবিক</string>
+    <string name="tab_overweight">অতিরিক্ত ওজন</string>
+    <string name="tab_obese">স্থূলতা</string>
+    <string name="chart_header_height">উচ্চতা (ফুট/ইঞ্চি + সেমি)</string>
+    <string name="chart_header_weight">আদর্শ ওজন (কেজি + পাউন্ড)</string>
+    <string name="chart_who_standard">আন্তর্জাতিক ডব্লিউএইচও মান: %1$s</string>
+    <string name="bmi_under_range">বিএমআই ১৮.৫ এর নিচে</string>
+    <string name="bmi_normal_range">বিএমআই ১৮.৫ – ২৪.৯</string>
+    <string name="bmi_overweight_range">বিএমআই ২৫.০ – ২৯.৯</string>
+    <string name="bmi_obese_range">বিএমআই ৩০.০ বা তার বেশি</string>
+    <string name="chart_weight_below">%1$s কেজির নিচে</string>
+    <string name="chart_weight_above">%1$s কেজির উপরে</string>
+    <string name="chart_weight_range">%1$s – %2$s কেজি</string>
+    <string name="chart_lbs_below">%1$s পাউন্ডের নিচে</string>
+    <string name="chart_lbs_above">%1$s পাউন্ডের উপরে</string>
+    <string name="chart_lbs_range">%1$s – %2$s পাউন্ড</string>
+    <string name="unit_cm">সেমি</string>
+
+    <!-- BMI Tool Localization -->
+    <string name="bmi_explanation">বডি মাস ইনডেক্স (BMI) হলো উচ্চতা ও ওজনের ওপর ভিত্তি করে মানবদেহের চর্বির পরিমাপ, যা প্রাপ্তবয়স্ক নারী ও পুরুষ উভয়ের জন্য প্রযোজ্য।</string>
+    <string name="weight_current">বর্তমান ওজন</string>
+    <string name="weight_target">লক্ষ্যমাত্রার ওজন</string>
+    <string name="goal_gain">%1$.1f %2$s ওজন বাড়াতে হবে</string>
+    <string name="goal_lose">%1$.1f %2$s ওজন কমাতে হবে</string>
+    <string name="goals_and_history">এবং হেলথ গোল ইতিহাস</string>
+
+    <!-- Sub-Category Grid Buttons -->
+    <string name="sub_calculate">হিসাব করুন</string>
+    <string name="sub_history">ইতিহাস</string>
+    <string name="sub_diet_advice">ডায়েট টিপস</string>
+    <string name="sub_progress_chart">প্রোগ্রেস চার্ট</string>
+    <string name="sub_pro_tips">প্রো টিপস</string>
+    <string name="sub_underweight_chart">কম ওজনের চার্ট</string>
+    <string name="sub_normal_weight">স্বাভাবিক ওজনের চার্ট</string>
+    <string name="sub_overweight_chart">অতিরিক্ত ওজনের চার্ট</string>
+    <string name="sub_obesity_guide">স্থূলতা নির্দেশিকা</string>
+    <string name="sub_government_hospital">সরকারি হাসপাতাল</string>
+    <string name="sub_military_hospital">সিএমএইচ (সামরিক)</string>
+    <string name="sub_private_hospital">বেসরকারি হাসপাতাল</string>
+    <string name="sub_emergency_medicine">জরুরি ওষুধ</string>
+    <string name="sub_wounds">কাটাছেঁড়া ও ক্ষত</string>
+    <string name="sub_burns">পোড়া ও দগ্ধ</string>
+    <string name="sub_cpr_guide">সিপিআর গাইড</string>
+    <string name="sub_fractures">হাড় ভাঙা</string>
+    <string name="sub_poisoning">বিষাক্তকরণ</string>
+    <string name="sub_choking">গলায় আটকানো</string>
+    <string name="sub_electric_shock">বিদ্যুৎস্পৃষ্ট</string>
+    <string name="sub_snake_bite">সাপের কামড়</string>
+    <string name="sub_heat_stroke">হিট স্ট্রোক</string>
+    <string name="sub_heat_exhaustion">হিট এক্সহসশন</string>
+    <string name="sub_fainting">অজ্ঞান হওয়া</string>
+    <string name="sub_heart_attack">হার্ট অ্যাটাক</string>
+    <string name="sub_bleeding">রক্তপাত</string>
+    <string name="sub_seizure">খিঁচুনি</string>
+    <string name="sub_period_tracker">মাসিক ও পিরিয়ড ট্র্যাকার</string>
+    <string name="sub_vaccine">টিকা ও ভ্যাকসিন</string>
+    <string name="sub_medical_vault">মেডিকেল ভল্ট</string>
+    <string name="sub_unified_report">ডাক্তার সামারি পিডিএফ</string>
+    <string name="sub_fluid_calculator">ফ্লুইড ক্যালকুলেটর</string>
+    <string name="sub_doctor_appointment">ডাক্তার অ্যাপয়েন্টমেন্ট</string>
+    <string name="sub_prescription_scanner">প্রেসক্রিপশন স্ক্যানার</string>
+    <string name="sub_wearable_sync">ডিভাইস সিঙ্ক</string>
+
+    <!-- Medicine Attributes Localization -->
+    <string name="food_before_meal">খাবার আগে</string>
+    <string name="food_after_meal">খাবার পরে</string>
+    <string name="time_morning">সকাল</string>
+    <string name="time_noon">দুপুর</string>
+    <string name="time_evening">সন্ধ্যা</string>
+    <string name="time_night">রাত</string>
+    <string name="time_4_times">দিনে ৪ বার (৬ ঘণ্টা পর পর)</string>
+    <string name="time_set_time">কাস্টম সময় সেটিং</string>
+    <string name="cat_tablet">ট্যাবলেট</string>
+    <string name="cat_capsule">ক্যাপসুল</string>
+    <string name="cat_cream">ক্রিম</string>
+    <string name="cat_ointment">অয়েন্টমেন্ট</string>
+    <string name="cat_spray">স্প্রে</string>
+    <string name="cat_drop">ড্রপ</string>
+    <string name="cat_lotion">লোশন</string>
+    <string name="cat_injection">ইনজেকশন</string>
+    <string name="cat_none">অন্যান্য</string>
+
+    <!-- Home Dashboard Assistant Strings -->
+    <string name="home_med_time_msg">আজ আপনার %1$s ঔষধটি নেওয়ার সময় হয়েছে।</string>
+    <string name="home_routine_good_msg">আপনার আজকের স্বাস্থ্য রুটিন চমৎকার চলছে!</string>
+    <string name="health_optimal">চমৎকার স্বাস্থ্য</string>
+    <string name="health_good">ভালো স্বাস্থ্য</string>
+    <string name="health_needs_attention">যত্ন প্রয়োজন</string>
+    <string name="next_med_label">পরবর্তী: %1$s</string>
+    <string name="smart_health_hub">স্মার্ট হেলথ হাব</string>
+    <string name="daily_tracking_active">দৈনিক ট্র্যাকিং সক্রিয়</string>
+    <string name="time_to_take_dosage">ওষুধ খাওয়ার সময় হয়েছে</string>
+    <string name="btn_take_now">এখনই গ্রহণ করুন</string>
+    <string name="search_tools_hint">খুঁজুন...</string>
+    <string name="nurse_toolkit_ready">আপনার প্রফেশনাল টুলকিট প্রস্তুত।</string>
+
+    <!-- Dietitian Advice Strings -->
+    <string name="diet_advice_title">ডায়েটিশিয়ান ডায়েট প্ল্যান</string>
+    <string name="diet_select_category">আপনার বিএমআই অনুযায়ী ডায়েট বেছে নিন:</string>
+    <string name="diet_macro_title">প্রস্তাবিত পুষ্টি ও ম্যাক্রো অনুপাত</string>
+    <string name="diet_carbs">শর্করা (%1$d%%)</string>
+    <string name="diet_protein">প্রোটিন (%1$d%%)</string>
+    <string name="diet_fats">স্বাস্থ্যকর ফ্যাট (%1$d%%)</string>
+    <string name="diet_meal_plan_title">📋 এক দিনের নমুনা খাবারের তালিকা</string>
+    <string name="diet_breakfast">🌅 সকালের নাস্তা</string>
+    <string name="diet_lunch">☀️ দুপুরের খাবার</string>
+    <string name="diet_snack">☕ বিকালের নাস্তা</string>
+    <string name="diet_dinner">🌙 রাতের খাবার</string>
+    <string name="diet_swaps_title">🔄 স্বাস্থ্যকর বিকল্প খাবার তালিকা</string>
+    <string name="diet_golden_rules">✨ ডায়েটিশিয়ানের গোল্ডেন রুলস</string>
+    <string name="diet_btn_view_plan">কাস্টম ডায়েট প্ল্যান দেখুন</string>
+    <string name="diet_underweight_plan">• সকালের নাস্তা: দুধ-ওটস, কলা, ২টি ডিম, কাঠবাদাম।\n• দুপুরের খাবার: লাল চালের ভাত, ঘন ডাল, মাছ/মাংস, শাকসবজি।\n• বিকালের নাস্তা: মিল্কশেক বা পিনাট বাটার টোস্ট ও ফল।\n• রাতের খাবার: রুটি/ভাত, ডিম/মাছ, সালাদ ও শোবার আগে গরম দুধ।</string>
+    <string name="diet_normal_plan">• সকালের নাস্তা: লাল আটার রুটি বা ওটস, ১টি সেদ্ধ ডিম, গ্রিন টি।\n• দুপুরের খাবার: পরিমিত লাল চালের ভাত, গ্রিলড মাছ বা চিকেন, প্রচুর সালাদ।\n• বিকালের নাস্তা: একমুঠো কাঠবাদাম/কিশমিশ, গ্রিন টি বা পছন্দের ফল।\n• রাতের খাবার: হালকা সবজি সুপ, রুটি ও প্রোটিনযুক্ত খাবার।</string>
+    <string name="diet_overweight_plan">• সকালের নাস্তা: ১-২টি ডিমের সাদা অংশ, ওটস বা ১টি লাল রুটি, শসা।\n• দুপুরের খাবার: ছোট এক বাটি লাল চালের ভাত, বেশি প্রোটিন (মাছ/চিকেন), শসা-সালাদ।\n• বিকালের নাস্তা: শসা, পেয়ারা/আপেল বা চিনি ছাড়া গ্রিন টি।\n• রাতের খাবার: ভেজিটেবল সুপ বা সেদ্ধ চিকেন/মাছ ও সালাদ (রাতে কার্বোহাইড্রেট কম)।</string>
+    <string name="diet_obese_plan">• সকালের নাস্তা: ২ টি ডিমের সাদা অংশ, সেদ্ধ সবজি, লিকার টি/গ্রিন টি।\n• দুপুরের খাবার: সাদা ভাত বাদ; ফুলকপির ভাত বা অল্প ওটস/লাল চালের ভাত, মাছ, সালাদ।\n• বিকালের নাস্তা: সেকা ছোলা বা মিষ্টি কুমড়ার বিচি, গ্রিন টি।\n• রাতের খাবার: রাত ৮টার মধ্যে হালকা ভেজিটেবল সুপ ও সেদ্ধ ডিম/চিকেন।</string>
+    <string name="diet_rule_1">• প্রতিদিন অন্তত ২.৫ থেকে ৩ লিটার বিশুদ্ধ পানি পান করুন।</string>
+    <string name="diet_rule_2">• চিনি, কোল্ড ড্রিন্কস ও প্রক্রিয়াজাত ফাস্টফুড সম্পূর্ণ এড়িয়ে চলুন।</string>
+    <string name="diet_rule_3">• খাবার ধীরেসুস্থে চিবিয়ে খান এবং ঘুমানোর ২ ঘণ্টা আগে রাতের খাবার শেষ করুন।</string>
+    <string name="diet_rule_4">• সুষম খাবারের সাথে প্রতিদিন ৩০ মিনিট হাঁটার অভ্যাস বজায় রাখুন।</string>
+
+    <!-- Food Swap Strings -->
+    <string name="swap_from_1">সাদা ভাত / রুটি</string>
+    <string name="swap_to_1">লাল চালের ভাত / ওটস</string>
+    <string name="swap_reason_1">কম জিআই, ফাইবার সমৃদ্ধ</string>
+    <string name="swap_from_2">সয়াবিন বা ভাজাপোড়া তেল</string>
+    <string name="swap_to_2">অলিভ অয়েল / সরিষার তেল</string>
+    <string name="swap_reason_2">হার্ট বান্ধব হেলদি ফ্যাট</string>
+    <string name="swap_from_3">চিনি বা মিষ্টি পানীয়</string>
+    <string name="swap_to_3">লেবুর পানি / গ্রিন টি</string>
+    <string name="swap_reason_3">ক্যালোরিমুক্ত মেটাবলিজম বুস্টার</string>
+    <string name="swap_from_4">ফাস্টফুড / প্রসেসড স্নাক্স</string>
+    <string name="swap_to_4">কাঠবাদাম / শসা / ফল</string>
+    <string name="swap_reason_4">প্রাকৃতিক ভিটামিন ও প্রোটিন</string>
+
+    <!-- Progress Chart Localization -->
+    <string name="progress_chart_title">প্রোগ্রেস চার্ট</string>
+    <string name="progress_latest_bmi">সর্বশেষ বিএমআই</string>
+    <string name="progress_weight_change">ওজন পরিবর্তন</string>
+    <string name="progress_total_logs">মোট এন্ট্রি</string>
+    <string name="progress_trend_label">📈 বিএমআই ও ওজন পরিবর্তন ট্রেন্ড</string>
+    <string name="progress_zone_spectrum">বিএমআই অবস্থান নির্দেশক</string>
+    <string name="progress_no_data">এখনো কোনো ইতিহাস সংরক্ষিত হয়নি। প্রোগ্রেস দেখতে উপরে আপনার বিএমআই হিসাব করুন!</string>
+    <string name="progress_deleted_record">রেকর্ড সফলভাবে মুছে ফেলা হয়েছে</string>
+    <string name="progress_goal_target">লক্ষ্যমাত্রা অর্জনের অগ্রগতি</string>
+
+    <!-- Home Pro Tips Card Strings -->
+    <string name="card_pro_tips">প্রো টিপস ও স্বাস্থ্য পরামর্শ</string>
+    <string name="card_pro_tips_desc">বিশেষজ্ঞ স্বাস্থ্য গাইড</string>
+
+    <string name="progress_add_entry_btn">+ নতুন এন্ট্রি যোগ করুন</string>
+    <string name="progress_add_entry_dialog_title">➕ নতুন ওজন ও বিএমআই এন্ট্রি</string>
+    <string name="progress_entry_saved">বিএমআই রেকর্ড সফলভাবে সংরক্ষণ করা হয়েছে! 📊</string>
+    <string name="progress_add_sample_btn">✨ ডেমো ডাটা যোগ করুন</string>
+    <string name="progress_demo_added">ডেমো বিএমআই রেকর্ড যোগ করা হয়েছে!</string>
+
+    <string name="progress_chart_subtitle">আপনার শরীরের ওজন ও বিএমআই ট্র্যাকার</string>
+    <string name="progress_entries_saved">এন্ট্রি সংরক্ষিত</string>
+    <string name="progress_entry_count">%d টি এন্ট্রি</string>
+    <string name="progress_record_count">%d টি রেকর্ডস</string>
+    <string name="progress_health_assessment">স্মার্ট হেলথ এসেসমেন্ট</string>
+    <string name="insight_underweight_status">বিএমআই স্বাভাবিকের চেয়ে কম (Underweight)</string>
+    <string name="insight_underweight_advice">আপনার শরীরের ওজন স্বাভাবিকের চেয়ে কিছুটা কম। প্রোটিন ও পুষ্টিকর খাবার গ্রহণ করে ওজন স্বাভাবিক মাত্রায় আনার পরামর্শ দেওয়া হচ্ছে।</string>
+    <string name="insight_normal_status">আপনার ওজন আদর্শ ও চমৎকার রয়েছে! (Normal)</string>
+    <string name="insight_normal_advice">অভিনন্দন! আপনার শরীরের বিএমআই সম্পূর্ণ স্বাভাবিক ও স্বাস্থ্যকর রেঞ্জে রয়েছে। নিয়মিত সুষম খাবার ও হাঁটাচলা বজায় রাখুন।</string>
+    <string name="insight_overweight_status">ওজন স্বাভাবিকের চেয়ে সামান্য বেশি (Overweight)</string>
+    <string name="insight_overweight_advice">আপনার শরীরের বিএমআই ওভারওয়েট জোনে রয়েছে। প্রতিদিন অন্তত ৩০ মিনিট হাঁটা ও তৈলাক্ত খাবার নিয়ন্ত্রণে রাখলে দ্রুত স্বাভাবিক জোনে আসা সম্ভব।</string>
+    <string name="insight_obese_status">উচ্চ বিএমআই ও স্থূলতা ঝুঁকি (Obese)</string>
+    <string name="insight_obese_advice">আপনার বিএমআই ওবেসিটি বা স্থূলতা ক্যাটাগরিতে পড়ছে। হৃদরোগ ও মেটাবলিক ঝুঁকি কমাতে মিষ্টি ও চর্বিজাতীয় খাবার নিয়ন্ত্রণ এবং ডাক্তারের পরামর্শ নিন।</string>
+
+    <!-- Caregiver & Pairing Localization -->
+    <string name="sync_caregiver_sync_title">পরিবার ও কেয়ারগিভার সিঙ্ক</string>
+    <string name="sync_patient_mode">🧑‍⚕️ পেসেন্ট মোড</string>
+    <string name="sync_caregiver_mode">🩺 কেয়ারগিভার মোড</string>
+    <string name="sync_patient_dashboard_desc">আপনার ভাইটালস (BP, Pulse, Temperature ইত্যাদি) কেয়ারগিভারের ফোনে রিয়াইল-টাইমে দেখতে পাবেন।</string>
+    <string name="sync_patient_name_label">রোগীর নাম (Patient Name)</string>
+    <string name="sync_generate_pairing_code">জেনারেট পেয়ারিং কোড</string>
+    <string name="sync_pairing_code_title">আপনার পেয়ারিং কোড (Pairing Code):</string>
+    <string name="sync_reset_code">রিসেট কোড</string>
+    <string name="sync_unpair">আনপেয়ার (Unpair)</string>
+    <string name="sync_waiting_for_caregiver">কেয়ারগিভারের সংযোগের অপেক্ষায়…</string>
+    <string name="sync_connected_caregiver">সংযুক্ত কেয়ারগিভার: %s</string>
+    <string name="sync_caregiver_name_label">আপনার নাম (Caregiver Name)</string>
+    <string name="sync_input_pairing_code">রোগীর ৬-ডিজিট কোড (Pairing Code)</string>
+    <string name="sync_custom_patient_name">রোগীর ডাকনাম (ঐচ্ছিক)</string>
+    <string name="sync_connect_button">রোগীর সাথে যুক্ত হোন (Connect)</string>
+    <string name="sync_linked_patients">সংযুক্ত রোগীসমূহ:</string>
+    <string name="sync_caregiver_dashboard_title">কেয়ারগিভার ড্যাশবোর্ড</string>
+    <string name="sync_send_message_title">💬 রোগীকে বার্তা বা নির্দেশনা পাঠান</string>
+    <string name="sync_message_placeholder">যেমন: ওষুধ সময়মতো খাবেন…</string>
+    <string name="sync_vitals_logs_title">📊 রিয়েল-টাইম ভাইটালস লগ (Vitals Logs)</string>
+    <string name="sync_no_vitals_logged">এখনো কোনো ভাইটালস ডেটা পাওয়া যায়নি। রোগী মোড থেকে ডেটা যোগ করলে এখানে দেখা যাবে।</string>
+
+    <!-- Auth & Instructions Localization -->
+    <string name="auth_welcome">স্মার্ট হেল্পে স্বাগতম</string>
+    <string name="auth_signin_subtitle">এগিয়ে যেতে সাইন ইন করুন</string>
+    <string name="auth_email_hint">ইমেইল এড্রেস</string>
+    <string name="auth_password_hint">পাসওয়ার্ড</string>
+    <string name="auth_login_btn">লগইন</string>
+    <string name="auth_to_signup">একাউন্ট নেই? সাইন আপ করুন</string>
+    <string name="auth_signup_title">একাউন্ট তৈরি করুন</string>
+    <string name="auth_signup_subtitle">শুরু করতে সাইন আপ করুন</string>
+    <string name="auth_name_hint">পূর্ণ নাম</string>
+    <string name="auth_select_role">রোল সিলেক্ট করুন:</string>
+    <string name="auth_role_patient">রোগী (Patient)</string>
+    <string name="auth_role_caregiver">কেয়ারগিভার (Caregiver)</string>
+    <string name="auth_signup_btn">সাইন আপ</string>
+    <string name="auth_to_login">ইতিমধ্যে একাউন্ট আছে? লগইন করুন</string>
+    <string name="caregiver_dashboard_title">কেয়ারগিভার ড্যাশবোর্ড</string>
+    <string name="link_patient_title">রোগী যুক্ত করুন</string>
+    <string name="link_family_title">কেয়ারগিভার যুক্ত করুন</string>
+    <string name="logout_label">লগআউট</string>
+</resources>

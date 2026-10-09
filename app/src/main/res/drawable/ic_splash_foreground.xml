@@ -1,0 +1,25 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- White Circular Surface -->
+    <path
+        android:pathData="M54,10 C78.3,10 98,30.3 98,54 C98,78.3 78.3,98 54,98 C30.3,98 10,78.3 10,54 C10,30.3 30.3,10 54,10 Z"
+        android:fillColor="#FFFFFF" />
+
+    <!-- Premium Indigo Inner Circle -->
+    <path
+        android:pathData="M54,20 C72.8,20 88,35.2 88,54 C88,72.8 72.8,88 54,88 C35.2,88 20,72.8 20,54 C20,35.2 35.2,20 54,20 Z"
+        android:fillColor="#1A237E" />
+
+    <!-- Iconic White Pulse Line -->
+    <path
+        android:pathData="M34,54 L44,54 L50,40 L58,68 L64,54 L74,54"
+        android:strokeWidth="4"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+</vector>

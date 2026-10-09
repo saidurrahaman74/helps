@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "871291565472",
+    "firebase_url": "https://helps-app-1371-default-rtdb.firebaseio.com",
+    "project_id": "helps-app-1371",
+    "storage_bucket": "helps-app-1371.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871291565472:android:4d3b89c68386d225c660c5",
+        "android_client_info": {
+          "package_name": "com.srcreation.smarthelp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "871291565472-6cp671d0sj2vu87g8k1nd1bmmp57aqoj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaps61pKaq6jERhCAeYcRGGZQg7lAyuZQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "871291565472-6cp671d0sj2vu87g8k1nd1bmmp57aqoj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
