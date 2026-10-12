@@ -122,9 +122,10 @@ object NotificationHelper {
     ) {
         createNotificationChannels(context)
 
-        val intent = Intent(context, CaregiverInstructionsActivity::class.java).apply {
+        val intent = Intent(context, PatientLinkHubActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra("PATIENT_NAME", patientName)
+            putExtra("TAB", "INSTRUCTIONS")
         }
         val pendingIntent = PendingIntent.getActivity(
             context,
@@ -164,8 +165,9 @@ object NotificationHelper {
     ) {
         createNotificationChannels(context)
 
-        val intent = Intent(context, WhoCanSeeMyDataActivity::class.java).apply {
+        val intent = Intent(context, PatientLinkHubActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("TAB", "PERMISSIONS")
         }
         val pendingIntent = PendingIntent.getActivity(
             context,

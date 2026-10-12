@@ -61,6 +61,7 @@
         <activity android:name=".CaregiverInstructionsActivity" android:exported="true" />
         <activity android:name=".PatientInstructionsActivity" android:exported="true" />
         <activity android:name=".WhoCanSeeMyDataActivity" android:exported="true" />
+        <activity android:name=".PatientLinkHubActivity" android:exported="false" android:launchMode="singleTop" />
 
         <activity
             android:name=".MainActivity"

@@ -197,7 +197,7 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
     companion object {
         fun parseTabValue(tabExtra: Any?): Int {
             return when (tabExtra) {
-                is Int -> tabExtra.coerceIn(0, 2)
+                is Int -> if (tabExtra in 0..2) tabExtra else 0
                 is String -> when (tabExtra.uppercase()) {
                     "LINK", "PAIRING", "0" -> 0
                     "PERMISSIONS", "WHO_CAN_SEE", "1" -> 1

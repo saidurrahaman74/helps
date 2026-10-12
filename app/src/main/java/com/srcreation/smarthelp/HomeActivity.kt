@@ -348,7 +348,10 @@ fun QuickActionBottomSheet(onDismiss: () -> Unit) {
                     modifier = Modifier.weight(1f)
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, PatientPairingActivity::class.java))
+                    val intent = Intent(context, PatientLinkHubActivity::class.java).apply {
+                        putExtra("TAB", "LINK")
+                    }
+                    context.startActivity(intent)
                 }
 
                 QuickActionButtonPill(
@@ -358,7 +361,10 @@ fun QuickActionBottomSheet(onDismiss: () -> Unit) {
                     modifier = Modifier.weight(1f)
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, WhoCanSeeMyDataActivity::class.java))
+                    val intent = Intent(context, PatientLinkHubActivity::class.java).apply {
+                        putExtra("TAB", "PERMISSIONS")
+                    }
+                    context.startActivity(intent)
                 }
             }
 
@@ -373,7 +379,10 @@ fun QuickActionBottomSheet(onDismiss: () -> Unit) {
                     modifier = Modifier.weight(1f)
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, PatientInstructionsActivity::class.java))
+                    val intent = Intent(context, PatientLinkHubActivity::class.java).apply {
+                        putExtra("TAB", "INSTRUCTIONS")
+                    }
+                    context.startActivity(intent)
                 }
             }
 

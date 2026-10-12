@@ -42,8 +42,9 @@ class HelpsFirebaseMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        val targetIntent = Intent(context, PatientInstructionsActivity::class.java).apply {
+        val targetIntent = Intent(context, PatientLinkHubActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("TAB", "INSTRUCTIONS")
         }
 
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
