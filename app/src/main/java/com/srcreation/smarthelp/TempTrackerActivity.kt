@@ -73,9 +73,11 @@ class TempTrackerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            HelpsTheme {
-                TempTrackerScreen(onBack = { finish() })
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    TempTrackerScreen(onBack = { finish() })
+                }
             }
         }
     }
@@ -122,12 +124,17 @@ class TempViewModel(application: Application, savedStateHandle: SavedStateHandle
     }
     
     fun deleteRecord(record: TempEntity) {
-        viewModelScope.launch { dao.deleteRecord(record) }
+        viewModelScope.launch {
+            DeletionSync.deleteTemp(getApplication(), record)
+        }
     }
 
     fun clearAllRecords(onCleared: () -> Unit) {
         viewModelScope.launch {
-            dao.deleteByProfile(profileId)
+            val list = dao.getFullTempList().filter { it.profileId == profileId }
+            for (record in list) {
+                DeletionSync.deleteTemp(getApplication(), record)
+            }
             onCleared()
         }
     }

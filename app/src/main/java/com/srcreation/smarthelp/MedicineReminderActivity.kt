@@ -2,6 +2,7 @@ package com.srcreation.smarthelp
 
 import android.app.Activity
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -61,9 +62,11 @@ class MedicineReminderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            HelpsTheme {
-                MedicineReminderScreen(onBack = { finish() })
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    MedicineReminderScreen(onBack = { finish() })
+                }
             }
         }
     }
@@ -112,14 +115,54 @@ fun MedicineReminderScreen(viewModel: MedicineViewModel = viewModel(), onBack: (
         }
     }
 
+    val isBn = remember { Locale.getDefault().language == "bn" }
+    var showPermissionDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (!alarmManager.canScheduleExactAlarms()) {
-                try {
-                    context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
-                } catch (_: Exception) {}
-            }
+        val needsExactAlarm = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()
+        val needsFullScreen = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && 
+            !(context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).canUseFullScreenIntent()
+        
+        if (needsExactAlarm || needsFullScreen) {
+            showPermissionDialog = true
         }
+    }
+
+    if (showPermissionDialog) {
+        AlertDialog(
+            onDismissRequest = { showPermissionDialog = false },
+            title = { Text(if (isBn) "⚠️ অ্যালার্ম পারমিশন প্রয়োজন" else "⚠️ Alarm Permissions Required") },
+            text = { 
+                Text(
+                    if (isBn) "লক স্ক্রিনে নিখুঁত সময়ে ফুল-স্ক্রিন মেডিসিন অ্যালার্ম বাজার জন্য অনুগ্রহ করে এক্সাক্ট অ্যালার্ম এবং ফুল-স্ক্রিন ইন্টেন্ট পারমিশন অন করুন।"
+                    else "To ensure medicine alarms ring on time in full screen over the lock screen, please grant Exact Alarm and Full-Screen Intent permissions."
+                ) 
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showPermissionDialog = false
+                        try {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                                context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                                    data = Uri.parse("package:${context.packageName}")
+                                }
+                                context.startActivity(intent)
+                            }
+                        } catch (_: Exception) {}
+                    }
+                ) {
+                    Text(if (isBn) "সেটিংস খুলুন" else "Open Settings")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPermissionDialog = false }) {
+                    Text(if (isBn) "পরে" else "Later")
+                }
+            }
+        )
     }
 
     var showAddDialog by remember { mutableStateOf(false) }
@@ -439,72 +482,11 @@ fun MedicineReminderSkeleton() {
 @Composable
 fun MedicineListHeader(list: List<MedicineEntity>) {
     val lowStockCount = list.count { it.currentStock <= 5 }
-    val total = list.size
-    val takenToday = list.count { isTakenToday(it.lastTakenTimestamp) }
-    val progress = if (total > 0) takenToday.toFloat() / total.toFloat() else 0f
-    
-    val missedDoses = remember(list) { getMissedDoseCount(list) }
 
     Column {
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(24.dp),
-            shape = RoundedCornerShape(32.dp),
-            colors = CardDefaults.cardColors(containerColor = TigerIndigo),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(24.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.size(70.dp)) {
-                    CircularProgressIndicator(
-                        progress = { progress },
-                        modifier = Modifier.size(70.dp),
-                        color = TigerNeonGreen,
-                        strokeWidth = 6.dp,
-                        trackColor = Color.White.copy(alpha = 0.2f),
-                        strokeCap = StrokeCap.Round
-                    )
-                    Text(
-                        text = "${(progress * 100).toInt()}%",
-                        color = Color.White,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 16.sp
-                    )
-                }
-                Spacer(modifier = Modifier.width(20.dp))
-                Column {
-                    Text(stringResource(id = R.string.todays_progress), color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
-                    Text(stringResource(id = R.string.med_taken_count, takenToday, total), color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
-                    
-                    if (missedDoses > 0) {
-                        Text(
-                            text = "Missed Doses: $missedDoses",
-                            color = TigerNeonRed,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Surface(
-                        color = if(progress == 1f) TigerNeonGreen.copy(0.2f) else Color.White.copy(0.1f),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.padding(top = 4.dp)
-                    ) {
-                        Text(
-                            text = if(progress == 1f) " " + stringResource(id = R.string.all_done) + " " else " " + stringResource(id = R.string.keep_going) + " ",
-                            color = if(progress == 1f) TigerNeonGreen else Color.White,
-                            fontSize = 11.sp,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
-                    }
-                }
-            }
-        }
-
         if (lowStockCount > 0) {
             Card(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = TigerNeonRed.copy(alpha = 0.1f)),
                 border = BorderStroke(1.dp, TigerNeonRed.copy(alpha = 0.5f))
@@ -709,7 +691,7 @@ fun MedicineTigerCard(med: MedicineEntity, onDelete: () -> Unit, onRefill: () ->
                     color = TigerIndigo.copy(alpha = 0.1f)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(getTigerIcon(med.category), null, tint = TigerIndigo, modifier = Modifier.size(24.dp))
+                        MedicationIcon(category = med.category, tint = TigerIndigo)
                     }
                 }
                 Spacer(Modifier.width(16.dp))
@@ -786,18 +768,28 @@ fun MedicineTigerCard(med: MedicineEntity, onDelete: () -> Unit, onRefill: () ->
             // Stock Bar & Refill Button
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        stringResource(id = R.string.med_stock_left, med.currentStock),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isLowStock) TigerNeonRed else Color.Gray
-                    )
+                    val isCompleted = med.currentStock <= 0
+                    if (isCompleted) {
+                        Text(
+                            text = if (Locale.getDefault().language == "bn") "কোর্স সম্পন্ন হয়েছে (Course Complete) ✓" else "Course Complete ✓",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Black,
+                            color = TigerNeonGreen
+                        )
+                    } else {
+                        Text(
+                            stringResource(id = R.string.med_stock_left, med.currentStock),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isLowStock) TigerNeonRed else Color.Gray
+                        )
+                    }
                     Spacer(Modifier.height(4.dp))
                     val progress = (med.currentStock.toFloat() / med.initialStock.coerceAtLeast(1).toFloat()).coerceIn(0f, 1f)
                     LinearProgressIndicator(
                         progress = { progress },
                         modifier = Modifier.fillMaxWidth().height(4.dp).clip(CircleShape),
-                        color = stockColor,
+                        color = if (isCompleted) TigerNeonGreen else stockColor,
                         trackColor = Color.Gray.copy(0.1f)
                     )
                 }
@@ -840,7 +832,7 @@ fun AddMedicineTigerDialog(
     var isContinuous by remember { mutableStateOf(false) }
     var stock by remember { mutableStateOf("30") }
 
-    val categories = listOf("Tablet", "Capsule", "Cream", "Ointment", "Spray", "Drop", "Lotion","Injection" ,"None")
+    val categories = listOf("Tablet", "Capsule", "Cream", "Ointment", "Spray", "Drop", "Lotion", "Injection", "Other")
     val units = listOf("mg", "mcg", "gm", "ml", "unit","Vial","Amp")
     val foodOptions = listOf("Before Meal", "After Meal")
     val timeOptions = listOf("Morning", "Noon", "Evening", "Night", "4 Times (6 Hourly)", "Set Time")
@@ -976,22 +968,34 @@ fun AddMedicineTigerDialog(
 
                 // Category Selection
                 Text(stringResource(id = R.string.med_category_label), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color.Gray)
-                OptIn(ExperimentalLayoutApi::class)
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                var categoryExpanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = categoryExpanded,
+                    onExpandedChange = { categoryExpanded = !categoryExpanded },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    categories.forEach { cat ->
-                        FilterChip(
-                            selected = category == cat,
-                            onClick = {
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                category = cat
-                            },
-                            label = { Text(getLocalizedCategory(cat)) },
-                            shape = RoundedCornerShape(8.dp)
-                        )
+                    OutlinedTextField(
+                        value = getLocalizedCategory(category),
+                        onValueChange = {},
+                        readOnly = true,
+                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                        shape = RoundedCornerShape(12.dp),
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = categoryExpanded,
+                        onDismissRequest = { categoryExpanded = false }
+                    ) {
+                        categories.forEach { cat ->
+                            DropdownMenuItem(
+                                text = { Text(getLocalizedCategory(cat)) },
+                                onClick = {
+                                    category = cat
+                                    categoryExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
 
@@ -1118,45 +1122,6 @@ fun AddMedicineTigerDialog(
     )
 }
 
-fun getMissedDoseCount(medicines: List<MedicineEntity>): Int {
-    var count = 0
-    val now = Calendar.getInstance()
-    val curH = now.get(Calendar.HOUR_OF_DAY)
-    val curM = now.get(Calendar.MINUTE)
-
-    medicines.forEach { med ->
-        val takenToday = isTakenToday(med.lastTakenTimestamp)
-        val times = med.selectedTimes.split(",")
-        times.forEach { rawKey ->
-            val timeKey = rawKey.trim()
-            val is4Times = timeKey.contains("4", ignoreCase = true) || timeKey.contains("6", ignoreCase = true)
-            val isCustom = timeKey.contains("Set", ignoreCase = true) || timeKey.contains("Custom", ignoreCase = true)
-
-            when {
-                timeKey.equals("Morning", ignoreCase = true) -> if (isMissed(8, 0, curH, curM, med.lastTakenTimestamp, takenToday)) count++
-                timeKey.equals("Noon", ignoreCase = true) -> if (isMissed(14, 0, curH, curM, med.lastTakenTimestamp, takenToday)) count++
-                timeKey.equals("Evening", ignoreCase = true) -> if (isMissed(18, 0, curH, curM, med.lastTakenTimestamp, takenToday)) count++
-                timeKey.equals("Night", ignoreCase = true) -> if (isMissed(22, 0, curH, curM, med.lastTakenTimestamp, takenToday)) count++
-                is4Times -> {
-                    listOf(6 to 0, 12 to 0, 18 to 0, 0 to 0).forEach { (h, m) ->
-                        if (isMissed(h, m, curH, curM, med.lastTakenTimestamp, takenToday)) count++
-                    }
-                }
-                isCustom -> {
-                    med.customTime?.split(":")?.let {
-                        if (it.size == 2) {
-                            val h = it[0].trim().toIntOrNull() ?: 8
-                            val m = it[1].trim().toIntOrNull() ?: 0
-                            if (isMissed(h, m, curH, curM, med.lastTakenTimestamp, takenToday)) count++
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return count
-}
-
 @Composable
 fun RefillMedicineDialog(
     med: MedicineEntity,
@@ -1200,25 +1165,24 @@ fun RefillMedicineDialog(
     )
 }
 
-fun isMissed(h: Int, m: Int, curH: Int, curM: Int, lastTakenTs: Long, takenToday: Boolean): Boolean {
-    if (curH > h || (curH == h && curM > m)) {
-        if (!takenToday) return true
-        val lastTaken = Calendar.getInstance().apply { timeInMillis = lastTakenTs }
-        val lastH = lastTaken.get(Calendar.HOUR_OF_DAY)
-        val lastM = lastTaken.get(Calendar.MINUTE)
-        return lastH < h || (lastH == h && lastM < m)
-    }
-    return false
-}
-
 @Composable
-fun getTigerIcon(category: String): ImageVector {
-    return when (category) {
-        "Tablet" -> ImageVector.vectorResource(id = R.drawable.ic_medicine_reminder)
-        "Capsule" -> Icons.Default.Medication
-        "Cream", "Ointment" -> Icons.Default.AutoFixHigh
-        "Spray", "Lotion" -> Icons.Default.Opacity
-        "Drop" -> Icons.Default.WaterDrop
+fun MedicationIcon(category: String, modifier: Modifier = Modifier, tint: Color = TigerIndigo) {
+    val clean = category.trim().lowercase()
+    val icon = when {
+        clean.contains("tablet") || clean.contains("ট্যাবলেট") -> ImageVector.vectorResource(id = R.drawable.ic_medicine_reminder)
+        clean.contains("capsule") || clean.contains("ক্যাপসুল") -> Icons.Default.LocalPharmacy
+        clean.contains("cream") || clean.contains("ক্রিম") -> Icons.Default.Spa
+        clean.contains("ointment") || clean.contains("অয়েন্টমেন্ট") -> Icons.Default.Healing
+        clean.contains("lotion") || clean.contains("liquid") || clean.contains("লোশন") || clean.contains("লিকুইড") -> Icons.Default.InvertColors
+        clean.contains("spray") || clean.contains("স্প্রে") -> Icons.Default.Air
+        clean.contains("drop") || clean.contains("ড্রপ") -> Icons.Default.WaterDrop
+        clean.contains("injection") || clean.contains("ইনজেকশন") -> Icons.Default.Vaccines
         else -> Icons.Default.MedicalServices
     }
+    Icon(
+        imageVector = icon,
+        contentDescription = category,
+        tint = tint,
+        modifier = modifier.size(24.dp)
+    )
 }

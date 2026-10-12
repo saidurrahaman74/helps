@@ -11,10 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
-        app:title="Link Family Member"
+        android:fitsSystemWindows="true"
+        app:title="@string/link_family_title"
         app:titleCentered="true"
         app:titleTextColor="@color/login_text_primary"
-        app:navigationIcon="?attr/homeAsUpIndicator" />
+        app:navigationIcon="@drawable/ic_arrow_back" />
 
     <LinearLayout
         android:layout_width="match_parent"

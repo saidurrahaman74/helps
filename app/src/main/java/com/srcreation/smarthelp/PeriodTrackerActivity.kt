@@ -52,9 +52,11 @@ class PeriodTrackerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            HelpsTheme {
-                PeriodTrackerScreen(onBack = { finish() })
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    PeriodTrackerScreen(onBack = { finish() })
+                }
             }
         }
     }

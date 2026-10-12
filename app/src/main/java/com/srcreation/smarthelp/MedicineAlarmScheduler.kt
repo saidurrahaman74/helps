@@ -35,10 +35,17 @@ object MedicineAlarmScheduler {
 
             if (isCustom) {
                 med.customTime?.let { custom ->
-                    val parts = custom.split(":")
-                    if (parts.size == 2) {
-                        val h = parts[0].trim().toIntOrNull() ?: 8
-                        val m = parts[1].trim().toIntOrNull() ?: 0
+                    val parts = custom.trim().split(":")
+                    if (parts.size >= 2) {
+                        var h = parts[0].trim().toIntOrNull() ?: 8
+                        val mAndAmPm = parts[1].trim()
+                        val spaceParts = mAndAmPm.split(" ")
+                        val m = spaceParts[0].trim().toIntOrNull() ?: 0
+                        if (spaceParts.size > 1) {
+                            val ampm = spaceParts[1].trim().uppercase(Locale.ROOT)
+                            if (ampm == "PM" && h < 12) h += 12
+                            if (ampm == "AM" && h == 12) h = 0
+                        }
                         calendar.set(Calendar.HOUR_OF_DAY, h)
                         calendar.set(Calendar.MINUTE, m)
                     }
@@ -54,7 +61,7 @@ object MedicineAlarmScheduler {
                         calendar.set(Calendar.MINUTE, 0)
                     }
                     timeKey.equals("Evening", ignoreCase = true) -> {
-                        calendar.set(Calendar.HOUR_OF_DAY, 18)
+                        calendar.set(Calendar.HOUR_OF_DAY, 20)
                         calendar.set(Calendar.MINUTE, 0)
                     }
                     timeKey.equals("Night", ignoreCase = true) -> {
@@ -68,16 +75,22 @@ object MedicineAlarmScheduler {
                 }
             }
 
-            if (calendar.timeInMillis <= System.currentTimeMillis()) {
+            if (calendar.timeInMillis <= System.currentTimeMillis() + 1000L) {
                 calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
 
+            val medName = med.name
+            val medId = med.id
+            val category = med.category
+            val dosage = if (med.dosageValue.isNotBlank()) "${med.dosageValue} ${med.dosageUnit}" else ""
+            val profileId = med.profileId
+
             val intent = Intent(context, MedicineAlarmReceiver::class.java).apply {
-                putExtra("MED_NAME", med.name)
-                putExtra("MED_ID", med.id)
-                putExtra("MED_CAT", med.category)
-                putExtra("MED_DOSAGE", if (med.dosageValue.isNotBlank()) "${med.dosageValue} ${med.dosageUnit}" else "")
-                putExtra("PROFILE_ID", med.profileId)
+                putExtra("MED_NAME", medName)
+                putExtra("MED_ID", medId)
+                putExtra("MED_CAT", category)
+                putExtra("MED_DOSAGE", dosage)
+                putExtra("PROFILE_ID", profileId)
                 putExtra("EXTRA_SLOT", timeKey)
             }
             
@@ -88,7 +101,7 @@ object MedicineAlarmScheduler {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            setAlarmSafely(alarmManager, calendar.timeInMillis, pendingIntent)
+            setAlarmSafely(context, alarmManager, calendar.timeInMillis, pendingIntent, medName, medId, category, dosage, profileId, timeKey)
         }
     }
 
@@ -99,20 +112,27 @@ object MedicineAlarmScheduler {
             set(Calendar.MINUTE, minute)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
-            if (timeInMillis <= System.currentTimeMillis()) add(Calendar.DAY_OF_YEAR, 1)
+            if (timeInMillis <= System.currentTimeMillis() + 1000L) add(Calendar.DAY_OF_YEAR, 1)
         }
+
+        val medName = med.name
+        val medId = med.id
+        val category = med.category
+        val dosage = if (med.dosageValue.isNotBlank()) "${med.dosageValue} ${med.dosageUnit}" else ""
+        val profileId = med.profileId
+
         val intent = Intent(context, MedicineAlarmReceiver::class.java).apply {
-            putExtra("MED_NAME", med.name)
-            putExtra("MED_ID", med.id)
-            putExtra("MED_CAT", med.category)
-            putExtra("MED_DOSAGE", if (med.dosageValue.isNotBlank()) "${med.dosageValue} ${med.dosageUnit}" else "")
-            putExtra("PROFILE_ID", med.profileId)
+            putExtra("MED_NAME", medName)
+            putExtra("MED_ID", medId)
+            putExtra("MED_CAT", category)
+            putExtra("MED_DOSAGE", dosage)
+            putExtra("PROFILE_ID", profileId)
             putExtra("EXTRA_SLOT", slotName)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context, (med.id.toString() + suffix).hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        setAlarmSafely(alarmManager, calendar.timeInMillis, pendingIntent)
+        setAlarmSafely(context, alarmManager, calendar.timeInMillis, pendingIntent, medName, medId, category, dosage, profileId, slotName)
     }
 
     fun cancelAlarms(context: Context, med: MedicineEntity) {
@@ -163,22 +183,50 @@ object MedicineAlarmScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        setAlarmSafely(alarmManager, triggerAtMs, pendingIntent)
+        setAlarmSafely(context, alarmManager, triggerAtMs, pendingIntent, medName, medId, category, dosage, profileId, slot)
     }
 
-    private fun setAlarmSafely(alarmManager: AlarmManager, triggerAtMs: Long, pendingIntent: PendingIntent) {
+    private fun setAlarmSafely(
+        context: Context,
+        alarmManager: AlarmManager,
+        triggerAtMs: Long,
+        pendingIntent: PendingIntent,
+        medName: String = "Medicine",
+        medId: String = "",
+        category: String = "None",
+        dosage: String = "",
+        profileId: Int = 1,
+        slot: String? = null
+    ) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pendingIntent)
-                } else {
-                    alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pendingIntent)
-                }
-            } else {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pendingIntent)
+            val showIntent = Intent(context, MedicineAlarmActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NO_USER_ACTION
+                putExtra("MED_NAME", medName)
+                putExtra("MED_ID", medId)
+                putExtra("MED_CAT", category)
+                putExtra("MED_DOSAGE", dosage)
+                putExtra("PROFILE_ID", profileId)
+                if (slot != null) putExtra("EXTRA_SLOT", slot)
             }
-        } catch (e: SecurityException) {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pendingIntent)
+            val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+            val showPendingIntent = PendingIntent.getActivity(context, triggerAtMs.hashCode(), showIntent, flags)
+            val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerAtMs, showPendingIntent)
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pendingIntent)
+            } else {
+                alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+            }
+        } catch (e: Exception) {
+            try {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pendingIntent)
+            } catch (_: Exception) {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMs, pendingIntent)
+            }
         }
     }
 }

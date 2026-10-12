@@ -10,9 +10,11 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:title="Link Patient"
+        android:fitsSystemWindows="true"
+        app:title="@string/link_patient_title"
+        app:titleCentered="true"
         app:titleTextColor="@color/login_text_primary"
-        app:navigationIcon="@drawable/ic_launcher_foreground" />
+        app:navigationIcon="@drawable/ic_arrow_back" />
 
     <ScrollView
         android:layout_width="match_parent"

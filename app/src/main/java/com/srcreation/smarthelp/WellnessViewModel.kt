@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 data class DailyTask(val title: String, val isCompleted: Boolean, val icon: ImageVector)
 
@@ -22,6 +24,7 @@ class WellnessViewModel(application: Application) : AndroidViewModel(application
     private val repository = WellnessRepository(application)
     private val db = AppDatabase.getDatabase(application)
     private val pref = PreferenceManager(application)
+    private val profileMutex = Mutex()
 
     val wellnessScore: Flow<Int> = repository.wellnessScore
     val weeklyWellnessTrend: Flow<List<Float>> = repository.weeklyWellnessTrend
@@ -36,15 +39,29 @@ class WellnessViewModel(application: Application) : AndroidViewModel(application
         fetchCurrentProfile()
     }
 
-    fun fetchCurrentProfile() {
-        viewModelScope.launch {
+    suspend fun ensureProfile(): ProfileEntity {
+        return profileMutex.withLock {
             val profileId = pref.getActiveProfile()
             var profile = db.profileDao().getProfileById(profileId)
-            
             if (profile == null) {
-                db.profileDao().insertProfile(ProfileEntity(id = 1, name = "Me", relation = "Self"))
-                profile = db.profileDao().getProfileById(1)
+                db.profileDao().insertProfileIgnore(ProfileEntity(id = profileId, name = "Me", relation = "Self"))
+                profile = db.profileDao().getProfileById(profileId)
+
+                val uid = AuthRepository().uid()
+                if (!uid.isNullOrBlank()) {
+                    LocalDataOwnership.claimIfFresh(getApplication(), uid)
+                }
             }
+            profile ?: ProfileEntity(id = profileId, name = "Me", relation = "Self")
+        }
+    }
+
+    fun fetchCurrentProfile() {
+        viewModelScope.launch {
+            if (LocalDataOwnership.isOwnershipBlocked(getApplication())) {
+                return@launch
+            }
+            val profile = ensureProfile()
             _currentProfile.value = profile
         }
     }

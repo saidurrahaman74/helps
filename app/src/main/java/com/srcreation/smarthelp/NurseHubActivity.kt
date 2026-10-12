@@ -6,6 +6,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -13,6 +16,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import java.util.Locale
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
@@ -57,6 +61,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import com.srcreation.smarthelp.ui.theme.HelpsTheme
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 
 class NurseHubActivity : AppCompatActivity() {
@@ -66,10 +71,12 @@ class NurseHubActivity : AppCompatActivity() {
         
         val pref = PreferenceManager(this)
         pref.setActiveProfile(2) // Ensure Nurse mode is active
-        
-        setContent {
-            HelpsTheme {
-                NurseHubScreen(onBack = { finish() })
+
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    NurseHubScreen(onBack = { finish() })
+                }
             }
         }
     }
@@ -112,7 +119,7 @@ fun NurseHubScreen(onBack: () -> Unit) {
     }
     
     val clinicalTools = listOf(
-        NurseToolData("smart_diet", if (isBn) "স্মার্ট ডায়েট ও ক্যালরি ট্র্যাকার" else "Smart Diet & Calorie Tracker", if (isBn) "এআই ফুড স্ক্যানার, ক্যালরি ও নিউট্রিশন ডায়েরি" else "AI Food Scanner, Calories & Nutrition Diary", Icons.Default.Restaurant, Color(0xFF22C55E)),
+        NurseToolData("smart_diet", if (isBn) "স্মার্ট ডায়েট ও ক্যালরি ট্র্যাকার" else "Smart Diet & Calorie Tracker", if (isBn) "ক্যালরি ও নিউট্রিশন ডায়েরি" else "Calories & Nutrition Diary", Icons.Default.Restaurant, Color(0xFF22C55E)),
         NurseToolData("drug_interact", if (isBn) "ওষুধের মিথস্ক্রিয়া চেকার" else "Drug Interaction Checker", if (isBn) "একাধিক ওষুধের পার্শ্বপ্রতিক্রিয়া ও কনট্রাডিকশন পরীক্ষা" else "Check adverse drug-drug interactions", Icons.Default.Medication, Color(0xFF0284C7)),
         NurseToolData("emergency_triage", if (isBn) "গোল্ডেন আওয়ার ইমার্জেন্সি গাইড" else "Golden Hour Emergency Guide", if (isBn) "সিপিআর, হার্ট অ্যাটাক ও রক্তক্ষরণ ফার্স্ট এইড" else "CPR, bleeding & emergency triage checklist", Icons.Default.Warning, Color(0xFFEF4444)),
         NurseToolData("icu", if (isBn) "ICU & Critical Care Suite" else "ICU & Critical Care Suite", if (isBn) "ABG, P/F Ratio, MAP, RASS, qSOFA, Parkland, CPP, ETT ও নিওনেটাল টুলস" else "ABG, P/F Ratio, MAP, RASS, qSOFA, Parkland, CPP, ETT & NICU Suite", Icons.Default.HealthAndSafety, Color(0xFFEF4444)),
@@ -191,10 +198,7 @@ fun NurseHubScreen(onBack: () -> Unit) {
                 val menuItems = listOf(
                     Triple(stringResource(id = R.string.nav_nurse_id), Icons.Default.Badge, Intent(context, NurseIdActivity::class.java)),
                     Triple(stringResource(id = R.string.tool_vault), Icons.Default.Inventory, Intent(context, MedicalVaultActivity::class.java).apply { putExtra("PROFILE_ID", 2) }),
-                    Triple(stringResource(id = R.string.duty_roster), Icons.Default.CalendarMonth, Intent(context, DutyRosterActivity::class.java)),
-                    Triple(stringResource(id = R.string.handover_notes), Icons.AutoMirrored.Filled.Assignment, Intent(context, HandoverActivity::class.java).apply { putExtra("PROFILE_ID", 2) }),
-                    Triple(stringResource(id = R.string.shift_reminder), Icons.Default.Alarm, Intent(context, DutyRosterActivity::class.java)),
-                    Triple(stringResource(id = R.string.guidelines), Icons.AutoMirrored.Filled.MenuBook, Intent(context, NurseDictionaryActivity::class.java))
+                    Triple(stringResource(id = R.string.duty_roster), Icons.Default.CalendarMonth, Intent(context, DutyRosterActivity::class.java))
                 )
 
                 menuItems.forEach { (label, icon, intent) ->
@@ -212,6 +216,8 @@ fun NurseHubScreen(onBack: () -> Unit) {
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                     )
                 }
+
+
 
                 Spacer(modifier = Modifier.weight(1f))
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
@@ -253,19 +259,13 @@ fun NurseHubScreen(onBack: () -> Unit) {
             },
             bottomBar = { AppBottomBar(context = context, currentTab = 2, isNurseMode = true, backgroundBrush = AppGradientBrush) },
             floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        showQuickActionSheet = true
-                    },
-                    containerColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
-                    contentColor = if (isDark) Color.Black else Color.White,
-                    shape = CircleShape,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                ) {
-                    Icon(Icons.Default.FlashOn, contentDescription = "Quick Nurse Hub", modifier = Modifier.size(24.dp))
+                    val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
+                    PremiumLinkHubFab(
+                        title = if (isBn) "রোগী লিঙ্ক" else "Link Patient",
+                        onClick = { showQuickActionSheet = true },
+                        isDark = isDark
+                    )
                 }
-            }
         ) { innerPadding ->
             Box(modifier = Modifier.fillMaxSize().background(brush = AppGradientBrush).padding(innerPadding)) {
                 if (showQuickActionSheet) {
@@ -511,6 +511,7 @@ fun handleToolClick(context: Context, id: String) {
         "abbr" -> context.startActivity(Intent(context, MedicalAbbreviationActivity::class.java))
         "dictionary" -> context.startActivity(Intent(context, NurseDictionaryActivity::class.java))
         "ecg" -> context.startActivity(Intent(context, NurseEcgGuideActivity::class.java))
+        "imaging" -> context.startActivity(Intent(context, ImagingGuideActivity::class.java))
         "pain" -> context.startActivity(Intent(context, NursePainScaleActivity::class.java))
         "dilution" -> context.startActivity(Intent(context, NurseDrugDilutionActivity::class.java))
         "io" -> context.startActivity(Intent(context, NurseIoActivity::class.java))
@@ -547,7 +548,7 @@ fun NurseQuickActionBottomSheet(onDismiss: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = if (isBn) "⚡ কুইক নার্সিং হাব (Quick Nurse Hub)" else "⚡ Quick Nurse Hub",
+                text = if (isBn) "⚡ কেয়ারগিভার লিঙ্ক হাব (Caregiver Link Hub)" else "⚡ Caregiver Link Hub",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Black,
                 color = if (isDark) Color(0xFF38BDF8) else MaterialTheme.colorScheme.primary
@@ -558,25 +559,25 @@ fun NurseQuickActionBottomSheet(onDismiss: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 NurseQuickActionButtonPill(
-                    title = if (isBn) "ইউনিট কনভার্টার" else "Unit Converter",
-                    icon = Icons.Default.SwapHoriz,
-                    color = Color(0xFF6366F1),
+                    title = if (isBn) "রোগী লিঙ্ক করুন" else "Link Patient",
+                    icon = Icons.Default.Link,
+                    color = Color(0xFF0284C7),
                     modifier = Modifier.weight(1f),
                     isDark = isDark
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, NurseUnitConverterActivity::class.java))
+                    context.startActivity(Intent(context, LinkPatientActivity::class.java))
                 }
 
                 NurseQuickActionButtonPill(
-                    title = if (isBn) "আইভি ফ্লুইড" else "IV Fluid",
-                    icon = Icons.Default.WaterDrop,
-                    color = Color(0xFF22C55E),
+                    title = if (isBn) "কেয়ারগিভার ড্যাশবোর্ড" else "Caregiver Dashboard",
+                    icon = Icons.Default.Dashboard,
+                    color = Color(0xFF0284C7),
                     modifier = Modifier.weight(1f),
                     isDark = isDark
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, IvFluidCalculatorActivity::class.java))
+                    context.startActivity(Intent(context, CaregiverDashboardActivity::class.java))
                 }
             }
 
@@ -585,25 +586,25 @@ fun NurseQuickActionBottomSheet(onDismiss: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 NurseQuickActionButtonPill(
-                    title = if (isBn) "জিসিএস (GCS) স্কোর" else "GCS Calculator",
-                    icon = Icons.Default.Psychology,
-                    color = Color(0xFFA855F7),
+                    title = if (isBn) "নির্দেশনা পাঠান" else "Send Instruction",
+                    icon = Icons.Default.Send,
+                    color = Color(0xFF7C4DFF),
                     modifier = Modifier.weight(1f),
                     isDark = isDark
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, NurseGcsActivity::class.java))
+                    context.startActivity(Intent(context, CaregiverInstructionsActivity::class.java))
                 }
 
                 NurseQuickActionButtonPill(
-                    title = if (isBn) "ইসিজি (ECG) গাইড" else "ECG Guide",
-                    icon = Icons.Default.MonitorHeart,
-                    color = Color(0xFFEF4444),
+                    title = if (isBn) "হিস্ট্রি ও চার্ট" else "History & Charts",
+                    icon = Icons.Default.History,
+                    color = Color(0xFF22C55E),
                     modifier = Modifier.weight(1f),
                     isDark = isDark
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, NurseEcgGuideActivity::class.java))
+                    context.startActivity(Intent(context, CaregiverHistoryActivity::class.java))
                 }
             }
 
@@ -640,3 +641,5 @@ fun NurseQuickActionButtonPill(
         }
     }
 }
+
+

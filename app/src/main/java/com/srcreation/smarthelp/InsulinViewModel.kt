@@ -51,7 +51,7 @@ class InsulinViewModel(application: Application, savedStateHandle: SavedStateHan
 
     fun deleteRecord(record: InsulinEntity) {
         viewModelScope.launch {
-            dao.deleteRecord(record)
+            DeletionSync.deleteInsulin(getApplication(), record)
         }
     }
 }

@@ -49,9 +49,11 @@ class SpO2TrackerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            HelpsTheme {
-                SpO2TrackerScreen(onBack = { finish() })
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    SpO2TrackerScreen(onBack = { finish() })
+                }
             }
         }
     }
@@ -66,8 +68,6 @@ fun SpO2TrackerScreen(viewModel: SpO2ViewModel = viewModel(), onBack: () -> Unit
     var spo2Input by rememberSaveable { mutableStateOf("") }
     var pulseInput by rememberSaveable { mutableStateOf("") }
     var breathingStatus by rememberSaveable { mutableStateOf("Normal Breathing") }
-    var patientName by rememberSaveable { mutableStateOf("") }
-    var patientAge by rememberSaveable { mutableStateOf("") }
 
     val records by viewModel.allRecords.collectAsState(initial = emptyList())
     val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
@@ -92,7 +92,7 @@ fun SpO2TrackerScreen(viewModel: SpO2ViewModel = viewModel(), onBack: () -> Unit
                 actions = {
                     IconButton(onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        exportSpO2ToPdf(context, records, patientName, patientAge, isBn)
+                        exportSpO2ToPdf(context, records, "", "", isBn)
                     }) {
                         Icon(Icons.Default.PictureAsPdf, contentDescription = "Export PDF", tint = spo2Primary)
                     }
@@ -109,57 +109,6 @@ fun SpO2TrackerScreen(viewModel: SpO2ViewModel = viewModel(), onBack: () -> Unit
                 modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Patient Name & Age Card
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
-                    border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        OutlinedTextField(
-                            value = patientName,
-                            onValueChange = { patientName = it },
-                            label = { Text(if (isBn) "রোগীর নাম (Patient Name)" else "Patient Name") },
-                            modifier = Modifier.weight(1.5f),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            textStyle = TextStyle(color = if (isDark) Color.White else Color.Black),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = if (isDark) Color.White else Color.Black,
-                                unfocusedTextColor = if (isDark) Color.White else Color.Black,
-                                focusedBorderColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedBorderColor = if (isDark) Color.White.copy(alpha = 0.3f) else Color.LightGray,
-                                focusedLabelColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedLabelColor = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray
-                            )
-                        )
-                        OutlinedTextField(
-                            value = patientAge,
-                            onValueChange = { patientAge = it },
-                            label = { Text(if (isBn) "বয়স (Age)" else "Age") },
-                            modifier = Modifier.weight(1f),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            textStyle = TextStyle(color = if (isDark) Color.White else Color.Black),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = if (isDark) Color.White else Color.Black,
-                                unfocusedTextColor = if (isDark) Color.White else Color.Black,
-                                focusedBorderColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedBorderColor = if (isDark) Color.White.copy(alpha = 0.3f) else Color.LightGray,
-                                focusedLabelColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedLabelColor = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray
-                            )
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // New SpO2 Input Card
                 Card(

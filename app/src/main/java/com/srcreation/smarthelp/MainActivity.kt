@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
@@ -96,6 +97,8 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         val prefManager = PreferenceManager(this)
         AppCompatDelegate.setDefaultNightMode(prefManager.getThemeMode())
+
+        checkAndShowOwnershipDialogIfNeeded()
 
         setContent {
             HelpsTheme {
@@ -207,6 +210,110 @@ class MainActivity : AppCompatActivity() {
     private fun changeLanguage(localeCode: String) {
         val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(localeCode)
         AppCompatDelegate.setApplicationLocales(appLocale)
+    }
+
+    private var isConflictDialogShowing = false
+
+    override fun onResume() {
+        super.onResume()
+        checkAndShowOwnershipDialogIfNeeded()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        checkAndShowOwnershipDialogIfNeeded()
+    }
+
+    private fun checkAndShowOwnershipDialogIfNeeded() {
+        if (isConflictDialogShowing) return
+        val prefManager = PreferenceManager(this)
+        val currentUid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val ownerUid = prefManager.getLocalDataOwnerUid()
+
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            val hasData = LocalDataOwnership.hasUserHealthData(this@MainActivity)
+            val decision = LocalDataOwnership.evaluateGateDecision(ownerUid, currentUid, hasData)
+
+            if (decision == GateDecision.REDIRECT_TO_MAIN) {
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    if (isConflictDialogShowing) return@withContext
+                    isConflictDialogShowing = true
+                    if (ownerUid.isNullOrBlank()) {
+                        val count = LocalDataOwnership.countUserHealthRecords(this@MainActivity)
+                        val newestDate = LocalDataOwnership.getNewestRecordDate(this@MainActivity)
+                        showUnsetOwnerConflictDialog(prefManager, currentUid, count, newestDate)
+                    } else {
+                        showDataOwnerConflictDialog()
+                    }
+                }
+            } else if (ownerUid.isNullOrBlank() && !hasData) {
+                LocalDataOwnership.claimIfFresh(this@MainActivity, currentUid)
+            }
+        }
+    }
+
+    private val ALLOWED_TARGET_ACTIVITIES = setOf(
+        HomeActivity::class.java.name,
+        NurseHubActivity::class.java.name,
+        WomenCareActivity::class.java.name
+    )
+
+    private fun onOwnershipResolved() {
+        isConflictDialogShowing = false
+        val targetClass = intent.getStringExtra("TARGET_ACTIVITY")
+        intent.removeExtra("TARGET_ACTIVITY")
+
+        if (!targetClass.isNullOrBlank() && ALLOWED_TARGET_ACTIVITIES.contains(targetClass)) {
+            try {
+                val clazz = Class.forName(targetClass)
+                startActivity(Intent(this, clazz))
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Error launching target activity $targetClass", e)
+            }
+        } else {
+            recreate()
+        }
+    }
+
+    private fun showDataOwnerConflictDialog() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.owner_mismatch_title))
+            .setMessage(getString(R.string.owner_mismatch_msg))
+            .setCancelable(false)
+            .setPositiveButton(getString(R.string.btn_keep_previous)) { _, _ ->
+                intent.removeExtra("TARGET_ACTIVITY")
+                AuthRepository().logout()
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+                finish()
+            }
+            .show()
+    }
+
+    private fun showUnsetOwnerConflictDialog(prefManager: PreferenceManager, currentUid: String, count: Int, newestDate: String) {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(getString(R.string.owner_unset_title))
+            .setMessage(getString(R.string.owner_unset_msg, count, newestDate))
+            .setCancelable(false)
+            .setPositiveButton(getString(R.string.btn_data_is_mine)) { _, _ ->
+                LocalDataOwnership.claimByUserChoice(this, currentUid)
+                SyncWorker.enqueue(this)
+                onOwnershipResolved()
+            }
+            .setNegativeButton(getString(R.string.btn_belongs_to_other)) { _, _ ->
+                intent.removeExtra("TARGET_ACTIVITY")
+                BackgroundCheckScheduler.cancelWorkers(this)
+                AuthRepository().logout()
+                val intent = Intent(this, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
+                finish()
+            }
+            .show()
     }
 
     private fun getGreeting(): Int {
@@ -420,84 +527,19 @@ fun StartScreen(
         launch { animatableSlide.animateTo(0f, tween(1200, easing = EaseOutExpo)) }
     }
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet(
-                drawerContainerColor = if (isDark) Color(0xFF0F172A) else Color.White,
-                drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
-                modifier = Modifier.width(300.dp)
-            ) {
-                Spacer(modifier = Modifier.height(24.dp))
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp)) {
-                    Box(modifier = Modifier.size(56.dp), contentAlignment = Alignment.Center) {
-                        AppLogo(size = 56.dp, showBackground = false, cornerRadius = 16.dp)
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = "SmartHelp", fontSize = 20.sp, fontWeight = FontWeight.Black, color = if (isDark) Color.White else Color(0xFF1A237E))
+    Scaffold(
+        containerColor = Color.Transparent,
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                actions = {
+                    LanguageToggleButton()
+                    Spacer(modifier = Modifier.width(16.dp))
                 }
-
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
-
-                NavigationDrawerItem(
-                    label = { Text(text = stringResource(id = R.string.nav_link_caregiver), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = if (isDark) Color.White else Color.Black) },
-                    selected = false,
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        scope.launch { drawerState.close() }
-                        context.startActivity(Intent(context, PatientPairingActivity::class.java))
-                    },
-                    icon = { Icon(imageVector = Icons.Default.GroupAdd, contentDescription = null, tint = if (isDark) Color.White else Color.Black) },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                )
-
-                NavigationDrawerItem(
-                    label = { Text(text = "Patient Home", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = if (isDark) Color.White else Color.Black) },
-                    selected = false,
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        scope.launch { drawerState.close() }
-                        context.startActivity(Intent(context, HomeActivity::class.java))
-                    },
-                    icon = { Icon(imageVector = Icons.Default.Home, contentDescription = null, tint = if (isDark) Color.White else Color.Black) },
-                    colors = NavigationDrawerItemDefaults.colors(unselectedContainerColor = Color.Transparent),
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-            }
+            )
         }
-    ) {
-        Scaffold(
-            containerColor = Color.Transparent,
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = { },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            scope.launch { drawerState.open() }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = if (isDark) Color.White else Color(0xFF1A237E),
-                                modifier = Modifier.size(26.dp)
-                            )
-                        }
-                    },
-                    actions = {
-                        LanguageToggleButton()
-                        Spacer(modifier = Modifier.width(16.dp))
-                    }
-                )
-            }
-        ) { innerPadding ->
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -765,5 +807,4 @@ fun StartScreen(
             }
         }
     }
-}
 }

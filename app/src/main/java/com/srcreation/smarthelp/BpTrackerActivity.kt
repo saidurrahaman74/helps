@@ -62,9 +62,11 @@ class BpTrackerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            HelpsTheme {
-                BpTrackerScreen(onBack = { finish() })
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    BpTrackerScreen(onBack = { finish() })
+                }
             }
         }
     }
@@ -75,22 +77,14 @@ class BpTrackerActivity : AppCompatActivity() {
 fun BpTrackerScreen(viewModel: BpViewModel = viewModel(), onBack: () -> Unit) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
-    val prefs = remember { PreferenceManager(context) }
     var systolic by rememberSaveable { mutableStateOf("") }
     var diastolic by rememberSaveable { mutableStateOf("") }
     var selectedTime by rememberSaveable { mutableStateOf("Morning") }
-    var patientName by rememberSaveable { mutableStateOf("") }
-    var patientAge by rememberSaveable { mutableStateOf("") }
     var recordToDelete by remember { mutableStateOf<BpEntity?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val bpRecords by viewModel.allRecords.collectAsState(initial = emptyList())
     val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
     val isDark = isSystemInDarkTheme()
-
-    LaunchedEffect(patientName, patientAge) {
-        if (patientName.isNotBlank()) prefs.setPatientName(patientName)
-        if (patientAge.isNotBlank()) prefs.setPatientAge(patientAge)
-    }
 
     Scaffold(
         topBar = {
@@ -107,7 +101,7 @@ fun BpTrackerScreen(viewModel: BpViewModel = viewModel(), onBack: () -> Unit) {
                 actions = {
                     IconButton(onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        exportToPdf(context, bpRecords, patientName, patientAge)
+                        exportToPdf(context, bpRecords, "", "")
                     }) {
                         Icon(Icons.Default.PictureAsPdf, contentDescription = "PDF", tint = if (isDark) Color.White else Color(0xFF1A237E))
                     }
@@ -124,53 +118,6 @@ fun BpTrackerScreen(viewModel: BpViewModel = viewModel(), onBack: () -> Unit) {
                 modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Patient Name & Age Input Card for Doctor / Report
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
-                    border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        OutlinedTextField(
-                            value = patientName,
-                            onValueChange = { patientName = it },
-                            label = { Text(if (isBn) "রোগীর নাম (Patient Name)" else "Patient Name") },
-                            modifier = Modifier.weight(1.5f),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = if (isDark) Color.White else Color.Black,
-                                unfocusedTextColor = if (isDark) Color.White else Color.Black,
-                                focusedBorderColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedBorderColor = if (isDark) Color.White.copy(alpha = 0.3f) else Color.LightGray,
-                                focusedLabelColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedLabelColor = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray
-                            )
-                        )
-                        OutlinedTextField(
-                            value = patientAge,
-                            onValueChange = { patientAge = it },
-                            label = { Text(if (isBn) "বয়স (Age)" else "Age") },
-                            modifier = Modifier.weight(1f),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = if (isDark) Color.White else Color.Black,
-                                unfocusedTextColor = if (isDark) Color.White else Color.Black,
-                                focusedBorderColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedBorderColor = if (isDark) Color.White.copy(alpha = 0.3f) else Color.LightGray,
-                                focusedLabelColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedLabelColor = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray
-                            )
-                        )
-                    }
-                }
 
                 // Advanced Interactive Chart
                 if (bpRecords.isNotEmpty()) {

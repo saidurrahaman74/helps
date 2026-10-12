@@ -42,14 +42,7 @@ class HelpsFirebaseMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        val prefManager = PreferenceManager(context)
-        val role = prefManager.getFamilyRole()
-
-        val targetIntent = if (role.equals("CAREGIVER", ignoreCase = true)) {
-            Intent(context, CaregiverDashboardActivity::class.java)
-        } else {
-            Intent(context, PatientInstructionsActivity::class.java)
-        }.apply {
+        val targetIntent = Intent(context, PatientInstructionsActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 

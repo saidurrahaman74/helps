@@ -61,9 +61,11 @@ class MedicalVaultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         enableEdgeToEdge()
-        setContent {
-            HelpsTheme {
-                MedicalVaultScreen(onBack = { finish() })
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    MedicalVaultScreen(onBack = { finish() })
+                }
             }
         }
     }

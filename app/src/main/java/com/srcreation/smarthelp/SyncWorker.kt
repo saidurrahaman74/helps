@@ -19,8 +19,26 @@ class SyncWorker(
 
     override suspend fun doWork(): Result {
         val repository = SyncRepository(applicationContext)
-        val success = repository.syncAllUnsynced()
-        return if (success) Result.success() else Result.retry()
+        val authRepo = AuthRepository()
+        
+        if (!authRepo.isUserLoggedIn()) {
+            return Result.success()
+        }
+        val uid = authRepo.uid()
+        val ownerUid = LocalDataOwnership.getOwnerUid(applicationContext)
+        
+        if ((ownerUid.isNullOrBlank() && LocalDataOwnership.hasUserHealthData(applicationContext)) || 
+            (!ownerUid.isNullOrBlank() && !uid.isNullOrBlank() && ownerUid != uid)) {
+            return Result.success()
+        }
+
+        val success = try {
+            repository.syncAllUnsynced()
+        } catch (_: Exception) {
+            false
+        }
+
+        return if (success) Result.success() else Result.success()
     }
 
     companion object {

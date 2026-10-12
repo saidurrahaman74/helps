@@ -37,10 +37,16 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.FamilyRestroom
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.PregnantWoman
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.LocalDining
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.Canvas
@@ -161,105 +167,61 @@ fun AppBottomBar(
     backgroundBrush: Brush? = null
 ) {
     val isDark = isAppInDarkTheme()
-    val isBn = Locale.getDefault().language == "bn"
     val activeColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF0F172A) // Bright Cyan in Dark Mode, Deep Navy in Light Mode
-    val sosActiveColor = Color(0xFFDC2626) // Deep Bold Crimson Red
     val inactiveColor = if (isDark) Color.White.copy(alpha = 0.7f) else Color(0xFF1E293B) // Translucent white in dark mode, charcoal in light mode
 
-    val prefs = remember { PreferenceManager(context) }
-    val profileId = when {
-        isNurseMode -> 2
-        isWomenMode -> 3
-        else -> 1
-    }
-
-    Surface(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        color = if (isDark) Color(0xFF0F172A).copy(alpha = 0.92f) else Color.White.copy(alpha = 0.85f),
-        shape = RoundedCornerShape(28.dp),
-        border = BorderStroke(1.2.dp, if (isDark) Color.White.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.5f)),
-        shadowElevation = 0.dp
+            .navigationBarsPadding(),
+        contentAlignment = Alignment.Center
     ) {
-        Row(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 2.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            color = Color.Transparent,
+            shape = RoundedCornerShape(28.dp),
+            border = null,
+            shadowElevation = 0.dp
         ) {
-            // 1. Home (হোম)
-            BottomTabItem(
-                icon = Icons.Default.Home,
-                label = stringResource(id = R.string.nav_home),
-                isSelected = currentTab == 0,
-                activeColor = activeColor,
-                inactiveColor = inactiveColor,
-                iconSize = 20.dp,
-                modifier = Modifier.weight(1f)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                val intent = Intent(context, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                context.startActivity(intent)
-            }
-
-            // 2. Medical ID / Gyne ID or Nurse Hub
-            if (!isNurseMode) {
-                val isGyne = isWomenMode
+                // 1. Home (হোম)
                 BottomTabItem(
-                    icon = if (isGyne) Icons.Default.PregnantWoman else Icons.Default.Badge,
-                    label = if (isGyne) (if (isBn) "গাইনী আইডি" else "Gyne ID") else (if (isBn) "মেডিকেল আইডি" else "Medical ID"),
-                    isSelected = currentTab == 1,
+                    icon = Icons.Default.Home,
+                    label = stringResource(id = R.string.nav_home),
+                    isSelected = currentTab == 0,
                     activeColor = activeColor,
                     inactiveColor = inactiveColor,
-                    iconSize = 20.dp,
-                    modifier = Modifier.weight(1f)
+                    iconSize = 26.dp,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 ) {
-                    val intent = if (isGyne) {
-                        Intent(context, GyneProfileActivity::class.java)
-                    } else {
-                        Intent(context, MedicalQrActivity::class.java)
-                    }.apply {
-                        flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    }
+                    val intent = Intent(context, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                     context.startActivity(intent)
                 }
-            } else {
+
+                // 2. Settings (সেটিংস)
                 BottomTabItem(
-                    icon = Icons.Default.MedicalServices,
-                    label = if (isBn) "নার্স হাব" else "Nurse Hub",
-                    isSelected = currentTab == 2,
+                    icon = Icons.Default.Settings,
+                    label = stringResource(id = R.string.nav_settings),
+                    isSelected = currentTab == 4,
                     activeColor = activeColor,
                     inactiveColor = inactiveColor,
-                    iconSize = 20.dp,
-                    modifier = Modifier.weight(1f)
+                    iconSize = 26.dp,
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 ) {
-                    val intent = Intent(context, NurseHubActivity::class.java).apply {
+                    context.startActivity(Intent(context, SettingsActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    }
-                    context.startActivity(intent)
+                        putExtra("FROM_NURSE", isNurseMode)
+                    })
                 }
-            }
-
-
-
-            // 4. Settings (সেটিংস)
-            BottomTabItem(
-                icon = Icons.Default.Settings,
-                label = stringResource(id = R.string.nav_settings),
-                isSelected = currentTab == 4,
-                activeColor = activeColor,
-                inactiveColor = inactiveColor,
-                iconSize = 20.dp,
-                modifier = Modifier.weight(1f)
-            ) {
-                context.startActivity(Intent(context, SettingsActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    putExtra("FROM_NURSE", isNurseMode)
-                })
             }
         }
     }
@@ -518,6 +480,66 @@ fun DailyChecklistSection(tasks: List<DailyTask>) {
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun PremiumLinkHubFab(
+    title: String,
+    onClick: () -> Unit,
+    isDark: Boolean
+) {
+    val haptic = LocalHapticFeedback.current
+
+    Surface(
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            onClick()
+        },
+        modifier = Modifier.padding(bottom = 8.dp),
+        shape = RoundedCornerShape(28.dp),
+        color = Color.Transparent,
+        tonalElevation = 6.dp,
+        shadowElevation = 8.dp
+    ) {
+        Box(
+            modifier = Modifier
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = if (isDark) listOf(Color(0xFF0284C7), Color(0xFF38BDF8))
+                        else listOf(Color(0xFF1A237E), Color(0xFF0284C7))
+                    )
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White.copy(alpha = 0.2f),
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = title,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp
+                )
             }
         }
     }

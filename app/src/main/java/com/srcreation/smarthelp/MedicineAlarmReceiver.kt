@@ -1,13 +1,18 @@
 package com.srcreation.smarthelp
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import com.srcreation.smarthelp.db.AppDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MedicineAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -18,7 +23,34 @@ class MedicineAlarmReceiver : BroadcastReceiver() {
         val profileId = intent.getIntExtra("PROFILE_ID", 1)
         val slot = intent.getStringExtra("EXTRA_SLOT") ?: ""
 
-        // 1. Launch Full Screen Activity DIRECTLY to guarantee instant full screen alarm on time
+        // 1. Acquire WakeLock to keep CPU awake during alarm trigger
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        val wakeLock = powerManager?.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+            "SmartHelp:MedicineAlarmWakeLock"
+        )
+        wakeLock?.acquire(10 * 1000L) // 10 seconds
+
+        // 2. Reschedule alarm for tomorrow so it repeats daily
+        if (medId.isNotBlank()) {
+            val pendingResult = goAsync()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val db = AppDatabase.getDatabase(context)
+                    val medList = db.medicineDao().getFullMedicineList()
+                    val med = medList.find { it.id == medId }
+                    med?.let {
+                        MedicineAlarmScheduler.scheduleAlarms(context, it)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    pendingResult.finish()
+                }
+            }
+        }
+
+        // 3. Launch Full Screen Activity DIRECTLY to guarantee instant full screen alarm on time
         val fullScreenIntent = Intent(context, MedicineAlarmActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NO_USER_ACTION
             putExtra("MED_NAME", medName)
@@ -34,10 +66,10 @@ class MedicineAlarmReceiver : BroadcastReceiver() {
             e.printStackTrace()
         }
 
-        // 2. Show Notification with Full Screen Intent and Actions
+        // 4. Show Notification with Full Screen Intent and Actions
         showMedicineNotification(context, medName, medId, category, dosage, profileId, slot)
 
-        // 3. Sync "DUE" status to Caregiver Cloud
+        // 5. Sync "DUE" status to Caregiver Cloud
         CaregiverSyncRepository.syncMedicineTaken(
             context = context,
             medicineName = medName,
@@ -61,7 +93,7 @@ class MedicineAlarmReceiver : BroadcastReceiver() {
         }
 
         val fullScreenIntent = Intent(context, MedicineAlarmActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("MED_NAME", name)
             putExtra("MED_ID", id)
             putExtra("MED_CAT", category)

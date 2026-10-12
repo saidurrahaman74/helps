@@ -12,13 +12,24 @@ import kotlinx.coroutines.flow.StateFlow
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class PatientInfo(val patientId: String, val name: String)
+data class PatientInfo(
+    val patientId: String,
+    val name: String,
+    val status: String = "active",
+    val linkId: String = ""
+)
 
 data class VitalItem(
     val type: String,
     val valueText: String,
     val unit: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val alertLevel: VitalAlertLevel = VitalAlertLevel.NORMAL,
+    val alertText: String = "",
+    val detailText: String = "",
+    val timeAgoText: String = "",
+    val isOlderThan24Hours: Boolean = false,
+    val isImpossible: Boolean = false
 )
 
 data class VitalsSnapshot(
@@ -26,7 +37,10 @@ data class VitalsSnapshot(
     val pulse: VitalItem? = null,
     val spo2: VitalItem? = null,
     val insulin: VitalItem? = null,
-    val temp: VitalItem? = null
+    val temp: VitalItem? = null,
+    val activeDangerAlerts: List<String> = emptyList(),
+    val recentAlerts24h: List<String> = emptyList(),
+    val lastUpdatedText: String = ""
 )
 
 data class DoseSlotSnapshot(
@@ -62,6 +76,9 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
     private val _medicinesState = MutableStateFlow<List<MedicineSnapshot>>(emptyList())
     val medicinesState: StateFlow<List<MedicineSnapshot>> = _medicinesState
 
+    private val _sessionAlertHistory = MutableStateFlow<List<String>>(emptyList())
+    val sessionAlertHistory: StateFlow<List<String>> = _sessionAlertHistory
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -96,7 +113,6 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
         try {
             linksListener = firestore.collection("links")
                 .whereEqualTo("caregiverId", uid)
-                .whereEqualTo("status", "active")
                 .addSnapshotListener { snapshot, error ->
                     _isLoading.value = false
                     if (error != null) {
@@ -138,10 +154,14 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
 
                         for (doc in validDocs) {
                             val pid = doc.getString("patientId") ?: continue
+                            val status = doc.getString("status") ?: "active"
+                            val linkId = doc.id
+
                             firestore.collection("users").document(pid).get()
                                 .addOnSuccessListener { userDoc ->
-                                    val name = userDoc?.getString("name") ?: "Patient (${pid.take(5)})"
-                                    list.add(PatientInfo(pid, name))
+                                    val rawName = userDoc?.getString("name") ?: "Patient (${pid.take(5)})"
+                                    val name = if (status == "pending") "$rawName (Waiting for approval)" else rawName
+                                    list.add(PatientInfo(pid, name, status, linkId))
                                     loadedCount++
                                     if (loadedCount == validDocs.size) {
                                         _linkedPatients.value = list.toList()
@@ -151,9 +171,9 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
                                         }
                                     }
                                 }
-                                .addOnFailureListener { e ->
-                                    Log.e("Caregiver", "Failed to fetch user doc for patient $pid", e)
-                                    list.add(PatientInfo(pid, "Patient (${pid.take(5)})"))
+                                .addOnFailureListener {
+                                    val name = if (status == "pending") "Patient (${pid.take(5)}) (Waiting for approval)" else "Patient (${pid.take(5)})"
+                                    list.add(PatientInfo(pid, name, status, linkId))
                                     loadedCount++
                                     if (loadedCount == validDocs.size) {
                                         _linkedPatients.value = list.toList()
@@ -179,7 +199,13 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
 
     fun selectPatient(patient: PatientInfo) {
         _selectedPatient.value = patient
-        attachPatientListeners(patient.patientId)
+        if (patient.status == "active") {
+            attachPatientListeners(patient.patientId)
+        } else {
+            clearPatientListeners()
+            _vitalsState.value = VitalsSnapshot()
+            _medicinesState.value = emptyList()
+        }
     }
 
     private fun attachPatientListeners(patientId: String) {
@@ -191,9 +217,8 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
                 .collection("vitals")
                 .addSnapshotListener { snapshot, error ->
                     if (error != null) {
-                        Log.e("Caregiver", "Error listening to vitals for $patientId", error)
                         if (error.code == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
-                            _errorMessage.value = "Permission denied: Cannot access patient vitals."
+                            Log.w("Caregiver", "Permission denied for vitals on patient $patientId")
                         }
                         return@addSnapshotListener
                     }
@@ -206,45 +231,58 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
                         var latestInsulin: VitalItem? = null
                         var latestTemp: VitalItem? = null
 
+                        val maxAllowedTs = System.currentTimeMillis() + 5 * 60 * 1000L
+                        val twentyFourHoursAgo = System.currentTimeMillis() - 24 * 3600 * 1000L
+                        val recent24hDangers = mutableListOf<Pair<Long, String>>()
+
                         for (doc in snapshot.documents) {
                             val type = doc.getString("type") ?: ""
+                            val kind = doc.getString("kind")
                             val ts = when (val t = doc.get("timestamp")) {
                                 is Number -> t.toLong()
                                 is String -> t.toLongOrNull() ?: 0L
                                 else -> 0L
                             }
+                            if (ts > maxAllowedTs) continue
+
                             val val1 = doc.get("value")
                             val val2 = doc.get("value2")
                             val unit = doc.getString("unit") ?: ""
 
+                            val item = createVitalItem(type, val1, val2, unit, ts, kind) ?: continue
+
                             when (type) {
-                                "BP" -> {
-                                    if (ts >= (latestBp?.timestamp ?: 0L)) {
-                                        val text = if (val2 != null && val2.toString() != "0") "$val1/$val2 $unit" else "$val1 $unit"
-                                        latestBp = VitalItem("BP", text, unit, ts)
-                                    }
-                                }
-                                "PULSE" -> {
-                                    if (ts >= (latestPulse?.timestamp ?: 0L)) {
-                                        latestPulse = VitalItem("PULSE", "$val1 $unit", unit, ts)
-                                    }
-                                }
-                                "SPO2" -> {
-                                    if (ts >= (latestSpO2?.timestamp ?: 0L)) {
-                                        latestSpO2 = VitalItem("SPO2", "$val1 $unit", unit, ts)
-                                    }
-                                }
-                                "GLUCOSE" -> {
-                                    if (ts >= (latestInsulin?.timestamp ?: 0L)) {
-                                        latestInsulin = VitalItem("GLUCOSE", "$val1 $unit", unit, ts)
-                                    }
-                                }
-                                "TEMPERATURE" -> {
-                                    if (ts >= (latestTemp?.timestamp ?: 0L)) {
-                                        latestTemp = VitalItem("TEMPERATURE", "$val1 $unit", unit, ts)
-                                    }
-                                }
+                                "BP" -> if (ts >= (latestBp?.timestamp ?: 0L)) latestBp = item
+                                "PULSE" -> if (ts >= (latestPulse?.timestamp ?: 0L)) latestPulse = item
+                                "SPO2" -> if (ts >= (latestSpO2?.timestamp ?: 0L)) latestSpO2 = item
+                                "GLUCOSE" -> if (ts >= (latestInsulin?.timestamp ?: 0L)) latestInsulin = item
+                                "TEMPERATURE" -> if (ts >= (latestTemp?.timestamp ?: 0L)) latestTemp = item
                             }
+
+                            if (item.alertLevel == VitalAlertLevel.DANGER && ts >= twentyFourHoursAgo) {
+                                val dateTimeStr = SimpleDateFormat("dd MMM HH:mm", Locale.getDefault()).format(Date(ts))
+                                val dangerMsg = "${item.type} ${item.valueText} on $dateTimeStr, ${item.detailText}"
+                                recent24hDangers.add(ts to dangerMsg)
+                                recordSessionAlert(dangerMsg)
+                            }
+                        }
+
+                        val activeDangers = mutableListOf<String>()
+                        listOfNotNull(latestBp, latestPulse, latestSpO2, latestInsulin, latestTemp).forEach { item ->
+                            if (item.alertLevel == VitalAlertLevel.DANGER && item.timestamp >= twentyFourHoursAgo) {
+                                val dateTimeStr = SimpleDateFormat("dd MMM HH:mm", Locale.getDefault()).format(Date(item.timestamp))
+                                val bannerMsg = "${item.type} ${item.valueText} on $dateTimeStr, ${item.detailText}"
+                                activeDangers.add(bannerMsg)
+                            }
+                        }
+
+                        val sortedRecent24h = recent24hDangers.sortedByDescending { it.first }.map { it.second }.distinct()
+
+                        val maxTs = listOfNotNull(latestBp?.timestamp, latestPulse?.timestamp, latestSpO2?.timestamp, latestInsulin?.timestamp, latestTemp?.timestamp).maxOrNull() ?: 0L
+                        val lastUpdatedText = if (maxTs > 0L && maxTs >= twentyFourHoursAgo) {
+                            "Last updated: " + SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date(maxTs))
+                        } else {
+                            "No recent data"
                         }
 
                         _vitalsState.value = VitalsSnapshot(
@@ -252,7 +290,10 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
                             pulse = latestPulse,
                             spo2 = latestSpO2,
                             insulin = latestInsulin,
-                            temp = latestTemp
+                            temp = latestTemp,
+                            activeDangerAlerts = activeDangers,
+                            recentAlerts24h = sortedRecent24h,
+                            lastUpdatedText = lastUpdatedText
                         )
                     } catch (e: Exception) {
                         Log.e("Caregiver", "Error parsing vitals snapshot for $patientId", e)
@@ -281,9 +322,8 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
                         .collection("medicines")
                         .addSnapshotListener { snapshot, error ->
                             if (error != null) {
-                                Log.e("Caregiver", "Error listening to medicines for $patientId", error)
                                 if (error.code == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
-                                    _errorMessage.value = "Permission denied: Cannot access patient medicines."
+                                    Log.w("Caregiver", "Permission denied for medicines on patient $patientId")
                                 }
                                 return@addSnapshotListener
                             }
@@ -326,19 +366,7 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
                                                 val isTaken = pair?.first ?: false
                                                 val takenAt = pair?.second ?: 0L
 
-                                                val scheduledHour = when (slotName.lowercase()) {
-                                                    "morning" -> 8
-                                                    "noon" -> 14
-                                                    "evening" -> 18
-                                                    "night" -> 22
-                                                    else -> 12
-                                                }
-                                                val scheduledMinutes = scheduledHour * 60
-                                                val status = when {
-                                                    isTaken -> "Taken"
-                                                    currentTimeInMinutes > scheduledMinutes + 120 -> "Missed"
-                                                    else -> "Due"
-                                                }
+                                                val status = MedicineScheduleHelper.calculateDoseStatus(slotName, isTaken, currentTimeInMinutes)
 
                                                 DoseSlotSnapshot(
                                                     slot = slotName,
@@ -372,12 +400,12 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
                                                 val scheduledHour = when (slotName.lowercase()) {
                                                     "morning" -> 8
                                                     "noon" -> 14
-                                                    "evening" -> 18
+                                                    "evening" -> 20
                                                     "night" -> 22
                                                     else -> 12
                                                 }
                                                 val scheduledMinutes = scheduledHour * 60
-                                                val status = if (currentTimeInMinutes > scheduledMinutes + 120) "Missed" else "Due"
+                                                val status = MedicineScheduleHelper.calculateDoseStatus(slotName, false, currentTimeInMinutes)
 
                                                 DoseSlotSnapshot(slot = slotName, taken = false, takenAt = 0L, status = status)
                                             }
@@ -404,12 +432,96 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
                             }
                         }
                 }
-                .addOnFailureListener {
-                    // Fallback to default timezone if user doc fetch fails
-                    // ...
-                }
+                .addOnFailureListener {}
         } catch (e: Exception) {
             Log.e("Caregiver", "Failed to attach patient listeners for $patientId", e)
+        }
+    }
+
+    private fun createVitalItem(type: String, val1: Any?, val2: Any?, unit: String, ts: Long, kind: String? = null): VitalItem? {
+        if (type == "GLUCOSE" && kind == "INSULIN_DOSE") return null
+
+        val val1Double = val1?.toString()?.toDoubleOrNull()
+        if (val1Double == null || val1Double <= 0.0) return null
+
+        val (timeAgoText, isOlderThan24) = formatTimeAgo(ts)
+
+        val alertResult = when (type) {
+            "BP" -> {
+                val sys = val1.toString().toIntOrNull() ?: return null
+                val dia = val2.toString().toIntOrNull() ?: return null
+                AlertThresholds.checkBp(sys, dia)
+            }
+            "PULSE" -> {
+                val bpm = val1Double.toInt()
+                AlertThresholds.checkPulse(bpm)
+            }
+            "SPO2" -> {
+                val spo2 = val1Double
+                AlertThresholds.checkSpO2(spo2)
+            }
+            "GLUCOSE" -> {
+                val glucoseVal = val1Double
+                AlertThresholds.checkGlucose(glucoseVal, unit)
+            }
+            "TEMPERATURE" -> {
+                val tempVal = val1Double
+                AlertThresholds.checkTemperature(tempVal, unit)
+            }
+            else -> VitalAlertResult(VitalAlertLevel.NORMAL)
+        }
+
+        val valueText = when (type) {
+            "BP" -> if (val2 != null && val2.toString() != "0") "$val1/$val2 $unit" else "$val1 $unit"
+            else -> "$val1 $unit"
+        }
+
+        val alertMsgWithDetail = if (alertResult.isImpossible) {
+            "Check this value"
+        } else if (alertResult.level != VitalAlertLevel.NORMAL && alertResult.detailText.isNotBlank()) {
+            "${alertResult.message}, ${alertResult.detailText}"
+        } else {
+            alertResult.message
+        }
+
+        return VitalItem(
+            type = type,
+            valueText = valueText,
+            unit = unit,
+            timestamp = ts,
+            alertLevel = if (alertResult.isImpossible) VitalAlertLevel.NORMAL else alertResult.level,
+            alertText = alertMsgWithDetail,
+            detailText = alertResult.detailText,
+            timeAgoText = timeAgoText,
+            isOlderThan24Hours = isOlderThan24,
+            isImpossible = alertResult.isImpossible
+        )
+    }
+
+    private fun formatTimeAgo(timestamp: Long): Pair<String, Boolean> {
+        if (timestamp <= 0L) return Pair("No recent data", true)
+        val diffMs = System.currentTimeMillis() - timestamp
+        val isOlder24 = diffMs >= 24 * 3600 * 1000L
+        if (diffMs < 0) return Pair("taken just now", isOlder24)
+        val diffMin = diffMs / (1000 * 60)
+        val diffHours = diffMin / 60
+        val diffDays = diffHours / 24
+
+        val text = when {
+            diffMin < 1 -> "taken just now"
+            diffMin < 60 -> "taken $diffMin min ago"
+            diffHours < 24 -> "taken $diffHours hrs ago"
+            else -> "taken $diffDays days ago"
+        }
+        return Pair(text, isOlder24)
+    }
+
+    private fun recordSessionAlert(message: String) {
+        if (message.isBlank()) return
+        val list = _sessionAlertHistory.value.toMutableList()
+        if (!list.contains(message)) {
+            list.add(0, message)
+            _sessionAlertHistory.value = list
         }
     }
 
@@ -426,9 +538,14 @@ class CaregiverDashboardViewModel(application: Application) : AndroidViewModel(a
         clearPatientListeners()
     }
 
-        fun formatTime(timestamp: Long): String {
+    fun formatTime(timestamp: Long): String {
         if (timestamp <= 0L) return "N/A"
         val sdf = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
         return sdf.format(Date(timestamp))
+    }
+
+    fun cancelPendingRequest(linkId: String) {
+        if (linkId.isBlank()) return
+        firestore.collection("links").document(linkId).delete()
     }
 }

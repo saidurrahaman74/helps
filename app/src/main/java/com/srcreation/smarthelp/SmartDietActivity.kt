@@ -47,7 +47,6 @@ class SmartDietActivity : AppCompatActivity() {
             HelpsTheme {
                 SmartDietScreen(
                     onBack = { finish() },
-                    onScanFood = { startActivity(Intent(this, FoodScannerActivity::class.java)) },
                     onManualEntry = { startActivity(Intent(this, ManualFoodEntryActivity::class.java)) },
                     onHistory = { startActivity(Intent(this, DietHistoryActivity::class.java)) }
                 )
@@ -60,7 +59,6 @@ class SmartDietActivity : AppCompatActivity() {
 @Composable
 fun SmartDietScreen(
     onBack: () -> Unit,
-    onScanFood: () -> Unit,
     onManualEntry: () -> Unit,
     onHistory: () -> Unit
 ) {
@@ -71,11 +69,14 @@ fun SmartDietScreen(
     val db = remember { AppDatabase.getDatabase(context) }
     val repo = remember { DietRepository(context) }
     val scope = rememberCoroutineScope()
+    var showResetDialog by remember { mutableStateOf(false) }
 
-    val todayDate = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) }
-    val meals by repo.getMealsForDate(1, todayDate).collectAsState(initial = emptyList())
+    val mealDate = remember { SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()) }
+    val stepDate = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date()) }
+    val meals by repo.getMealsForDate(1, mealDate).collectAsState(initial = emptyList())
     val stepRecords by db.stepDao().getAllRecords(1).collectAsState(initial = emptyList())
-    val todaySteps = stepRecords.firstOrNull()?.steps ?: 0
+    val todayRecord = stepRecords.firstOrNull { it.date == stepDate } ?: stepRecords.firstOrNull()
+    val todaySteps = todayRecord?.steps ?: 0
 
     LaunchedEffect(Unit) {
         scope.launch {
@@ -123,6 +124,12 @@ fun SmartDietScreen(
                     actions = {
                         IconButton(onClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showResetDialog = true
+                        }) {
+                            Icon(Icons.Default.Refresh, contentDescription = "Reset Diet", tint = Color(0xFFEF4444))
+                        }
+                        IconButton(onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             onHistory()
                         }) {
                             Icon(Icons.Default.History, contentDescription = "History", tint = if (isDark) Color.White else Color(0xFF1A237E))
@@ -133,58 +140,57 @@ fun SmartDietScreen(
                 )
             }
         },
-        bottomBar = { AppBottomBar(context = context, currentTab = -1, backgroundBrush = AppGradientBrush) },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onScanFood()
-                },
-                containerColor = Color(0xFF22C55E),
-                contentColor = Color.White,
-                shape = CircleShape
-            ) {
-                Icon(Icons.Default.CameraAlt, contentDescription = "Scan Food")
-            }
-        }
+        bottomBar = { AppBottomBar(context = context, currentTab = -1, backgroundBrush = AppGradientBrush) }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().background(brush = AppGradientBrush).padding(innerPadding)) {
+            if (showResetDialog) {
+                AlertDialog(
+                    onDismissRequest = { showResetDialog = false },
+                    title = { Text(if (isBn) "আজকের ডায়েট রিসেট করুন" else "Reset Today's Diet", fontWeight = FontWeight.Black, color = if (isDark) Color.White else Color.Black) },
+                    text = { Text(if (isBn) "আপনি কি নিশ্চিত যে আজকের সমস্ত লোগ করা খাবার ও ক্যালরি রিসেট করে ০ করতে চান?" else "Are you sure you want to reset today's logged meals and calories to 0?", color = if (isDark) Color.White.copy(alpha = 0.8f) else Color.DarkGray) },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                scope.launch {
+                                    repo.clearMealsForDate(1, mealDate)
+                                    Toast.makeText(context, if (isBn) "🔄 আজকের ডায়েট রিসেট করা হয়েছে!" else "🔄 Today's diet reset to 0!", Toast.LENGTH_SHORT).show()
+                                }
+                                showResetDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444))
+                        ) {
+                            Text(if (isBn) "রিসেট (০)" else "Reset to 0", color = Color.White)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showResetDialog = false }) {
+                            Text(if (isBn) "বাতিল" else "Cancel", color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
+                        }
+                    },
+                    containerColor = if (isDark) Color(0xFF0F172A) else Color.White,
+                    shape = RoundedCornerShape(24.dp)
+                )
+            }
             ScreenEntranceAnimation {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Button(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    onScanFood()
-                                },
-                                modifier = Modifier.weight(1f).height(42.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF22C55E)),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                            ) {
-                                Icon(Icons.Default.CameraAlt, null, modifier = Modifier.size(16.dp))
-                                Spacer(Modifier.width(6.dp))
-                                Text(if (isBn) "📷 স্ক্যান করুন" else "Scan Food", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                            }
-
-                            Button(
-                                onClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    onManualEntry()
-                                },
-                                modifier = Modifier.weight(1f).height(42.dp),
-                                shape = RoundedCornerShape(12.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E)),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-                            ) {
-                                Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp))
-                                Spacer(Modifier.width(6.dp))
-                                Text(if (isBn) "✍️ ম্যানুয়াল এন্ট্রি" else "Add Manually", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                            }
+                        Button(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onManualEntry()
+                            },
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E)),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(if (isBn) "✍️ খাবার যোগ করুন (Add Food)" else "Add Food Manually", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         }
                     }
 
@@ -236,21 +242,109 @@ fun SmartDietScreen(
                     item {
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp),
-                            color = (if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E)).copy(alpha = 0.12f),
-                            border = BorderStroke(1.5.dp, (if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E)).copy(alpha = 0.35f))
+                            shape = RoundedCornerShape(28.dp),
+                            color = if (isDark) Color(0xFF0F172A) else Color.White,
+                            border = BorderStroke(1.5.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.15f)),
+                            shadowElevation = 4.dp
                         ) {
                             Column(modifier = Modifier.padding(20.dp)) {
-                                Text(if (isBn) "⚡ দৈনিক শক্তি ওভারভিউ (Daily Energy Overview)" else "Daily Energy Overview", fontWeight = FontWeight.Black, fontSize = 16.sp, color = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E))
-                                Spacer(Modifier.height(10.dp))
-                                Text(
-                                    text = if (isBn) "প্রাক্কলিত প্রয়োজনীয়তা: 2,000 kcal | খাদ্য গ্রহণ: %.0f kcal | অ্যাক্টিভিটি বার্ন: %d kcal".format(totalCalories, activityCalories)
-                                    else "Estimated Requirement: 2,000 kcal | Food Intake: %.0f kcal | Activity: %d kcal".format(totalCalories, activityCalories),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isDark) Color.White.copy(alpha = 0.9f) else Color(0xFF0F172A),
-                                    lineHeight = 18.sp
-                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Surface(
+                                            modifier = Modifier.size(32.dp),
+                                            shape = CircleShape,
+                                            color = Color(0xFFEF4444).copy(alpha = 0.15f)
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Icon(Icons.Default.LocalFireDepartment, null, tint = Color(0xFFEF4444), modifier = Modifier.size(18.dp))
+                                            }
+                                        }
+                                        Text(
+                                            text = if (isBn) "এনার্জি ড্যাশবোর্ড (Apple Health)" else "Energy Dashboard",
+                                            fontWeight = FontWeight.Black,
+                                            fontSize = 16.sp,
+                                            color = if (isDark) Color.White else Color(0xFF1A237E)
+                                        )
+                                    }
+                                    Surface(
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = Color(0xFF22C55E).copy(alpha = 0.15f)
+                                    ) {
+                                        Text(
+                                            text = "LIVE",
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF22C55E)
+                                        )
+                                    }
+                                }
+
+                                Spacer(Modifier.height(16.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    EnergyRingMetricItem(
+                                        title = if (isBn) "খাবার গ্রহণ" else "Intake",
+                                        value = "%.0f".format(totalCalories),
+                                        unit = "kcal",
+                                        color = Color(0xFFEF4444),
+                                        isDark = isDark
+                                    )
+                                    EnergyRingMetricItem(
+                                        title = if (isBn) "অ্যাক্টিভিটি বার্ন" else "Burned",
+                                        value = "$activityCalories",
+                                        unit = "kcal",
+                                        color = Color(0xFFFF9800),
+                                        isDark = isDark
+                                    )
+                                    EnergyRingMetricItem(
+                                        title = if (isBn) "দৈনিক লক্ষ্য" else "Target",
+                                        value = "2000",
+                                        unit = "kcal",
+                                        color = Color(0xFF38BDF8),
+                                        isDark = isDark
+                                    )
+                                }
+
+                                Spacer(Modifier.height(16.dp))
+
+                                HorizontalDivider(color = Color.Gray.copy(alpha = 0.2f))
+
+                                Spacer(Modifier.height(12.dp))
+
+                                val netCalories = totalCalories - activityCalories
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column {
+                                        Text(
+                                            text = if (isBn) "নেট ক্যালরি ব্যালেন্স" else "Net Energy Balance",
+                                            fontSize = 11.sp,
+                                            color = if (isDark) Color.Gray else Color.DarkGray,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            text = "Target - Intake + Burned",
+                                            fontSize = 9.sp,
+                                            color = Color.Gray
+                                        )
+                                    }
+                                    Text(
+                                        text = "%.0f kcal".format(2000.0 - netCalories),
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 15.sp,
+                                        color = if (2000.0 - netCalories >= 0) Color(0xFF22C55E) else Color(0xFFEF4444)
+                                    )
+                                }
                             }
                         }
                     }
@@ -351,5 +445,21 @@ fun MealLogItemCard(meal: MealEntity, isDark: Boolean, isBn: Boolean, onDelete: 
                 }
             }
         }
+    }
+}
+
+@Composable
+fun EnergyRingMetricItem(title: String, value: String, unit: String, color: Color, isDark: Boolean) {
+    Column(
+        modifier = Modifier
+            .background(color.copy(alpha = 0.08f), RoundedCornerShape(16.dp))
+            .border(1.dp, color.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+            .padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(title, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
+        Spacer(Modifier.height(4.dp))
+        Text(value, fontSize = 18.sp, fontWeight = FontWeight.Black, color = color)
+        Text(unit, fontSize = 9.sp, color = color.copy(alpha = 0.8f))
     }
 }

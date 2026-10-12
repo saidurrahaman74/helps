@@ -53,7 +53,7 @@ service cloud.firestore {
       allow read, write: if isAuthenticated();
     }
 
-    // 5. Links: can be created only by the caregiver themselves (caregiverId == request.auth.uid)
+    // 5. Links: caregiver can create link, both patient and caregiver can read/update/delete
     match /links/{linkId} {
       allow create: if isAuthenticated() && request.resource.data.caregiverId == request.auth.uid;
       allow read, update, delete: if isAuthenticated() && (resource.data.caregiverId == request.auth.uid || resource.data.patientId == request.auth.uid);

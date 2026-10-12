@@ -75,9 +75,11 @@ class StepCounterActivity : AppCompatActivity(), SensorEventListener {
         }
         initialBaseline = prefs.getStepBaseline(profileId)
 
-        setContent {
-            HelpsTheme {
-                StepCounterScreen(sensorSteps = _steps.intValue, onBack = { finish() })
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    StepCounterScreen(sensorSteps = _steps.intValue, onBack = { finish() })
+                }
             }
         }
     }
@@ -116,10 +118,11 @@ fun StepCounterScreen(sensorSteps: Int, viewModel: StepViewModel = viewModel(), 
     val prefs = remember { PreferenceManager(context) }
     var stepGoal by remember { mutableIntStateOf(prefs.getStepGoal()) }
     var manualSteps by remember { mutableIntStateOf(0) }
+    var resetOffset by remember { mutableIntStateOf(0) }
     var showGoalDialog by remember { mutableStateOf(false) }
     val isDark = isSystemInDarkTheme()
 
-    val steps = sensorSteps + manualSteps
+    val steps = (sensorSteps - resetOffset + manualSteps).coerceAtLeast(0)
 
     val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
 
@@ -290,27 +293,55 @@ fun StepCounterScreen(sensorSteps: Int, viewModel: StepViewModel = viewModel(), 
                     
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Simulate Walking Button (Great for Testing / Emulators)
-                    OutlinedButton(
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            manualSteps += 100
-                            Toast.makeText(context, if (isBn) "+১০০ স্টেপ যোগ করা হয়েছে!" else "+100 Steps added!", Toast.LENGTH_SHORT).show()
-                        },
+                    // Simulate Walking & Reset Buttons
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E)),
-                        border = BorderStroke(1.2.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.5f) else Color(0xFF1A237E).copy(alpha = 0.5f))
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.DirectionsWalk, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = if (isBn) "🚶‍♂️ হাঁটা সিমুলেট করুন (+১০০ স্টেপസ്)" else "🚶‍♂️ Simulate Walking (+100 Steps)",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
-                        )
+                        OutlinedButton(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                manualSteps += 100
+                                Toast.makeText(context, if (isBn) "+১০০ স্টেপ যোগ করা হয়েছে!" else "+100 Steps added!", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.weight(1f).height(46.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E)),
+                            border = BorderStroke(1.2.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.5f) else Color(0xFF1A237E).copy(alpha = 0.5f))
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.DirectionsWalk, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                text = if (isBn) "🚶‍♂️ +১০০ স্টেপ" else "🚶‍♂️ +100 Steps",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                resetOffset = sensorSteps
+                                manualSteps = 0
+                                val date = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date())
+                                viewModel.addStepRecord(0, date)
+                                Toast.makeText(context, if (isBn) "🔄 রিসেট সফল! (০ থেকে শুরু)" else "🔄 Reset to 0!", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.weight(1f).height(46.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444))
+                        ) {
+                            Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp), tint = Color.White)
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                text = if (isBn) "🔄 রিসেট (০)" else "Reset to 0",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                color = Color.White
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))

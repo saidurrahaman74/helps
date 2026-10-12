@@ -1,15 +1,15 @@
 package com.srcreation.smarthelp
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
-class PairingRepository {
+class PairingRepository(private val context: Context) {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
-    private val authRepo = AuthRepository()
 
     suspend fun createPairingCode(): String {
         val currentUser = auth.currentUser
@@ -18,19 +18,19 @@ class PairingRepository {
             throw IllegalStateException("User not logged in")
         }
 
-        val role = authRepo.getRole()
-        if (!role.equals("patient", ignoreCase = true)) {
-            Log.e("Pairing", "Failed to generate pairing code: Only patients can generate pairing codes (Role: $role)")
-            throw IllegalStateException("Only patients can generate pairing codes")
+        val patientId = currentUser.uid
+        val installId = PreferenceManager(context).getInstallId()
+        if (installId.isBlank()) {
+            throw IllegalStateException("Install ID cannot be blank")
         }
 
-        val patientId = currentUser.uid
         val code = (100000..999999).random().toString()
         val now = System.currentTimeMillis()
         val expiresAt = now + 10 * 60 * 1000L // 10 minutes
 
         val codeMap = hashMapOf(
             "patientId" to patientId,
+            "patientInstallId" to installId,
             "expiresAt" to expiresAt,
             "createdAt" to now
         )
@@ -80,17 +80,62 @@ class PairingRepository {
                 throw Exception("Invalid code")
             }
 
+            // Same-phone guard 1: Reject if patientId == current caregiverId
+            if (patientId == caregiverId) {
+                throw Exception("You cannot link your own account to yourself.")
+            }
+
+            // Same-phone guard 2: Reject if patientInstallId == this phone's installId
+            val patientInstallId = docSnap.getString("patientInstallId") ?: ""
+            val caregiverInstallId = PreferenceManager(context).getInstallId()
+            if (caregiverInstallId.isBlank()) {
+                throw IllegalStateException("Install ID cannot be blank")
+            }
+            if (patientInstallId.isNotBlank() && patientInstallId == caregiverInstallId) {
+                throw Exception("Cannot link accounts on the same physical phone/installation.")
+            }
+
             val linkId = "${caregiverId}_${patientId}"
+
+            // Check existing link status
+            val existingLinkDoc = firestore.collection("links").document(linkId).get().await()
+            if (existingLinkDoc.exists()) {
+                val existingStatus = existingLinkDoc.getString("status") ?: "active"
+                if (existingStatus == "active") {
+                    throw Exception("You are already linked to this patient")
+                } else if (existingStatus == "pending") {
+                    throw Exception("Your request is already waiting for approval")
+                }
+            }
+
+            // Resolve caregiverName
+            var caregiverName = ""
+            try {
+                val caregiverUserDoc = firestore.collection("users").document(caregiverId).get().await()
+                caregiverName = caregiverUserDoc.getString("name") ?: ""
+            } catch (_: Exception) {}
+
+            if (caregiverName.isBlank()) {
+                caregiverName = currentUser.displayName ?: currentUser.email ?: "Caregiver"
+            }
+
+            val now = System.currentTimeMillis()
             val linkMap = hashMapOf(
                 "patientId" to patientId,
                 "caregiverId" to caregiverId,
-                "status" to "active",
-                "createdAt" to System.currentTimeMillis()
+                "status" to "pending",
+                "code" to cleanCode,
+                "caregiverName" to caregiverName,
+                "patientInstallId" to patientInstallId,
+                "caregiverInstallId" to caregiverInstallId,
+                "createdAt" to now
             )
 
+            // Create link document with status = "pending" while pairing code still exists
             firestore.collection("links").document(linkId).set(linkMap).await()
-            Log.d("Pairing", "Link created successfully: $linkId")
+            Log.d("Pairing", "Pending link created successfully: $linkId")
 
+            // Delete pairing code after link document is written successfully
             try {
                 firestore.collection("pairingCodes").document(cleanCode).delete().await()
             } catch (e: CancellationException) {
@@ -108,9 +153,6 @@ class PairingRepository {
     suspend fun linkPatientWithCode(code: String): Result<String> {
         return try {
             linkWithCode(code)
-            // Extract patientId for Result success
-            val cleanCode = code.trim()
-            // Since doc is deleted, we can return success or patientId if needed.
             Result.success("Success")
         } catch (e: CancellationException) {
             throw e

@@ -48,7 +48,7 @@ fun CaregiverLinkScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val coroutineScope = rememberCoroutineScope()
-    val pairingRepo = remember { PairingRepository() }
+    val pairingRepo = remember { PairingRepository(context) }
     val isBn = remember { Locale.getDefault().language == "bn" }
 
     var codeInput by remember { mutableStateOf("") }

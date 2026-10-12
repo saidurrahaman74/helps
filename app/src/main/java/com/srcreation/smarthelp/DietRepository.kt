@@ -35,6 +35,13 @@ class DietRepository(context: Context) {
         dietDao.deleteMeal(meal)
     }
 
+    suspend fun clearMealsForDate(profileId: Int, date: String) {
+        val meals = dietDao.getMealsListByDate(profileId, date)
+        for (meal in meals) {
+            deleteMeal(meal)
+        }
+    }
+
     fun getProfile(profileId: Int): Flow<UserDietProfileEntity?> = dietDao.getDietProfile(profileId)
 
     suspend fun saveProfile(profile: UserDietProfileEntity) = dietDao.saveDietProfile(profile)

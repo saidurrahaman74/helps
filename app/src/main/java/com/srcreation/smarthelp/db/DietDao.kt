@@ -29,6 +29,12 @@ interface DietDao {
     @Query("SELECT * FROM diet_meals WHERE profileId = :profileId AND date = :date ORDER BY id DESC")
     fun getMealsByDate(profileId: Int, date: String): Flow<List<MealEntity>>
 
+    @Query("SELECT * FROM diet_meals WHERE profileId = :profileId AND date = :date")
+    suspend fun getMealsListByDate(profileId: Int, date: String): List<MealEntity>
+
+    @Query("SELECT * FROM diet_meals")
+    suspend fun getFullMealList(): List<MealEntity>
+
     @Query("SELECT * FROM diet_meal_items WHERE mealId = :mealId")
     suspend fun getItemsForMeal(mealId: Long): List<MealFoodItemEntity>
 

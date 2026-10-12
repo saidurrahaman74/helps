@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.widget.Toast
+import com.google.firebase.firestore.FirebaseFirestore
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -14,6 +15,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import java.util.Locale
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
@@ -47,6 +49,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.lifecycle.lifecycleScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -78,11 +81,21 @@ class HomeActivity : AppCompatActivity() {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 101)
         }
 
-        setContent {
-            HelpsTheme {
-                HomeScreen()
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    HomeScreen()
+                }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 }
 
@@ -91,12 +104,22 @@ class HomeActivity : AppCompatActivity() {
 fun HomeScreen(wellnessViewModel: WellnessViewModel = viewModel()) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
+    
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var showQuickActionSheet by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
         wellnessViewModel.fetchCurrentProfile()
+    }
+
+    val authRepo = remember { AuthRepository() }
+    val patientUid = authRepo.uid() ?: ""
+
+    LaunchedEffect(patientUid) {
+        if (patientUid.isNotBlank()) {
+            SyncWorker.enqueue(context)
+        }
     }
 
     BackHandler(enabled = drawerState.isOpen) {
@@ -127,8 +150,27 @@ fun HomeScreen(wellnessViewModel: WellnessViewModel = viewModel()) {
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
 
+                val isBn = remember { Locale.getDefault().language == "bn" }
+                val authRepo = remember { AuthRepository() }
+                val patientUid = authRepo.uid() ?: ""
+                val pendingCountState = remember { mutableStateOf(0) }
+                
+                DisposableEffect(patientUid) {
+                    if (patientUid.isBlank()) {
+                        return@DisposableEffect object : androidx.compose.runtime.DisposableEffectResult {
+                            override fun dispose() {}
+                        }
+                    }
+                    val reg = FirebaseFirestore.getInstance().collection("links")
+                        .whereEqualTo("patientId", patientUid)
+                        .whereEqualTo("status", "pending")
+                        .addSnapshotListener { snap: com.google.firebase.firestore.QuerySnapshot?, _ ->
+                            pendingCountState.value = snap?.size() ?: 0
+                        }
+                    onDispose { reg.remove() }
+                }
+
                 val menuItems = listOf(
-                    Triple(stringResource(id = R.string.nav_link_caregiver), Icons.Default.GroupAdd, Intent(context, PatientPairingActivity::class.java)),
                     Triple(stringResource(id = R.string.nav_medical_id), Icons.Default.Person, Intent(context, MedicalIdActivity::class.java)),
                     Triple(stringResource(id = R.string.nav_emergency_qr), Icons.Default.QrCode2, Intent(context, MedicalQrActivity::class.java)),
                     Triple(stringResource(id = R.string.nav_patient_vault), Icons.Default.Inventory, Intent(context, MedicalVaultActivity::class.java).apply { putExtra("PROFILE_ID", 1) }),
@@ -213,18 +255,12 @@ fun HomeScreen(wellnessViewModel: WellnessViewModel = viewModel()) {
                 },
                 bottomBar = { AppBottomBar(context = context, currentTab = 1, isNurseMode = false, backgroundBrush = AppGradientBrush) },
                 floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            showQuickActionSheet = true
-                        },
-                        containerColor = Color(0xFFEF4444),
-                        contentColor = Color.White,
-                        shape = CircleShape,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    ) {
-                        Icon(Icons.Default.FlashOn, contentDescription = "Quick Emergency Actions", modifier = Modifier.size(24.dp))
-                    }
+                    val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
+                    PremiumLinkHubFab(
+                        title = if (isBn) "কেয়ারগিভার লিঙ্ক" else "Link Caregiver",
+                        onClick = { showQuickActionSheet = true },
+                        isDark = isDark
+                    )
                 }
             ) { innerPadding ->
                 Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
@@ -295,7 +331,7 @@ fun QuickActionBottomSheet(onDismiss: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = if (isBn) "⚡ কুইক ইমার্জেন্সি ও হেলথ হাব (Quick Actions)" else "⚡ Quick Emergency & Health Hub",
+                text = if (isBn) "⚡ পেশেন্ট লিঙ্ক হাব (Patient Link Hub)" else "⚡ Patient Link Hub",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Black,
                 color = MaterialTheme.colorScheme.primary
@@ -306,23 +342,23 @@ fun QuickActionBottomSheet(onDismiss: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 QuickActionButtonPill(
-                    title = if (isBn) "ডিজিটাল প্রিসক্রিপশন" else "Prescription Vault",
-                    icon = Icons.Default.Inventory,
+                    title = if (isBn) "কেয়ারগিভার লিঙ্ক" else "Link Caregiver",
+                    icon = Icons.Default.GroupAdd,
                     color = Color(0xFF0284C7),
                     modifier = Modifier.weight(1f)
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, MedicalVaultActivity::class.java).apply { putExtra("PROFILE_ID", 1) })
+                    context.startActivity(Intent(context, PatientPairingActivity::class.java))
                 }
 
                 QuickActionButtonPill(
-                    title = if (isBn) "মেডিকেল আই ডি / QR" else "Medical ID / QR",
-                    icon = Icons.Default.Badge,
+                    title = if (isBn) "কে ডেটা দেখতে পারে" else "Who Can See Data",
+                    icon = Icons.Default.Visibility,
                     color = Color(0xFF0284C7),
                     modifier = Modifier.weight(1f)
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, MedicalQrActivity::class.java))
+                    context.startActivity(Intent(context, WhoCanSeeMyDataActivity::class.java))
                 }
             }
 
@@ -331,48 +367,13 @@ fun QuickActionBottomSheet(onDismiss: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 QuickActionButtonPill(
-                    title = if (isBn) "এআই রিপোর্ট চেকার" else "AI Report Checker",
-                    icon = Icons.Default.AutoAwesome,
-                    color = Color(0xFFEC4899),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    onDismiss()
-                    context.startActivity(Intent(context, AiReportCheckerActivity::class.java))
-                }
-
-                QuickActionButtonPill(
-                    title = if (isBn) "ঔষধ রিমাইন্ডার" else "Take Medicine",
-                    icon = Icons.Default.Medication,
+                    title = if (isBn) "প্রাপ্ত নির্দেশনা" else "Received Instructions",
+                    icon = Icons.Default.ChatBubbleOutline,
                     color = Color(0xFF7C4DFF),
                     modifier = Modifier.weight(1f)
                 ) {
                     onDismiss()
-                    context.startActivity(Intent(context, MedicineReminderActivity::class.java).apply { putExtra("PROFILE_ID", 1) })
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                QuickActionButtonPill(
-                    title = if (isBn) "স্টেপ কাউন্টার" else "Step Counter",
-                    icon = Icons.AutoMirrored.Filled.DirectionsWalk,
-                    color = Color(0xFF22C55E),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    onDismiss()
-                    context.startActivity(Intent(context, StepCounterActivity::class.java).apply { putExtra("PROFILE_ID", 1) })
-                }
-
-                QuickActionButtonPill(
-                    title = if (isBn) "স্মার্ট ডায়েট" else "Smart Diet",
-                    icon = Icons.Default.LocalDining,
-                    color = Color(0xFF22C55E),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    onDismiss()
-                    context.startActivity(Intent(context, SmartDietActivity::class.java))
+                    context.startActivity(Intent(context, PatientInstructionsActivity::class.java))
                 }
             }
 
@@ -668,7 +669,7 @@ fun DashboardContent(smartInsights: List<SmartInsight>, viewModel: WellnessViewM
 
     val services = remember(cardBmi, cardBmiDesc, cardWeight, cardWeightDesc, cardProTips, cardProTipsDesc, isBn) {
         listOf(
-            InfoCardData("diet_01", if (isBn) "স্মার্ট ডায়েট ও ক্যালরি" else "Smart Diet & Calories", if (isBn) "এআই ফুড স্ক্যানার, ক্যালরি ও নিউট্রিশন ডায়েরি" else "AI food scan, calories & nutrition diary", "LocalDining", "#22C55E"),
+            InfoCardData("diet_01", if (isBn) "স্মার্ট ডায়েট ও ক্যালরি" else "Smart Diet & Calories", if (isBn) "ক্যালরি ও নিউট্রিশন ডায়েরি" else "Calories & nutrition diary", "LocalDining", "#22C55E"),
             InfoCardData("emergency_triage_01", if (isBn) "গোল্ডেন আওয়ার ইমার্জেন্সি গাইড" else "Golden Hour Emergency Guide", if (isBn) "সিপিআর, হার্ট অ্যাটাক ও রক্তক্ষরণ ফার্স্ট এইড" else "CPR, bleeding & emergency triage checklist", "MedicalServices", "#EF4444"),
             InfoCardData("bmi_01", cardBmi, cardBmiDesc, "BMI", "#A855F7"),
             InfoCardData("chart_01", cardWeight, cardWeightDesc, "BarChart", "#EC4899"),

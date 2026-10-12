@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -75,7 +76,7 @@ fun CaregiverHistoryScreen(
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val isDark = isSystemInDarkTheme()
-    val isBn = remember { Locale.getDefault().language == "bn" }
+    val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
 
     val patientName by viewModel.patientName.collectAsState()
     val selectedVital by viewModel.selectedVital.collectAsState()
@@ -100,7 +101,7 @@ fun CaregiverHistoryScreen(
                             Text(
                                 text = patientName,
                                 fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (isDark) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     },
@@ -125,7 +126,7 @@ fun CaregiverHistoryScreen(
                             text = if (isBn) "টাইপ সিলেক্ট করুন:" else "Select Vital Type:",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = if (isDark) Color.White.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
@@ -162,7 +163,11 @@ fun CaregiverHistoryScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        listOf(7 to "7 Days", 30 to "30 Days", 90 to "3 Months").forEach { (days, label) ->
+                        listOf(
+                            7 to (if (isBn) "৭ দিন" else "7 Days"),
+                            30 to (if (isBn) "৩০ দিন" else "30 Days"),
+                            90 to (if (isBn) "৩ মাস" else "3 Months")
+                        ).forEach { (days, label) ->
                             Button(
                                 onClick = {
                                     activePresetDays = days
@@ -187,7 +192,7 @@ fun CaregiverHistoryScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
                         colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E293B).copy(alpha = 0.9f) else Color.White.copy(alpha = 0.85f)),
-                        border = BorderStroke(1.dp, if (isDark) Color.White.copy(alpha = 0.15f) else Color(0xFFE2E8F0))
+                        border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
@@ -209,7 +214,7 @@ fun CaregiverHistoryScreen(
                                 Box(modifier = Modifier.fillMaxWidth().height(180.dp), contentAlignment = Alignment.Center) {
                                     Text(
                                         text = if (isBn) "কোনো রেকর্ড পাওয়া যায়নি" else "No records found for selected period",
-                                        color = Color.Gray,
+                                        color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray,
                                         fontSize = 14.sp
                                     )
                                 }
@@ -231,7 +236,7 @@ fun CaregiverHistoryScreen(
                         text = if (isBn) "📋 রেকর্ডের তালিকা (History List)" else "📋 History Records List",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = if (isDark) Color.White else Color(0xFF1A237E)
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -240,12 +245,13 @@ fun CaregiverHistoryScreen(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                            colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
+                            border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
                         ) {
                             Text(
                                 text = if (isBn) "তালিকা খালি" else "No records available",
                                 fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = if (isDark) Color.White.copy(alpha = 0.75f) else Color.DarkGray,
                                 modifier = Modifier.padding(16.dp),
                                 textAlign = TextAlign.Center
                             )

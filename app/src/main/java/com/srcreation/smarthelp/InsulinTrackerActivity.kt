@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.srcreation.smarthelp.db.AppDatabase
 import com.srcreation.smarthelp.db.InsulinEntity
 import com.srcreation.smarthelp.ui.theme.HelpsTheme
 import java.text.SimpleDateFormat
@@ -49,9 +48,11 @@ class InsulinTrackerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            HelpsTheme {
-                InsulinTrackerScreen(onBack = { finish() })
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    InsulinTrackerScreen(onBack = { finish() })
+                }
             }
         }
     }
@@ -83,7 +84,6 @@ fun getLocalizedDayTime(dayTime: String): String {
 fun InsulinTrackerScreen(viewModel: InsulinViewModel = viewModel(), onBack: () -> Unit) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
-    val prefs = remember { PreferenceManager(context) }
     val isDark = isSystemInDarkTheme()
     var glucoseLevel by rememberSaveable { mutableStateOf("") }
     var glucoseUnit by rememberSaveable { mutableStateOf("mg/dL") }
@@ -91,42 +91,10 @@ fun InsulinTrackerScreen(viewModel: InsulinViewModel = viewModel(), onBack: () -
     var insulinUnit by rememberSaveable { mutableStateOf("Units") }
     var selectedMealTime by rememberSaveable { mutableStateOf("Fasting") }
     var selectedDayTime by rememberSaveable { mutableStateOf("Morning") }
-    val db = remember { AppDatabase.getDatabase(context) }
-    val medicalId by db.medicalIdDao().getMedicalId(1).collectAsState(initial = null)
-
-    val initialName = remember(medicalId, prefs.getPatientName()) {
-        when {
-            !medicalId?.fullName.isNullOrBlank() -> medicalId!!.fullName
-            prefs.getPatientName().isNotEmpty() && prefs.getPatientName() != "Patient" -> prefs.getPatientName()
-            else -> ""
-        }
-    }
-    val initialAge = remember(medicalId, prefs.getPatientAge()) {
-        when {
-            !medicalId?.age.isNullOrBlank() -> medicalId!!.age
-            prefs.getPatientAge().isNotEmpty() -> prefs.getPatientAge()
-            else -> ""
-        }
-    }
-
-    var patientName by rememberSaveable { mutableStateOf(initialName) }
-    var patientAge by rememberSaveable { mutableStateOf(initialAge) }
     val insulinRecords by viewModel.allRecords.collectAsState(initial = emptyList())
     val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
-
-    LaunchedEffect(medicalId) {
-        if (patientName.isBlank() && !medicalId?.fullName.isNullOrBlank()) {
-            patientName = medicalId!!.fullName
-        }
-        if (patientAge.isBlank() && !medicalId?.age.isNullOrBlank()) {
-            patientAge = medicalId!!.age
-        }
-    }
-
-    LaunchedEffect(patientName, patientAge) {
-        if (patientName.isNotBlank()) prefs.setPatientName(patientName)
-        if (patientAge.isNotBlank()) prefs.setPatientAge(patientAge)
-    }
+    var recordToDelete by remember { mutableStateOf<InsulinEntity?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -143,7 +111,7 @@ fun InsulinTrackerScreen(viewModel: InsulinViewModel = viewModel(), onBack: () -
                 actions = {
                     IconButton(onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        exportInsulinToPdf(context, insulinRecords, patientName, patientAge)
+                        exportInsulinToPdf(context, insulinRecords, "", "")
                     }) {
                         Icon(Icons.Default.PictureAsPdf, contentDescription = "PDF", tint = if (isDark) Color.White else Color(0xFF1A237E))
                     }
@@ -162,54 +130,6 @@ fun InsulinTrackerScreen(viewModel: InsulinViewModel = viewModel(), onBack: () -
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Patient Name & Age Input Card for Doctor / Report
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
-                    border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        OutlinedTextField(
-                            value = patientName,
-                            onValueChange = { patientName = it },
-                            label = { Text(if (isBn) "রোগীর নাম (Patient Name)" else "Patient Name") },
-                            modifier = Modifier.weight(1.5f),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = if (isDark) Color.White else Color.Black,
-                                unfocusedTextColor = if (isDark) Color.White else Color.Black,
-                                focusedBorderColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedBorderColor = if (isDark) Color.White.copy(alpha = 0.3f) else Color.LightGray,
-                                focusedLabelColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedLabelColor = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray
-                            )
-                        )
-                        OutlinedTextField(
-                            value = patientAge,
-                            onValueChange = { patientAge = it },
-                            label = { Text(if (isBn) "বয়স (Age)" else "Age") },
-                            modifier = Modifier.weight(1f),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            shape = RoundedCornerShape(12.dp),
-                            singleLine = true,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = if (isDark) Color.White else Color.Black,
-                                unfocusedTextColor = if (isDark) Color.White else Color.Black,
-                                focusedBorderColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedBorderColor = if (isDark) Color.White.copy(alpha = 0.3f) else Color.LightGray,
-                                focusedLabelColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                                unfocusedLabelColor = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray
-                            )
-                        )
-                    }
-                }
-
                 if (insulinRecords.isNotEmpty()) {
                     AdvancedLineChart(
                         dataPoints = insulinRecords.takeLast(7).map { it.glucose.toFloatOrNull() ?: 0f },
@@ -382,18 +302,55 @@ fun InsulinTrackerScreen(viewModel: InsulinViewModel = viewModel(), onBack: () -
                 groupedRecords.forEach { (date, dailyLogs) ->
                     Text(date, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray, modifier = Modifier.padding(vertical = 8.dp))
                     dailyLogs.forEach { record ->
-                        DoctorFriendlyLogCard(record, isDark)
+                        DoctorFriendlyLogCard(record, isDark, onDelete = {
+                            recordToDelete = record
+                            showDeleteDialog = true
+                        })
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
                 Spacer(modifier = Modifier.height(40.dp))
             }
         }
+
+        if (showDeleteDialog && recordToDelete != null) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = { Text(if (isBn) "লগ ডিলিট নিশ্চিতকরণ" else "Delete Log Confirmation", fontWeight = FontWeight.Bold, color = if (isDark) Color.White else Color(0xFF1A237E)) },
+                text = {
+                    Text(
+                        if (isBn) "আপনি কি নিশ্চিত যে ${recordToDelete!!.date} (${recordToDelete!!.time}) এর ইনসুলিন/গ্লুকোজ রেকর্ডটি ডিলিট করতে চান?"
+                        else "Are you sure you want to delete the log recorded on ${recordToDelete!!.date} (${recordToDelete!!.time})?",
+                        color = if (isDark) Color.White.copy(alpha = 0.8f) else Color.DarkGray
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            viewModel.deleteRecord(recordToDelete!!)
+                            showDeleteDialog = false
+                            recordToDelete = null
+                            Toast.makeText(context, if (isBn) "রেকর্ড ডিলিট করা হয়েছে" else "Log deleted successfully", Toast.LENGTH_SHORT).show()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF4444))
+                    ) {
+                        Text(if (isBn) "ডিলিট করুন" else "Delete", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text(if (isBn) "বাতিল" else "Cancel", color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
+                    }
+                },
+                containerColor = if (isDark) Color(0xFF0F172A) else Color.White,
+                shape = RoundedCornerShape(24.dp)
+            )
+        }
     }
 }
 
 @Composable
-fun DoctorFriendlyLogCard(record: InsulinEntity, isDark: Boolean) {
+fun DoctorFriendlyLogCard(record: InsulinEntity, isDark: Boolean, onDelete: () -> Unit) {
     val glucoseValue = record.glucose.toDoubleOrNull() ?: 0.0
     val isHigh = if (record.unit == "mg/dL") glucoseValue > 140.0 else glucoseValue > 7.8
     val isLow = if (record.unit == "mg/dL") glucoseValue < 70.0 else glucoseValue < 3.9
@@ -415,7 +372,12 @@ fun DoctorFriendlyLogCard(record: InsulinEntity, isDark: Boolean) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("${getLocalizedDayTime(record.dayTime)} - ${getLocalizedMealContext(record.mealTime)}", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = if (isDark) Color.White else Color(0xFF1A237E))
                 }
-                Text(record.time, fontSize = 12.sp, color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(record.time, fontSize = 12.sp, color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
+                    IconButton(onClick = onDelete, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.Delete, contentDescription = "Delete Log", tint = Color(0xFFEF4444), modifier = Modifier.size(18.dp))
+                    }
+                }
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = if (isDark) Color(0xFF1E293B) else Color.LightGray.copy(alpha = 0.3f))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -487,18 +449,14 @@ fun exportInsulinToPdf(context: Context, records: List<InsulinEntity>, patientNa
     paint.isFakeBoldText = true
     canvas.drawText("Smart Help - Insulin & Glucose Report", 50f, 50f, paint)
 
-    paint.textSize = 13f
-    paint.isFakeBoldText = true
-    canvas.drawText("Patient Name: ${patientName.ifEmpty { "N/A" }}   |   Age: ${patientAge.ifEmpty { "N/A" }}", 50f, 78f, paint)
-
     paint.textSize = 11f
     paint.isFakeBoldText = false
     
     val timestamp = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(Date())
-    canvas.drawText("Generated on: $timestamp", 50f, 102f, paint)
-    canvas.drawLine(50f, 115f, 545f, 115f, paint)
+    canvas.drawText("Generated on: $timestamp", 50f, 78f, paint)
+    canvas.drawLine(50f, 95f, 545f, 95f, paint)
     
-    var yPos = 145f
+    var yPos = 125f
     val rowHeight = 25f
 
     // Table Header
@@ -537,12 +495,11 @@ fun exportInsulinToPdf(context: Context, records: List<InsulinEntity>, patientNa
         if (uri != null) {
             context.contentResolver.openOutputStream(uri)?.use { os ->
                 pdfDocument.writeTo(os)
+                Toast.makeText(context, "PDF saved to Downloads/SmartHelp", Toast.LENGTH_LONG).show()
             }
-            Toast.makeText(context, "PDF saved to Downloads/SmartHelp", Toast.LENGTH_LONG).show()
         }
     } catch (e: Exception) {
-        e.printStackTrace()
-        Toast.makeText(context, "Failed to save PDF", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
     } finally {
         pdfDocument.close()
     }

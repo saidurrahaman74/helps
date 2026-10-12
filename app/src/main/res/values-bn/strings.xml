@@ -499,6 +499,24 @@
     <!-- Family & Caregiver Connectivity -->
     <string name="nav_caregiver_sync">ফ্যামিলি ও কেয়ারগিভার ট্র্যাকিং</string>
     <string name="nav_link_caregiver">পরিবার বা কেয়ারগিভার লিঙ্ক করুন</string>
+
+    <!-- Local Data Owner Dialogs -->
+    <string name="owner_mismatch_title">অন্য অ্যাকাউন্টের ডেটা পাওয়া গেছে</string>
+    <string name="owner_mismatch_msg">এই ফোনের স্বাস্থ্য তথ্য অন্য অ্যাকাউন্টের সাথে যুক্ত। একটি অপশন বেছে নিন:</string>
+    <string name="btn_keep_previous">পূর্বের তথ্য রাখতে লগ আউট করুন</string>
+    <string name="btn_clear_new_user">তথ্য মুছে নতুনভাবে চালু করুন</string>
+
+    <string name="owner_unset_title">পুরানো স্বাস্থ্য তথ্য পাওয়া গেছে</string>
+    <string name="owner_unset_msg">এই ফোনে %1$d টি স্বাস্থ্য তথ্য রয়েছে (সর্বশেষ: %2$s)। এগুলো কি আপনার?</string>
+    <string name="btn_data_is_mine">হ্যাঁ, এগুলো আমার তথ্য</string>
+    <string name="btn_belongs_to_other">না, লগ আউট করুন</string>
+    <string name="btn_clear_start_fresh">না, মুছে নতুন করে শুরু করুন</string>
+
+    <string name="confirm_clear_title">তথ্য মোছার নিশ্চয়তা</string>
+    <string name="confirm_clear_msg">সতর্কতা: %1$d টি অ-সিঙ্ককৃত তথ্য স্থায়ীভাবে মুছে যাবে। আপনি কি নিশ্চিত?</string>
+    <string name="confirm_clear_cloud_note">ক্লাউডে ইতোমধ্যে সিঙ্ক হওয়া আপনার ডেটা মুছে যাবে না।</string>
+    <string name="btn_clear_confirm">মুছে নতুন করে শুরু করুন</string>
+    <string name="btn_cancel">বাতিল</string>
     <string name="caregiver_sync_card_title">ফ্যামিলি সিঙ্ক</string>
     <string name="caregiver_sync_card_desc">মেডিসিন ট্র্যাকিং ও এলার্ট</string>
     <string name="pairing_screen_title">ফ্যামিলি ও কেয়ারগিভার পেয়ারিং</string>
@@ -579,7 +597,7 @@
     <string name="pill_box_title">💊 দৈনিক ভিজ্যুয়াল ঔষধ সময়সূচী</string>
     <string name="slot_morning">☀️ সকাল (সকাল ৮:০০)</string>
     <string name="slot_noon">🌤️ দুপুর (দুপুর ২:০০)</string>
-    <string name="slot_evening">⛅ বিকাল (সন্ধ্যা ৬:০০)</string>
+    <string name="slot_evening">⛅ রাত (রাত ৮:০০)</string>
     <string name="slot_night">🌙 রাত (রাত ১০:০০)</string>
     <string name="btn_mark_slot_taken">✓ বেলার ওষুধ সেবন সম্পন্ন</string>
     <string name="slot_completed">🟢 এই বেলার সব ওষুধ খাওয়া হয়েছে</string>

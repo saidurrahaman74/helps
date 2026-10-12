@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.srcreation.smarthelp.ui.theme.HelpsTheme
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -40,9 +41,12 @@ class WomenCareActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         enableEdgeToEdge()
-        setContent {
-            HelpsTheme {
-                WomenCareScreen(onBack = { finish() })
+
+        ActivityGateHelper.checkGateAndRender(this) {
+            setContent {
+                HelpsTheme {
+                    WomenCareScreen(onBack = { finish() })
+                }
             }
         }
     }

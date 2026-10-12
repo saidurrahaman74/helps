@@ -33,7 +33,7 @@ interface MedicineDao {
     suspend fun updateMedicine(medicine: MedicineEntity)
 
     @Delete
-    suspend fun deleteMedicine(medicine: MedicineEntity)
+    suspend fun deleteMedicineInternal(medicine: MedicineEntity)
 
     @Query("DELETE FROM medicine_reminders WHERE profileId = :profileId")
     suspend fun deleteByProfile(profileId: Int)
@@ -61,6 +61,21 @@ interface MedicineDoseDao {
 
     @Query("UPDATE medicine_doses SET synced = 1 WHERE id = :id")
     suspend fun markSynced(id: String)
+
+    @Query("DELETE FROM medicine_doses WHERE medicineId = :medicineId")
+    suspend fun deleteDosesByMedicineIdInternal(medicineId: String)
+}
+
+@Dao
+interface PendingDeletionDao {
+    @Query("SELECT * FROM pending_deletions")
+    suspend fun getAllPendingDeletions(): List<PendingDeletionEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(pending: PendingDeletionEntity)
+
+    @Delete
+    suspend fun delete(pending: PendingDeletionEntity)
 }
 
 @Dao
@@ -78,7 +93,7 @@ interface BpDao {
     suspend fun insertAll(records: List<BpEntity>)
 
     @Delete
-    suspend fun deleteRecord(record: BpEntity)
+    suspend fun deleteBpInternal(record: BpEntity)
 
     @Query("DELETE FROM bp_records WHERE profileId = :profileId")
     suspend fun deleteByProfile(profileId: Int)
@@ -105,7 +120,7 @@ interface InsulinDao {
     suspend fun insertAll(records: List<InsulinEntity>)
 
     @Delete
-    suspend fun deleteRecord(record: InsulinEntity)
+    suspend fun deleteInsulinInternal(record: InsulinEntity)
 
     @Query("DELETE FROM insulin_records WHERE profileId = :profileId")
     suspend fun deleteByProfile(profileId: Int)
@@ -395,6 +410,12 @@ interface IoDao {
     @Query("SELECT * FROM io_records WHERE profileId = :profileId AND date = :date")
     fun getRecordsByDate(profileId: Int, date: String): Flow<List<IoRecordEntity>>
 
+    @Query("SELECT * FROM io_records LIMIT 1")
+    suspend fun getAnyRecord(): List<IoRecordEntity>
+
+    @Query("SELECT * FROM io_records")
+    suspend fun getFullIoList(): List<IoRecordEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecord(record: IoRecordEntity)
 
@@ -410,6 +431,9 @@ interface GyneDao {
     @Query("SELECT * FROM gyne_profiles WHERE profileId = :profileId")
     fun getGyneProfile(profileId: Int): Flow<GyneProfileEntity?>
 
+    @Query("SELECT * FROM gyne_profiles")
+    suspend fun getFullGyneList(): List<GyneProfileEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveGyneProfile(profile: GyneProfileEntity)
 
@@ -421,6 +445,9 @@ interface GyneDao {
 
     @Query("SELECT * FROM pregnancy_kick_logs WHERE profileId = :profileId ORDER BY id DESC")
     fun getAllKicks(profileId: Int): Flow<List<KickLogEntity>>
+
+    @Query("SELECT * FROM pregnancy_kick_logs")
+    suspend fun getFullKickList(): List<KickLogEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertKick(kick: KickLogEntity)
@@ -446,11 +473,14 @@ interface TempDao {
     @Query("SELECT * FROM temp_records WHERE profileId = :profileId ORDER BY id DESC")
     fun getAllRecords(profileId: Int): Flow<List<TempEntity>>
 
+    @Query("SELECT * FROM temp_records")
+    suspend fun getFullTempList(): List<TempEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecord(record: TempEntity)
 
     @Delete
-    suspend fun deleteRecord(record: TempEntity)
+    suspend fun deleteTempInternal(record: TempEntity)
 
     @Query("DELETE FROM temp_records WHERE profileId = :profileId")
     suspend fun deleteByProfile(profileId: Int)
@@ -467,6 +497,9 @@ interface LabDao {
     @Query("SELECT * FROM lab_records WHERE profileId = :profileId ORDER BY id DESC")
     fun getAllRecords(profileId: Int): Flow<List<LabRecordEntity>>
 
+    @Query("SELECT * FROM lab_records")
+    suspend fun getFullLabList(): List<LabRecordEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecord(record: LabRecordEntity)
 
@@ -482,11 +515,14 @@ interface PulseDao {
     @Query("SELECT * FROM pulse_records WHERE profileId = :profileId ORDER BY id DESC")
     fun getAllRecords(profileId: Int): Flow<List<PulseEntity>>
 
+    @Query("SELECT * FROM pulse_records")
+    suspend fun getFullPulseList(): List<PulseEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecord(record: PulseEntity)
 
     @Delete
-    suspend fun deleteRecord(record: PulseEntity)
+    suspend fun deletePulseInternal(record: PulseEntity)
 
     @Query("DELETE FROM pulse_records WHERE profileId = :profileId")
     suspend fun deleteByProfile(profileId: Int)
@@ -503,11 +539,14 @@ interface SpO2Dao {
     @Query("SELECT * FROM spo2_records WHERE profileId = :profileId ORDER BY id DESC")
     fun getAllRecords(profileId: Int): Flow<List<SpO2Entity>>
 
+    @Query("SELECT * FROM spo2_records")
+    suspend fun getFullSpO2List(): List<SpO2Entity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecord(record: SpO2Entity)
 
     @Delete
-    suspend fun deleteRecord(record: SpO2Entity)
+    suspend fun deleteSpO2Internal(record: SpO2Entity)
 
     @Query("DELETE FROM spo2_records WHERE profileId = :profileId")
     suspend fun deleteByProfile(profileId: Int)
@@ -535,6 +574,9 @@ interface ProfileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProfile(profile: ProfileEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertProfileIgnore(profile: ProfileEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllProfiles(profiles: List<ProfileEntity>)
@@ -572,10 +614,11 @@ interface ProfileDao {
         DietFoodEntity::class,
         MealEntity::class,
         MealFoodItemEntity::class,
-        UserDietProfileEntity::class
+        UserDietProfileEntity::class,
+        PendingDeletionEntity::class
     ], 
-    version = 29, 
-    exportSchema = false
+    version = 31, 
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
@@ -600,6 +643,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun pulseDao(): PulseDao
     abstract fun spo2Dao(): SpO2Dao
     abstract fun dietDao(): DietDao
+    abstract fun pendingDeletionDao(): PendingDeletionDao
 
     companion object {
         val MIGRATION_27_28 = object : Migration(27, 28) {
@@ -654,6 +698,18 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_29_30 = object : Migration(29, 30) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `pending_deletions` (`id` TEXT NOT NULL, `ownerUid` TEXT NOT NULL, `kind` TEXT NOT NULL, `docId` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+            }
+        }
+
+        val MIGRATION_30_31 = object : Migration(30, 31) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE IF NOT EXISTS `pending_deletions` (`id` TEXT NOT NULL, `ownerUid` TEXT NOT NULL, `kind` TEXT NOT NULL, `docId` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -664,7 +720,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "smart_help_database"
                 )
-                .addMigrations(MIGRATION_27_28, MIGRATION_28_29)
+                .addMigrations(MIGRATION_27_28, MIGRATION_28_29, MIGRATION_29_30, MIGRATION_30_31)
                 .build()
                 INSTANCE = instance
                 instance

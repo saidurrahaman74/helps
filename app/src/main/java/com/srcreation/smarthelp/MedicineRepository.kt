@@ -1,12 +1,15 @@
 package com.srcreation.smarthelp
 
 import android.content.Context
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.srcreation.smarthelp.db.AppDatabase
 import com.srcreation.smarthelp.db.MedicineDoseEntity
 import com.srcreation.smarthelp.db.MedicineEntity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -75,8 +78,19 @@ class MedicineRepository(private val context: Context) {
         )
         doseDao.insertDose(doseEntity)
 
-        val syncRepo = SyncRepository(context)
-        syncRepo.syncAllUnsynced()
-        SyncWorker.enqueue(context)
+        val isBlocked = LocalDataOwnership.isOwnershipBlocked(context)
+        if (!isBlocked) {
+            val syncRepo = SyncRepository(context)
+            syncRepo.syncAllUnsynced()
+            SyncWorker.enqueue(context)
+        } else {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "Saved on this phone. Open the app to confirm which account this phone belongs to.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
     }
 }

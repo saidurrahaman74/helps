@@ -54,7 +54,7 @@ class BpViewModel(application: Application, savedStateHandle: SavedStateHandle) 
 
     fun deleteRecord(record: BpEntity) {
         viewModelScope.launch {
-            bpDao.deleteRecord(record)
+            DeletionSync.deleteBp(getApplication(), record)
         }
     }
 }

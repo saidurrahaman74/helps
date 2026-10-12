@@ -17,9 +17,23 @@ data class LinkedPatientInfo(
     val pairingCode: String = ""
 )
 
-class PreferenceManager(context: Context) {
+class PreferenceManager(private val context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("smart_help_prefs", Context.MODE_PRIVATE)
+
+    fun getInstallId(): String {
+        val installPrefs = context.getSharedPreferences("smart_help_install_prefs", Context.MODE_PRIVATE)
+        var id = installPrefs.getString("install_id", null)
+        if (id.isNullOrBlank()) {
+            id = java.util.UUID.randomUUID().toString()
+            installPrefs.edit().putString("install_id", id).apply()
+        }
+        return id!!
+    }
+
+    fun getLocalDataOwnerUid(): String? = sharedPreferences.getString("local_data_owner_uid", null)
+    fun getLocalDataOwnerUidInternal(): String? = sharedPreferences.getString("local_data_owner_uid", null)
+    internal fun setLocalDataOwnerUidInternal(uid: String) = sharedPreferences.edit().putString("local_data_owner_uid", uid).apply()
 
     fun setUnitSystem(isMetric: Boolean) {
         sharedPreferences.edit().putBoolean("is_metric", isMetric).apply()
@@ -267,5 +281,34 @@ class PreferenceManager(context: Context) {
                 onComplete()
             }
         }
+    }
+
+    private fun getUidPrefix(): String {
+        val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "anonymous"
+        return "u_${uid}_"
+    }
+
+    fun isAlertChecksEnabled(): Boolean {
+        return sharedPreferences.getBoolean("${getUidPrefix()}alert_checks_enabled", true)
+    }
+
+    fun setAlertChecksEnabled(enabled: Boolean) {
+        sharedPreferences.edit().putBoolean("${getUidPrefix()}alert_checks_enabled", enabled).apply()
+    }
+
+    fun getLastCheckedTimestamp(patientId: String): Long {
+        return sharedPreferences.getLong("${getUidPrefix()}last_checked_ts_$patientId", 0L)
+    }
+
+    fun setLastCheckedTimestamp(patientId: String, timestamp: Long) {
+        sharedPreferences.edit().putLong("${getUidPrefix()}last_checked_ts_$patientId", timestamp).apply()
+    }
+
+    fun isAlreadyNotified(eventId: String): Boolean {
+        return sharedPreferences.getBoolean("${getUidPrefix()}notified_$eventId", false)
+    }
+
+    fun markNotified(eventId: String) {
+        sharedPreferences.edit().putBoolean("${getUidPrefix()}notified_$eventId", true).apply()
     }
 }

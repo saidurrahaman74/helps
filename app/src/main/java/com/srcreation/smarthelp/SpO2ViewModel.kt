@@ -53,13 +53,16 @@ class SpO2ViewModel(application: Application, savedStateHandle: SavedStateHandle
 
     fun deleteRecord(record: SpO2Entity) {
         viewModelScope.launch {
-            spo2Dao.deleteRecord(record)
+            DeletionSync.deleteSpO2(getApplication(), record)
         }
     }
 
     fun clearAllRecords(onCleared: () -> Unit) {
         viewModelScope.launch {
-            spo2Dao.deleteByProfile(profileId)
+            val list = spo2Dao.getFullSpO2List().filter { it.profileId == profileId }
+            for (record in list) {
+                DeletionSync.deleteSpO2(getApplication(), record)
+            }
             onCleared()
         }
     }

@@ -32,7 +32,6 @@ class SignupActivity : AppCompatActivity() {
             val name = binding.etName.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
             val pass = binding.etPassword.text.toString().trim()
-            val role = if (binding.rbCaregiver.isChecked) "caregiver" else "patient"
 
             if (name.isEmpty() || email.isEmpty() || pass.isEmpty()) {
                 val msg = if (isBangla) "অনুগ্রহ করে সব তথ্য দিন" else "Please fill in all fields"
@@ -48,7 +47,7 @@ class SignupActivity : AppCompatActivity() {
 
             setLoading(true)
             lifecycleScope.launch {
-                val result = authRepo.signUp(email, pass, name, role)
+                val result = authRepo.signUp(email, pass, name, "user")
                 setLoading(false)
                 if (result.isSuccess) {
                     com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
@@ -56,11 +55,7 @@ class SignupActivity : AppCompatActivity() {
                     }
                     val msg = if (isBangla) "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!" else "Account created successfully!"
                     Toast.makeText(this@SignupActivity, msg, Toast.LENGTH_SHORT).show()
-                    val intent = if (role == "caregiver") {
-                        Intent(this@SignupActivity, CaregiverDashboardActivity::class.java)
-                    } else {
-                        Intent(this@SignupActivity, MainActivity::class.java)
-                    }.apply {
+                    val intent = Intent(this@SignupActivity, MainActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                     startActivity(intent)
@@ -84,9 +79,6 @@ class SignupActivity : AppCompatActivity() {
             binding.tilName.hint = "সম্পূর্ণ নাম"
             binding.tilEmail.hint = "ইমেইল ঠিকানা"
             binding.tilPassword.hint = "পাসওয়ার্ড"
-            binding.tvRoleLabel.text = "ভূমিকা নির্বাচন করুন:"
-            binding.rbPatient.text = "রোগী"
-            binding.rbCaregiver.text = "কেয়ারগিভার"
             binding.btnSignup.text = "সাইন আপ"
             binding.tvToLogin.text = "ইতিমধ্যে একটি অ্যাকাউন্ট আছে? লগইন করুন"
         } else {
@@ -95,9 +87,6 @@ class SignupActivity : AppCompatActivity() {
             binding.tilName.hint = "Full Name"
             binding.tilEmail.hint = "Email Address"
             binding.tilPassword.hint = "Password"
-            binding.tvRoleLabel.text = "Select Role:"
-            binding.rbPatient.text = "Patient"
-            binding.rbCaregiver.text = "Caregiver"
             binding.btnSignup.text = "Sign Up"
             binding.tvToLogin.text = "Already have an account? Login"
         }

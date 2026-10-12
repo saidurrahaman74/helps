@@ -54,12 +54,13 @@
         </activity>
         <activity android:name=".SignupActivity" android:exported="true" />
         <activity android:name=".CaregiverDashboardActivity" android:exported="true" />
-        <activity android:name=".LinkPatientActivity" android:exported="false" />
+        <activity android:name=".LinkPatientActivity" android:exported="true" />
         <activity android:name=".PatientPairingActivity" android:exported="true" />
         <activity android:name=".CaregiverLinkActivity" android:exported="true" />
         <activity android:name=".CaregiverHistoryActivity" android:exported="true" />
         <activity android:name=".CaregiverInstructionsActivity" android:exported="true" />
         <activity android:name=".PatientInstructionsActivity" android:exported="true" />
+        <activity android:name=".WhoCanSeeMyDataActivity" android:exported="true" />
 
         <activity
             android:name=".MainActivity"
@@ -68,100 +69,101 @@
             android:theme="@style/Theme.Helps"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".SeizureActivity" />
-        <activity android:name=".AnimalBiteActivity" />
-        <activity android:name=".EyeInjuryActivity" />
-        <activity android:name=".DrowningActivity" />
-        <activity android:name=".AsthmaActivity" />
-        <activity android:name=".InsectStingActivity" />
-        <activity android:name=".AnaphylaxisActivity" />
-        <activity android:name=".FluidTrackerActivity" />
-        <activity android:name=".AppointmentActivity" />
-        <activity android:name=".PrescriptionScannerActivity" />
-        <activity android:name=".NurseHubActivity" />
-        <activity android:name=".NurseIdActivity" />
-        <activity android:name=".DutyRosterActivity" />
+        <activity android:name=".HomeActivity" android:exported="true" />
+        <activity android:name=".SeizureActivity" android:exported="true" />
+        <activity android:name=".AnimalBiteActivity" android:exported="true" />
+        <activity android:name=".EyeInjuryActivity" android:exported="true" />
+        <activity android:name=".DrowningActivity" android:exported="true" />
+        <activity android:name=".AsthmaActivity" android:exported="true" />
+        <activity android:name=".InsectStingActivity" android:exported="true" />
+        <activity android:name=".AnaphylaxisActivity" android:exported="true" />
+        <activity android:name=".FluidTrackerActivity" android:exported="true" />
+        <activity android:name=".AppointmentActivity" android:exported="true" />
+        <activity android:name=".PrescriptionScannerActivity" android:exported="true" />
+        <activity android:name=".NurseHubActivity" android:exported="true" />
+        <activity android:name=".NurseIdActivity" android:exported="true" />
+        <activity android:name=".DutyRosterActivity" android:exported="true" />
 
-        <activity android:name=".HandoverActivity" />
-        <activity android:name=".NurseDoseActivity" />
-        <activity android:name=".MedicalAbbreviationActivity" />
-        <activity android:name=".IvFluidCalculatorActivity" />
-        <activity android:name=".LabValuesActivity" />
-        <activity android:name=".NurseGcsActivity" />
-        <activity android:name=".NurseApgarActivity" />
-        <activity android:name=".NurseBsaActivity" />
-        <activity android:name=".NurseOxygenActivity" />
-        <activity android:name=".NurseBradenActivity" />
-        <activity android:name=".NurseBurnActivity" />
-        <activity android:name=".NurseIcuActivity" />
-        <activity android:name=".NurseUnitConverterActivity" />
-        <activity android:name=".CategoryActivity" />
-        <activity android:name=".BmiToolActivity" />
-        <activity android:name=".BpTrackerActivity" />
-        <activity android:name=".PulseTrackerActivity" />
-        <activity android:name=".SpO2TrackerActivity" />
-        <activity android:name=".StepCounterActivity" />
-        <activity android:name=".InsulinTrackerActivity" />
-        <activity android:name=".PeriodTrackerActivity" />
-        <activity android:name=".MedicineReminderActivity" />
-        <activity android:name=".MedicineAlarmActivity" android:showOnLockScreen="true" android:turnScreenOn="true" android:exported="false" />
-        <activity android:name=".VaccineActivity" />
-        <activity android:name=".ContentDisplayActivity" />
-        <activity android:name=".ProTipsActivity" />
-        <activity android:name=".NotificationActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".WeightChartActivity" />
-        <activity android:name=".WomenCareActivity" />
-        <activity android:name=".PregnancyActivity" />
-        <activity android:name=".GyneProfileActivity" />
-        <activity android:name=".HealthDashboardActivity" />
-        <activity android:name=".HospitalDetailActivity" />
-        <activity android:name=".MedicalVaultActivity" />
-        <activity android:name=".MedicalIdActivity" />
-        <activity android:name=".NursePainScaleActivity" />
-        <activity android:name=".NurseEcgGuideActivity" />
-        <activity android:name=".NurseIoActivity" />
-        <activity android:name=".NurseDrugDilutionActivity" />
-        <activity android:name=".NurseDictionaryActivity" />
-        <activity android:name=".MedicalEncyclopediaActivity" />
+        <activity android:name=".HandoverActivity" android:exported="true" />
+        <activity android:name=".NurseDoseActivity" android:exported="true" />
+        <activity android:name=".MedicalAbbreviationActivity" android:exported="true" />
+        <activity android:name=".IvFluidCalculatorActivity" android:exported="true" />
+        <activity android:name=".LabValuesActivity" android:exported="true" />
+        <activity android:name=".NurseGcsActivity" android:exported="true" />
+        <activity android:name=".NurseApgarActivity" android:exported="true" />
+        <activity android:name=".NurseBsaActivity" android:exported="true" />
+        <activity android:name=".NurseOxygenActivity" android:exported="true" />
+        <activity android:name=".NurseBradenActivity" android:exported="true" />
+        <activity android:name=".NurseBurnActivity" android:exported="true" />
+        <activity android:name=".NurseIcuActivity" android:exported="true" />
+        <activity android:name=".NurseUnitConverterActivity" android:exported="true" />
+        <activity android:name=".CategoryActivity" android:exported="true" />
+        <activity android:name=".BmiToolActivity" android:exported="true" />
+        <activity android:name=".BpTrackerActivity" android:exported="true" />
+        <activity android:name=".PulseTrackerActivity" android:exported="true" />
+        <activity android:name=".SpO2TrackerActivity" android:exported="true" />
+        <activity android:name=".StepCounterActivity" android:exported="true" />
+        <activity android:name=".InsulinTrackerActivity" android:exported="true" />
+        <activity android:name=".PeriodTrackerActivity" android:exported="true" />
+        <activity android:name=".MedicineReminderActivity" android:exported="true" />
+        <activity android:name=".MedicineAlarmActivity" android:showOnLockScreen="true" android:turnScreenOn="true" android:exported="true" />
+        <activity android:name=".VaccineActivity" android:exported="true" />
+        <activity android:name=".ContentDisplayActivity" android:exported="true" />
+        <activity android:name=".ProTipsActivity" android:exported="true" />
+        <activity android:name=".NotificationActivity" android:exported="true" />
+        <activity android:name=".SearchActivity" android:exported="true" />
+        <activity android:name=".SettingsActivity" android:exported="true" />
+        <activity android:name=".WeightChartActivity" android:exported="true" />
+        <activity android:name=".WomenCareActivity" android:exported="true" />
+        <activity android:name=".PregnancyActivity" android:exported="true" />
+        <activity android:name=".GyneProfileActivity" android:exported="true" />
+        <activity android:name=".HealthDashboardActivity" android:exported="true" />
+        <activity android:name=".HospitalDetailActivity" android:exported="true" />
+        <activity android:name=".MedicalVaultActivity" android:exported="true" />
+        <activity android:name=".MedicalIdActivity" android:exported="true" />
+        <activity android:name=".NursePainScaleActivity" android:exported="true" />
+        <activity android:name=".NurseEcgGuideActivity" android:exported="true" />
+        <activity android:name=".NurseIoActivity" android:exported="true" />
+        <activity android:name=".NurseDrugDilutionActivity" android:exported="true" />
+        <activity android:name=".NurseDictionaryActivity" android:exported="true" />
+        <activity android:name=".MedicalEncyclopediaActivity" android:exported="true" />
+        <activity android:name=".ImagingGuideActivity" android:exported="true" />
         <activity
             android:name=".PeriodAlarmActivity"
             android:showOnLockScreen="true"
             android:turnScreenOn="true"
-            android:exported="false" />
-        <activity android:name=".FallTriggerActivity" android:theme="@style/Theme.Helps" android:exported="false" />
+            android:exported="true" />
+        <activity android:name=".FallTriggerActivity" android:theme="@style/Theme.Helps" android:exported="true" />
 
         <service
             android:name=".FallDetectionService"
             android:foregroundServiceType="health"
             android:exported="false" />
 
-        <activity android:name=".UnifiedReportActivity" />
-        <activity android:name=".WoundsActivity" />
-        <activity android:name=".BurnsActivity" />
-        <activity android:name=".CprGuideActivity" />
-        <activity android:name=".FracturesActivity" />
-        <activity android:name=".PoisoningActivity" />
-        <activity android:name=".ChokingActivity" />
-        <activity android:name=".ElectricShockActivity" />
-        <activity android:name=".SnakeBiteActivity" />
-        <activity android:name=".HeatStrokeActivity" />
-        <activity android:name=".HeatExhaustionActivity" />
-        <activity android:name=".FaintingActivity" />
-        <activity android:name=".HeartAttackActivity" />
-        <activity android:name=".BleedingActivity" />
-        <activity android:name=".InsulinCalculatorActivity" />
-        <activity android:name=".HealthConnectActivity" />
-        <activity android:name=".MedicalQrActivity" />
-        <activity android:name=".TempTrackerActivity" />
-        <activity android:name=".CaregiverPairingActivity" />
-        <activity android:name=".SmartDietActivity" />
-        <activity android:name=".FoodScannerActivity" />
-        <activity android:name=".ManualFoodEntryActivity" />
-        <activity android:name=".DietHistoryActivity" />
-        <activity android:name=".MedicationInteractionActivity" />
+        <activity android:name=".UnifiedReportActivity" android:exported="true" />
+        <activity android:name=".WoundsActivity" android:exported="true" />
+        <activity android:name=".BurnsActivity" android:exported="true" />
+        <activity android:name=".CprGuideActivity" android:exported="true" />
+        <activity android:name=".FracturesActivity" android:exported="true" />
+        <activity android:name=".PoisoningActivity" android:exported="true" />
+        <activity android:name=".ChokingActivity" android:exported="true" />
+        <activity android:name=".ElectricShockActivity" android:exported="true" />
+        <activity android:name=".SnakeBiteActivity" android:exported="true" />
+        <activity android:name=".HeatStrokeActivity" android:exported="true" />
+        <activity android:name=".HeatExhaustionActivity" android:exported="true" />
+        <activity android:name=".FaintingActivity" android:exported="true" />
+        <activity android:name=".HeartAttackActivity" android:exported="true" />
+        <activity android:name=".BleedingActivity" android:exported="true" />
+        <activity android:name=".InsulinCalculatorActivity" android:exported="true" />
+        <activity android:name=".HealthConnectActivity" android:exported="true" />
+        <activity android:name=".MedicalQrActivity" android:exported="true" />
+        <activity android:name=".TempTrackerActivity" android:exported="true" />
+        <activity android:name=".CaregiverPairingActivity" android:exported="true" />
+        <activity android:name=".SmartDietActivity" android:exported="true" />
+        <activity android:name=".FoodScannerActivity" android:exported="true" />
+        <activity android:name=".ManualFoodEntryActivity" android:exported="true" />
+        <activity android:name=".DietHistoryActivity" android:exported="true" />
+        <activity android:name=".MedicationInteractionActivity" android:exported="true" />
 
         <service
             android:name=".HelpsFirebaseMessagingService"
@@ -188,8 +190,8 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.QUOKBOOT_POWERON" />
+                <action android:name="android.intent.action.HTK_INTENT_ACTION_QUICKBOOT_POWERON" />
                 <action android:name="android.intent.action.REBOOT" />
             </intent-filter>
         </receiver>
@@ -202,7 +204,7 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.srcreation.smarthelp.ACTION_TAKE_MEDICINE" />
-                <action android:name="com.srcreation.smarthelp.ACTION_REFRESH_WIDGET" />
+                <action android:name="com.srcreation.smarthelp.ACTION_REF_WIDGET" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

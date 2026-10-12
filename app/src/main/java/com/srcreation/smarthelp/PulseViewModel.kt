@@ -52,13 +52,16 @@ class PulseViewModel(application: Application, savedStateHandle: SavedStateHandl
 
     fun deleteRecord(record: PulseEntity) {
         viewModelScope.launch {
-            pulseDao.deleteRecord(record)
+            DeletionSync.deletePulse(getApplication(), record)
         }
     }
 
     fun clearAllRecords(onCleared: () -> Unit) {
         viewModelScope.launch {
-            pulseDao.deleteByProfile(profileId)
+            val list = pulseDao.getFullPulseList().filter { it.profileId == profileId }
+            for (record in list) {
+                DeletionSync.deletePulse(getApplication(), record)
+            }
             onCleared()
         }
     }

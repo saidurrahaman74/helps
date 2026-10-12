@@ -499,6 +499,24 @@
     <!-- Family & Caregiver Connectivity -->
     <string name="nav_caregiver_sync">Family &amp; Caregiver Tracking</string>
     <string name="nav_link_caregiver">Link Family Member / Caregiver</string>
+
+    <!-- Local Data Owner Dialogs -->
+    <string name="owner_mismatch_title">Account Mismatch</string>
+    <string name="owner_mismatch_msg">The health data on this phone belongs to another account. Choose an option:</string>
+    <string name="btn_keep_previous">Log Out to Keep Previous Data</string>
+    <string name="btn_clear_new_user">Clear Local Data &amp; Continue</string>
+
+    <string name="owner_unset_title">Existing Health Records Found</string>
+    <string name="owner_unset_msg">This phone already has %1$d health records (newest: %2$s). Are these records yours?</string>
+    <string name="btn_data_is_mine">Yes, This Data Is Mine</string>
+    <string name="btn_belongs_to_other">No, Log Out</string>
+    <string name="btn_clear_start_fresh">No, Clear &amp; Start Fresh</string>
+
+    <string name="confirm_clear_title">Confirm Clear Data</string>
+    <string name="confirm_clear_msg">Warning: %1$d unsynced records will be permanently deleted. Are you sure?</string>
+    <string name="confirm_clear_cloud_note">Your data already synced to the cloud will not be deleted.</string>
+    <string name="btn_clear_confirm">Clear &amp; Start Fresh</string>
+    <string name="btn_cancel">Cancel</string>
     <string name="caregiver_sync_card_title">Family Sync</string>
     <string name="caregiver_sync_card_desc">Medicine Tracking &amp; Alerts</string>
     <string name="pairing_screen_title">Family &amp; Caregiver Pairing</string>
@@ -578,7 +596,7 @@
     <string name="pill_box_title">💊 Daily Visual Pill Box Schedule</string>
     <string name="slot_morning">☀️ Morning (8:00 AM)</string>
     <string name="slot_noon">🌤️ Noon (2:00 PM)</string>
-    <string name="slot_evening">⛅ Evening (6:00 PM)</string>
+    <string name="slot_evening">⛅ Evening (8:00 PM)</string>
     <string name="slot_night">🌙 Night (10:00 PM)</string>
     <string name="btn_mark_slot_taken">✓ Mark Slot Taken</string>
     <string name="slot_completed">🟢 All medicines taken for this slot</string>

@@ -5,6 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
+import com.srcreation.smarthelp.db.AppDatabase
+import androidx.work.OneTimeWorkRequestBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -68,6 +72,8 @@ fun SettingsScreen(onBack: () -> Unit) {
     val prefManager = remember { PreferenceManager(context) }
     
     var showDeleteConfirm by remember { mutableStateOf(false) }
+    var showFinalClearConfirm by remember { mutableStateOf(false) }
+    var unsyncedCountState by remember { mutableIntStateOf(0) }
     var showAboutDialog by remember { mutableStateOf(false) }
     var showDisclaimerDialog by remember { mutableStateOf(false) }
     var showWidgetGuideDialog by remember { mutableStateOf(false) }
@@ -170,6 +176,62 @@ fun SettingsScreen(onBack: () -> Unit) {
                         showBatteryDialog = true
                     }
                     
+                    SettingsSection(if (Locale.getDefault().language == "bn") "ব্যাকগ্রাউন্ড চেক" else "Background Checks")
+                    var alertChecksEnabled by remember { mutableStateOf(PreferenceManager(context).isAlertChecksEnabled()) }
+                    SettingsToggleItem(
+                        title = if (Locale.getDefault().language == "bn") "অ্যালার্ট চেক (Alert Checks)" else "Alert checks",
+                        icon = Icons.Default.NotificationsActive,
+                        checked = alertChecksEnabled
+                    ) { enabled ->
+                        alertChecksEnabled = enabled
+                        PreferenceManager(context).setAlertChecksEnabled(enabled)
+                        if (enabled) {
+                            BackgroundCheckScheduler.scheduleWorkers(context)
+                        } else {
+                            BackgroundCheckScheduler.cancelWorkers(context)
+                        }
+                    }
+                    Text(
+                        text = if (Locale.getDefault().language == "bn")
+                            "চেকগুলো প্রতি ১৫ মিনিটে চলে, ব্যাটারি সেভারের কারণে দেরি হতে পারে বা বাদ পড়তে পারে, এবং জরুরি অবস্থায় এগুলোর উপর নির্ভর করা যাবে না।"
+                        else
+                            "Checks run about every 15 minutes, can be delayed or skipped by battery saver, and must not be relied on in an emergency.",
+                        fontSize = 11.sp,
+                        color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+                    OutlinedButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            BatteryOptimizationHelper.openBatteryOptimizationSettings(context)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.BatteryChargingFull, null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(if (Locale.getDefault().language == "bn") "ব্যাকগ্রাউন্ড অ্যাক্টিভিটি অনুমোদন করুন" else "Allow background activity")
+                    }
+
+                    if (BuildConfig.DEBUG) {
+                        Button(
+                            onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                val workRequest1 = OneTimeWorkRequestBuilder<CaregiverCheckWorker>().build()
+                                val workRequest2 = OneTimeWorkRequestBuilder<PatientCheckWorker>().build()
+                                androidx.work.WorkManager.getInstance(context).enqueue(listOf(workRequest1, workRequest2))
+                                Toast.makeText(context, "Enqueued debug background check workers", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981))
+                        ) {
+                            Icon(Icons.Default.PlayArrow, null)
+                            Spacer(Modifier.width(8.dp))
+                            Text("Run alert check now (Debug)")
+                        }
+                    }
+
                     SettingsSection(stringResource(id = R.string.settings_security))
                     SettingsItem(
                         title = stringResource(id = R.string.settings_app_lock),
@@ -190,6 +252,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                         title = if (Locale.getDefault().language == "bn") "লগআউট (Logout)" else "Logout",
                         icon = Icons.Default.Logout
                     ) {
+                        BackgroundCheckScheduler.cancelWorkers(context)
                         AuthRepository().logout()
                         val intent = Intent(context, LoginActivity::class.java).apply {
                             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -208,11 +271,25 @@ fun SettingsScreen(onBack: () -> Unit) {
                     }
                     
                     SettingsItem(
-                        title = stringResource(id = R.string.delete_all_data),
+                        title = if (Locale.getDefault().language == "bn") "এই ফোনের তথ্য মুছে ফেলুন" else "Clear this phone's data",
                         icon = Icons.Default.DeleteForever,
                         subtitle = "Irreversible action"
                     ) {
-                        showDeleteConfirm = true
+                        val db = AppDatabase.getDatabase(context)
+                        scope.launch(Dispatchers.IO) {
+                            val count = db.bpDao().getUnsyncedRecords().size +
+                                    db.insulinDao().getUnsyncedRecords().size +
+                                    db.stepDao().getUnsyncedRecords().size +
+                                    db.tempDao().getUnsyncedRecords().size +
+                                    db.pulseDao().getUnsyncedRecords().size +
+                                    db.spo2Dao().getUnsyncedRecords().size +
+                                    db.medicineDao().getUnsyncedMedicines().size +
+                                    db.medicineDoseDao().getUnsyncedDoses().size
+                            withContext(Dispatchers.Main) {
+                                unsyncedCountState = count
+                                showDeleteConfirm = true
+                            }
+                        }
                     }
                     
                     SettingsSection(stringResource(id = R.string.settings_help_support))
@@ -427,9 +504,9 @@ fun SettingsScreen(onBack: () -> Unit) {
                     )
                     Text(
                         text = if (isBanglaLang)
-                            "• এআই মেডিকেল রিপোর্ট চেকার ও হেলথ এআই সার্ভিস\n• জরুরি ট্রায়াড, ফার্স্ট এইড ও ১-ট্যাপ SOS হেল্পলাইন\n• স্মার্ট মেডিসিন রিমাইন্ডার, অ্যালার্ম ও পিল ট্র্যাকার\n• ভাইটালস ট্র্যাকার (রক্তচাপ, পালস, SpO2, তাপমাত্রা, সুগার)\n• ডায়াবেটিস ইনসুলিন ও ফ্লুইড ক্যালকুলেটর ও ট্র্যাকার\n• নার্স প্রো হাব ও ক্লিনিক্যাল ক্যালকুলেটর (GCS, Apgar, BSA ইত্যাদি)\n• স্মার্ট ডায়েট, ফুড স্ক্যানার ও ম্যানুয়াল ফুড এন্ট্রি\n• পিরিয়ড, প্রেগনেন্সি ও উইমেন কেয়ার ট্র্যাকার\n• ডিজিটাল মেডিকেল আইডি, কিউআর কোড ও মেডিকেল ভল্ট\n• কেয়ারগিভার পেয়ারিং ও রিয়েল-টাইম সিঙ্ক"
+                            "• মেডিকেল রিপোর্ট চেকার ও হেলথ সার্ভিস\n• জরুরি ট্রায়াড, ফার্স্ট এইড ও ১-ট্যাপ SOS হেল্পলাইন\n• স্মার্ট মেডিসিন রিমাইন্ডার, অ্যালার্ম ও পিল ট্র্যাকার\n• ভাইটালস ট্র্যাকার (রক্তচাপ, পালস, SpO2, তাপমাত্রা, সুগার)\n• ডায়াবেটিস ইনসুলিন ও ফ্লুইড ক্যালকুলেটর ও ট্র্যাকার\n• নার্স প্রো হাব ও ক্লিনিক্যাল ক্যালকুলেটর (GCS, Apgar, BSA ইত্যাদি)\n• স্মার্ট ডায়েট, ফুড স্ক্যানার ও ম্যানুয়াল ফুড এন্ট্রি\n• পিরিয়ড, প্রেগনেন্সি ও উইমেন কেয়ার ট্র্যাকার\n• ডিজিটাল মেডিকেল আইডি, কিউআর কোড ও মেডিকেল ভল্ট\n• কেয়ারগিভার পেয়ারিং ও রিয়েল-টাইম সিঙ্ক"
                         else
-                            "• AI Medical Report Checker & Health AI Service\n• Emergency Triage, First Aid & 1-Tap SOS Helpline\n• Smart Medicine Reminders, Alarms & Refill Tracker\n• Vitals Tracker (BP, Pulse, SpO2, Temperature, Glucose)\n• Insulin & IV Fluid Calculators & Loggers\n• Nurse Pro Clinical Toolkit & Calculators (GCS, Apgar, BSA, etc.)\n• Smart Diet, Food Scanner & Manual Food Entry\n• Period, Pregnancy & Women Care Trackers\n• Digital Medical ID, Emergency QR & Medical Vault\n• Caregiver Pairing & Real-Time Family Sync",
+                            "• Medical Report Checker & Health Service\n• Emergency Triage, First Aid & 1-Tap SOS Helpline\n• Smart Medicine Reminders, Alarms & Refill Tracker\n• Vitals Tracker (BP, Pulse, SpO2, Temperature, Glucose)\n• Insulin & IV Fluid Calculators & Loggers\n• Nurse Pro Clinical Toolkit & Calculators (GCS, Apgar, BSA, etc.)\n• Smart Diet, Food Scanner & Manual Food Entry\n• Period, Pregnancy & Women Care Trackers\n• Digital Medical ID, Emergency QR & Medical Vault\n• Caregiver Pairing & Real-Time Family Sync",
                         fontSize = 12.sp,
                         color = if (isDark) Color.White.copy(alpha = 0.75f) else Color(0xFF475569),
                         lineHeight = 18.sp
@@ -644,27 +721,55 @@ fun SettingsScreen(onBack: () -> Unit) {
     }
 
     if (showDeleteConfirm) {
+        val isBn = Locale.getDefault().language == "bn"
+        val cloudNote = stringResource(id = R.string.confirm_clear_cloud_note)
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text(stringResource(id = R.string.delete_all_data), color = Color.Red) },
-            text = { Text(stringResource(id = R.string.delete_data_confirm)) },
+            title = { Text(if (isBn) "এই ফোনের তথ্য মুছে ফেলুন" else "Clear This Phone's Data", color = Color.Red, fontWeight = FontWeight.Bold) },
+            text = { Text((if (isBn) "সতর্কতা: আপনার কাছে $unsyncedCountState টি অ-সিঙ্ককৃত ডেটা রয়েছে যা স্থায়ীভাবে মুছে যাবে। আপনি কি এগিয়ে যেতে চান?" else "Warning: You have $unsyncedCountState unsynced records on this phone that will be permanently lost if you clear local data. Are you sure you want to proceed?") + "\n\n$cloudNote") },
             confirmButton = {
                 Button(
                     onClick = {
-                        val isBn = Locale.getDefault().language == "bn"
+                        showDeleteConfirm = false
+                        showFinalClearConfirm = true
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(if (isBn) "এগিয়ে যান" else "Proceed", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirm = false }) {
+                    Text(stringResource(id = R.string.cancel))
+                }
+            }
+        )
+    }
+
+    if (showFinalClearConfirm) {
+        val isBn = Locale.getDefault().language == "bn"
+        val cloudNote = stringResource(id = R.string.confirm_clear_cloud_note)
+        AlertDialog(
+            onDismissRequest = { showFinalClearConfirm = false },
+            title = { Text(if (isBn) "চূড়ান্ত নিশ্চয়তা" else "Final Confirmation", color = Color.Red, fontWeight = FontWeight.Bold) },
+            text = { Text((if (isBn) "এটি একটি অপরিবর্তনযোগ্য কাজ। আপনি কি সত্যিই এই ফোনের সমস্ত ডেটা মুছে ফেলতে চান?" else "This action is irreversible. Are you completely sure you want to clear all data on this phone?") + "\n\n$cloudNote") },
+            confirmButton = {
+                Button(
+                    onClick = {
                         prefManager.clearAllData(context) {
-                            Toast.makeText(context, if (isBn) "সমস্ত তথ্য সফলভাবে মুছে ফেলা হয়েছে।" else "All data deleted successfully.", Toast.LENGTH_LONG).show()
-                            showDeleteConfirm = false
+                            LocalDataOwnership.resetOwnerUidToUnset(context)
+                            Toast.makeText(context, if (isBn) "সমস্ত তথ্য সফলভাবে মুছে ফেলা হয়েছে।" else "All data on this phone deleted successfully.", Toast.LENGTH_LONG).show()
+                            showFinalClearConfirm = false
                             (context as? Activity)?.finishAffinity()
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
-                    Text(stringResource(id = R.string.delete_action), color = Color.White)
+                    Text(if (isBn) "হ্যাঁ, মুছে ফেলুন" else "Yes, Clear Everything", color = Color.White, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirm = false }) {
+                TextButton(onClick = { showFinalClearConfirm = false }) {
                     Text(stringResource(id = R.string.cancel))
                 }
             }

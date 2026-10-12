@@ -74,8 +74,12 @@ class MedicineViewModel(application: Application, savedStateHandle: SavedStateHa
 
     fun updateMedicine(medicine: MedicineEntity) {
         viewModelScope.launch {
-            medicineDao.updateMedicine(medicine)
+            val updated = medicine.copy(synced = false)
+            medicineDao.updateMedicine(updated)
             MedicineWidgetProvider.updateAllWidgets(getApplication())
+            val syncRepo = SyncRepository(getApplication())
+            syncRepo.syncAllUnsynced()
+            syncRepo.triggerSync()
         }
     }
 
@@ -90,7 +94,7 @@ class MedicineViewModel(application: Application, savedStateHandle: SavedStateHa
     
     fun deleteMedicine(medicine: MedicineEntity) {
         viewModelScope.launch {
-            medicineDao.deleteMedicine(medicine)
+            DeletionSync.deleteMedicine(getApplication(), medicine)
             MedicineAlarmScheduler.cancelAlarms(getApplication(), medicine)
             MedicineWidgetProvider.updateAllWidgets(getApplication())
         }

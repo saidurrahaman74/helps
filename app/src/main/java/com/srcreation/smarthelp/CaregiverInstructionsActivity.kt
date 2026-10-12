@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -35,8 +36,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-
-
 
 class CaregiverInstructionsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +68,7 @@ fun CaregiverInstructionsScreen(
     val haptic = LocalHapticFeedback.current
     val firestore = remember { FirebaseFirestore.getInstance() }
     val isDark = isSystemInDarkTheme()
-    val isBn = remember { Locale.getDefault().language == "bn" }
+    val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
 
     var instructionText by remember { mutableStateOf("") }
     var isSending by remember { mutableStateOf(false) }
@@ -111,18 +110,18 @@ fun CaregiverInstructionsScreen(
                                 text = if (isBn) "রোগীকে নির্দেশনা পাঠান" else "Send Instructions",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = if (isDark) Color.White else MaterialTheme.colorScheme.primary
                             )
                             Text(
                                 text = patientName,
                                 fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = if (isDark) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = if (isDark) Color.White else MaterialTheme.colorScheme.primary)
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -140,8 +139,8 @@ fun CaregiverInstructionsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E293B).copy(alpha = 0.9f) else Color.White.copy(alpha = 0.85f)),
-                    border = BorderStroke(1.dp, if (isDark) Color.White.copy(alpha = 0.15f) else Color(0xFFE2E8F0))
+                    colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
+                    border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
                 ) {
                     Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(
@@ -154,9 +153,17 @@ fun CaregiverInstructionsScreen(
                         OutlinedTextField(
                             value = instructionText,
                             onValueChange = { instructionText = it },
-                            placeholder = { Text(if (isBn) "যেমন: সময়মতো ওষুধ খাবেন ও পানি পান করবেন..." else "e.g., Take medicine on time and drink water...") },
+                            placeholder = { Text(if (isBn) "যেমন: সময়মতো ওষুধ খাবেন ও পানি পান করবেন..." else "e.g., Take medicine on time and drink water...", color = if (isDark) Color.White.copy(alpha = 0.5f) else Color.Gray) },
                             modifier = Modifier.fillMaxWidth().height(120.dp),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(16.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = if (isDark) Color.White else Color.Black,
+                                unfocusedTextColor = if (isDark) Color.White else Color.Black,
+                                focusedBorderColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
+                                unfocusedBorderColor = if (isDark) Color.White.copy(alpha = 0.3f) else Color.LightGray,
+                                focusedLabelColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
+                                unfocusedLabelColor = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray
+                            )
                         )
 
                         Button(
@@ -206,19 +213,20 @@ fun CaregiverInstructionsScreen(
                     text = if (isBn) "📨 পাঠানো নির্দেশনাসমূহ (Sent History)" else "📨 Sent Instructions History",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = if (isDark) Color.White else Color(0xFF1A237E)
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 if (instructionsList.isEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
+                        border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
                     ) {
                         Text(
                             text = if (isBn) "কোনো নির্দেশনা পাঠানো হয়নি" else "No instructions sent yet",
                             fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray,
                             modifier = Modifier.padding(16.dp),
                             textAlign = TextAlign.Center
                         )
@@ -229,7 +237,7 @@ fun CaregiverInstructionsScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         items(instructionsList) { item ->
-                            SentInstructionCard(item = item)
+                            SentInstructionCard(item = item, isBn = isBn, isDark = isDark)
                         }
                     }
                 }
@@ -239,26 +247,25 @@ fun CaregiverInstructionsScreen(
 }
 
 @Composable
-fun SentInstructionCard(item: InstructionItem) {
-    val isDark = isSystemInDarkTheme()
+fun SentInstructionCard(item: InstructionItem, isBn: Boolean, isDark: Boolean) {
     val sdf = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
     val timeStr = sdf.format(Date(item.sentAt))
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E293B).copy(alpha = 0.9f) else Color.White.copy(alpha = 0.85f)),
+        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
         border = BorderStroke(1.dp, if (item.seen) Color(0xFF10B981).copy(alpha = 0.5f) else Color(0xFFF59E0B).copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(timeStr, fontSize = 11.sp, color = Color.Gray)
+                Text(timeStr, fontSize = 11.sp, color = if (isDark) Color.White.copy(alpha = 0.6f) else Color.Gray)
                 Surface(
                     shape = RoundedCornerShape(10.dp),
                     color = (if (item.seen) Color(0xFF10B981) else Color(0xFFF59E0B)).copy(alpha = 0.15f)
                 ) {
                     Text(
-                        text = if (item.seen) "Seen ✓" else "Unseen ⏳",
+                        text = if (item.seen) (if (isBn) "পঠিত ✓" else "Seen ✓") else (if (isBn) "অপঠিত ⏳" else "Unseen ⏳"),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (item.seen) Color(0xFF047857) else Color(0xFFB45309),
