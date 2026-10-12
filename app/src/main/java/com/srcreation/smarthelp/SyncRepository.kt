@@ -28,11 +28,7 @@ class SyncRepository(private val context: Context) {
         val uid = authRepo.uid() ?: return false
         val ownerUid = LocalDataOwnership.getOwnerUid(context)
         if (ownerUid.isNullOrBlank()) {
-            LocalDataOwnership.claimIfFresh(context, uid)
-            val updatedOwner = LocalDataOwnership.getOwnerUid(context)
-            if (updatedOwner != uid && LocalDataOwnership.hasUserHealthData(context)) {
-                return false
-            }
+            LocalDataOwnership.claimByUserChoice(context, uid)
         } else if (ownerUid != uid) {
             // Local data owner mismatch guard: do NOT upload another user's local data
             return false

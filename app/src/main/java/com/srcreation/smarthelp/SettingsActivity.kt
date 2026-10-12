@@ -18,10 +18,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import java.util.Locale
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -157,6 +159,119 @@ fun SettingsScreen(onBack: () -> Unit) {
                     modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    // Medical / Caregiver Profile Card
+                    val currentUser = remember { com.google.firebase.auth.FirebaseAuth.getInstance().currentUser }
+                    val userEmail = currentUser?.email ?: if (Locale.getDefault().language == "bn") "ইমেইল যুক্ত করা হয়নি" else "No Email Associated"
+                    val userUid = currentUser?.uid ?: "N/A"
+                    val isBnSetting = remember { Locale.getDefault().language == "bn" }
+
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        color = if (isDark) Color(0xFF0F172A).copy(alpha = 0.9f) else Color.White,
+                        border = BorderStroke(1.2.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.4f) else Color(0xFF1A237E).copy(alpha = 0.2f)),
+                        shadowElevation = 4.dp
+                    ) {
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    Surface(
+                                        modifier = Modifier.size(52.dp),
+                                        shape = CircleShape,
+                                        color = (if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E)).copy(alpha = 0.15f)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                imageVector = if (isFromNurse) Icons.Default.SupervisorAccount else Icons.Default.Badge,
+                                                contentDescription = null,
+                                                tint = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
+                                                modifier = Modifier.size(28.dp)
+                                            )
+                                        }
+                                    }
+                                    Column {
+                                        Text(
+                                            text = if (isFromNurse) (if (isBnSetting) "কেয়ারগিভার প্রোফাইল" else "Caregiver Profile") else (if (isBnSetting) "মেডিকেল প্রোফাইল" else "Medical Profile"),
+                                            fontWeight = FontWeight.Black,
+                                            fontSize = 17.sp,
+                                            color = if (isDark) Color.White else Color(0xFF1A237E)
+                                        )
+                                        Surface(
+                                            shape = RoundedCornerShape(6.dp),
+                                            color = Color(0xFF22C55E).copy(alpha = 0.15f)
+                                        ) {
+                                            Text(
+                                                text = if (isFromNurse) "CAREGIVER ID: ${userUid.take(8).uppercase()}" else "PATIENT ID: ${userUid.take(8).uppercase()}",
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color(0xFF22C55E)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(Modifier.height(14.dp))
+                            HorizontalDivider(color = Color.Gray.copy(alpha = 0.2f))
+                            Spacer(Modifier.height(12.dp))
+
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFF0284C7), modifier = Modifier.size(16.dp))
+                                Text(
+                                    text = userEmail,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isDark) Color.White.copy(alpha = 0.9f) else Color.DarkGray
+                                )
+                            }
+
+                            Spacer(Modifier.height(6.dp))
+
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Icon(Icons.Default.Key, contentDescription = null, tint = Color(0xFFFF9800), modifier = Modifier.size(16.dp))
+                                Text(
+                                    text = "UID: $userUid",
+                                    fontSize = 11.sp,
+                                    color = Color.Gray,
+                                    maxLines = 1
+                                )
+                            }
+
+                            Spacer(Modifier.height(14.dp))
+
+                            OutlinedButton(
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    BackgroundCheckScheduler.cancelWorkers(context)
+                                    AuthRepository().logout()
+                                    val intent = Intent(context, LoginActivity::class.java).apply {
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    }
+                                    context.startActivity(intent)
+                                    (context as? Activity)?.finish()
+                                },
+                                modifier = Modifier.fillMaxWidth().height(42.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFEF4444)),
+                                border = BorderStroke(1.2.dp, Color(0xFFEF4444).copy(alpha = 0.5f))
+                            ) {
+                                Icon(Icons.Default.Logout, contentDescription = null, tint = Color(0xFFEF4444), modifier = Modifier.size(16.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text = if (isBnSetting) "লগআউট করুন (Logout)" else "Logout",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    color = Color(0xFFEF4444)
+                                )
+                            }
+                        }
+                    }
+
                     SettingsSection(stringResource(id = R.string.settings_general))
                     SettingsItem(stringResource(id = R.string.settings_app_language), Icons.Default.Language) {
                         showLanguageDialog = true
@@ -242,24 +357,6 @@ fun SettingsScreen(onBack: () -> Unit) {
                     }
 
                     SettingsSection(stringResource(id = R.string.settings_account_data))
-                    SettingsItem(
-                        title = if (Locale.getDefault().language == "bn") "কেয়ারগিভার পেয়ারিং (Link Family Member)" else "Link Family Member",
-                        icon = Icons.Default.FamilyRestroom
-                    ) {
-                        context.startActivity(Intent(context, PatientPairingActivity::class.java))
-                    }
-                    SettingsItem(
-                        title = if (Locale.getDefault().language == "bn") "লগআউট (Logout)" else "Logout",
-                        icon = Icons.Default.Logout
-                    ) {
-                        BackgroundCheckScheduler.cancelWorkers(context)
-                        AuthRepository().logout()
-                        val intent = Intent(context, LoginActivity::class.java).apply {
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        }
-                        context.startActivity(intent)
-                        (context as? Activity)?.finish()
-                    }
                     SettingsItem(stringResource(id = R.string.settings_backup), Icons.Default.CloudUpload) {
                         createBackupLauncher.launch("SmartHelp_Backup_${System.currentTimeMillis()}.json")
                     }
@@ -930,29 +1027,60 @@ fun AppLockSetupDialog(
 
 
 @Composable
-fun SettingsToggleItem(title: String, icon: ImageVector, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+fun SettingsGroupCard(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
     val isDark = isSystemInDarkTheme()
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.5f))
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        color = if (isDark) Color(0xFF0F172A).copy(alpha = 0.9f) else Color.White,
+        border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.25f) else Color(0xFF1A237E).copy(alpha = 0.12f)),
+        shadowElevation = 2.dp
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(icon, null, tint = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E), modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(16.dp))
-            Text(title, modifier = Modifier.weight(1f), fontWeight = FontWeight.Medium, color = if (isDark) Color.White else Color.Black)
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
-                    checkedTrackColor = if (isDark) Color(0xFF0284C7).copy(alpha = 0.5f) else Color(0xFF1A237E).copy(alpha = 0.3f)
-                )
-            )
+        Column(modifier = Modifier.padding(vertical = 4.dp)) {
+            content()
         }
+    }
+}
+
+@Composable
+fun SettingsToggleItem(
+    title: String, 
+    icon: ImageVector, 
+    checked: Boolean, 
+    iconColor: Color? = null,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    val isDark = isSystemInDarkTheme()
+    val tint = iconColor ?: (if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Surface(
+            modifier = Modifier.size(36.dp),
+            shape = CircleShape,
+            color = tint.copy(alpha = 0.15f)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(icon, null, tint = tint, modifier = Modifier.size(20.dp))
+            }
+        }
+        Spacer(Modifier.width(14.dp))
+        Text(title, modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = if (isDark) Color.White else Color(0xFF0F172A))
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E)
+            )
+        )
     }
 }
 
@@ -961,40 +1089,51 @@ fun SettingsSection(title: String) {
     val isDark = isSystemInDarkTheme()
     Text(
         text = title,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Bold,
-        color = if (isDark) Color.White else Color(0xFF1A237E),
-        modifier = Modifier.padding(top = 8.dp)
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Black,
+        color = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E),
+        modifier = Modifier.padding(start = 4.dp, top = 8.dp, bottom = 4.dp)
     )
 }
 
 @Composable
-fun SettingsItem(title: String, icon: ImageVector, subtitle: String? = null, onClick: () -> Unit) {
+fun SettingsItem(
+    title: String, 
+    icon: ImageVector, 
+    subtitle: String? = null, 
+    iconColor: Color? = null,
+    onClick: () -> Unit
+) {
     val haptic = LocalHapticFeedback.current
     val isDark = isSystemInDarkTheme()
-    Card(
+    val tint = iconColor ?: (if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E))
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 onClick()
-            },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.5f))
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(icon, null, tint = if (isDark) Color(0xFF38BDF8) else Color(0xFF1A237E), modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(title, fontWeight = FontWeight.Medium, color = if (isDark) Color.White else Color.Black)
-                if (subtitle != null) {
-                    Text(subtitle, fontSize = 11.sp, color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
-                }
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = if (isDark) Color.White.copy(alpha = 0.5f) else Color.LightGray)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Surface(
+            modifier = Modifier.size(36.dp),
+            shape = CircleShape,
+            color = tint.copy(alpha = 0.15f)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(icon, null, tint = tint, modifier = Modifier.size(20.dp))
+            }
         }
+        Spacer(Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = if (isDark) Color.White else Color(0xFF0F172A))
+            if (subtitle != null) {
+                Text(subtitle, fontSize = 11.sp, color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
+            }
+        }
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = if (isDark) Color.White.copy(alpha = 0.4f) else Color.LightGray, modifier = Modifier.size(20.dp))
     }
 }

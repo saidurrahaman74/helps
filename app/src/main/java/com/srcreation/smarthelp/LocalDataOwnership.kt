@@ -80,6 +80,10 @@ object LocalDataOwnership {
     suspend fun isOwnershipBlocked(context: Context): Boolean {
         val uid = AuthRepository().uid() ?: return false
         val ownerUid = getOwnerUid(context)
+        if (ownerUid.isNullOrBlank()) {
+            setOwnerUidInternal(context, uid)
+            return false
+        }
         val hasData = hasUserHealthData(context)
         return evaluateGateDecision(ownerUid, uid, hasData) == GateDecision.REDIRECT_TO_MAIN
     }

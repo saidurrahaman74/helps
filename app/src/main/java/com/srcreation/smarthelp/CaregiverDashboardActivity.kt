@@ -139,8 +139,14 @@ fun CaregiverDashboardScreen(
                         IconButton(onClick = onLinkPatient) {
                             Icon(Icons.Default.PersonAdd, contentDescription = "Link Patient", tint = MaterialTheme.colorScheme.primary)
                         }
-                        IconButton(onClick = onLogout) {
-                            Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout", tint = MaterialTheme.colorScheme.error)
+                        IconButton(onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            val intent = Intent(context, SettingsActivity::class.java).apply {
+                                putExtra("FROM_NURSE", true)
+                            }
+                            context.startActivity(intent)
+                        }) {
+                            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.primary)
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)

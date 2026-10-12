@@ -63,6 +63,7 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 val result = authRepo.login(email, pass)
                 if (result.isSuccess) {
+                    authRepo.uid()?.let { LocalDataOwnership.claimByUserChoice(this@LoginActivity, it) }
                     com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
                         authRepo.updateFcmToken(token)
                     }

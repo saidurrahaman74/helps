@@ -50,6 +50,7 @@ class SignupActivity : AppCompatActivity() {
                 val result = authRepo.signUp(email, pass, name, "user")
                 setLoading(false)
                 if (result.isSuccess) {
+                    authRepo.uid()?.let { LocalDataOwnership.claimByUserChoice(this@SignupActivity, it) }
                     com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
                         authRepo.updateFcmToken(token)
                     }
