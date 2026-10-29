@@ -11,14 +11,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+enum class StepGuideState { STEP1, STEP2, STEP3, DONE }
+
 class PatientLinkHubViewModel(application: Application) : AndroidViewModel(application) {
 
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
     private val pairingRepo = PairingRepository(application)
-    private val instructionsRepo = InstructionsRepository()
 
-    // Tab Index: 0 = LINK, 1 = PERMISSIONS, 2 = INSTRUCTIONS
+    // Tab Index: 0 = LINK, 1 = PERMISSIONS
     private val _selectedTab = MutableStateFlow(0)
     val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
 
@@ -32,16 +33,15 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
     private val _isGeneratingCode = MutableStateFlow(false)
     val isGeneratingCode: StateFlow<Boolean> = _isGeneratingCode.asStateFlow()
 
-    // Permissions State (Tab 2)
+    private val _stepState = MutableStateFlow(StepGuideState.STEP1)
+    val stepState: StateFlow<StepGuideState> = _stepState.asStateFlow()
+
+    // Permissions State (Tab 1)
     private val _pendingRequests = MutableStateFlow<List<Map<String, Any>>>(emptyList())
     val pendingRequests: StateFlow<List<Map<String, Any>>> = _pendingRequests.asStateFlow()
 
     private val _activeCaregivers = MutableStateFlow<List<Map<String, Any>>>(emptyList())
     val activeCaregivers: StateFlow<List<Map<String, Any>>> = _activeCaregivers.asStateFlow()
-
-    // Instructions State (Tab 3)
-    private val _instructions = MutableStateFlow<List<InstructionItem>>(emptyList())
-    val instructions: StateFlow<List<InstructionItem>> = _instructions.asStateFlow()
 
     // Badge Counts
     private val _pendingCount = MutableStateFlow(0)
@@ -53,7 +53,8 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
     // Listener Registrations
     private var pendingListener: ListenerRegistration? = null
     private var activeListener: ListenerRegistration? = null
-    private var instructionsListener: ListenerRegistration? = null
+
+    private var isTabInitialized = false
 
     fun selectTab(index: Int) {
         _selectedTab.value = parseTabValue(index)
@@ -61,9 +62,44 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
     }
 
     fun parseTabExtra(extra: Any?): Int {
-        val parsed = parseTabValue(extra)
-        _selectedTab.value = parsed
-        return parsed
+        if (extra != null) {
+            val parsed = parseTabValue(extra)
+            _selectedTab.value = parsed
+            isTabInitialized = true
+        } else if (!isTabInitialized) {
+            _selectedTab.value = 0
+            isTabInitialized = true
+        }
+        return _selectedTab.value
+    }
+
+    fun checkStatusForCurrentCode(code: String) {
+        val uid = auth.currentUser?.uid ?: return
+        if (code.isBlank() || !_codeGenerated.value) {
+            _stepState.value = StepGuideState.STEP1
+            return
+        }
+
+        firestore.collection("links")
+            .whereEqualTo("patientId", uid)
+            .whereEqualTo("code", code)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot == null || snapshot.isEmpty) {
+                    _stepState.value = StepGuideState.STEP2
+                } else {
+                    val doc = snapshot.documents.first()
+                    val status = doc.getString("status") ?: "pending"
+                    if (status == "active") {
+                        _stepState.value = StepGuideState.DONE
+                    } else {
+                        _stepState.value = StepGuideState.STEP3
+                    }
+                }
+            }
+            .addOnFailureListener {
+                _stepState.value = StepGuideState.STEP2
+            }
     }
 
     fun generatePairingCode(onSuccess: (String) -> Unit, onError: (String) -> Unit) {
@@ -74,6 +110,7 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
                 val code = pairingRepo.createPairingCode()
                 _pairingCode.value = code
                 _codeGenerated.value = true
+                _stepState.value = StepGuideState.STEP2
                 onSuccess(code)
             } catch (e: Exception) {
                 onError(e.localizedMessage ?: "Failed to generate pairing code")
@@ -83,10 +120,15 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
         }
     }
 
+    fun resetPairingCodeState() {
+        _pairingCode.value = ""
+        _codeGenerated.value = false
+        _stepState.value = StepGuideState.STEP1
+    }
+
     fun refreshBadgeCounts() {
         val uid = auth.currentUser?.uid ?: return
 
-        // Lightweight pending requests count
         firestore.collection("links")
             .whereEqualTo("patientId", uid)
             .whereEqualTo("status", "pending")
@@ -94,11 +136,8 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
             .addOnSuccessListener { snapshot ->
                 _pendingCount.value = snapshot.size()
             }
-            .addOnFailureListener {
-                // Graceful fallback for permission/offline issues
-            }
+            .addOnFailureListener {}
 
-        // Lightweight unread instructions count
         firestore.collection("patients")
             .document(uid)
             .collection("instructions")
@@ -107,76 +146,44 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
             .addOnSuccessListener { snapshot ->
                 _unreadInstructionsCount.value = snapshot.size()
             }
-            .addOnFailureListener {
-                // Graceful fallback for permission/offline issues
-            }
+            .addOnFailureListener {}
     }
 
     private fun updateActiveTabListeners() {
         val uid = auth.currentUser?.uid ?: return
         detachAllTabListeners()
 
-        when (_selectedTab.value) {
-            1 -> { // Tab 2: Who Can See My Data
-                pendingListener = firestore.collection("links")
-                    .whereEqualTo("patientId", uid)
-                    .whereEqualTo("status", "pending")
-                    .addSnapshotListener { snapshot, _ ->
-                        if (snapshot != null) {
-                            val list = snapshot.documents.map { doc ->
-                                mapOf(
-                                    "linkId" to doc.id,
-                                    "name" to (doc.getString("caregiverName") ?: "Caregiver"),
-                                    "createdAt" to (doc.getLong("createdAt") ?: System.currentTimeMillis())
-                                )
-                            }
-                            _pendingRequests.value = list
-                            _pendingCount.value = list.size
+        if (_selectedTab.value == 1) {
+            pendingListener = firestore.collection("links")
+                .whereEqualTo("patientId", uid)
+                .whereEqualTo("status", "pending")
+                .addSnapshotListener { snapshot, _ ->
+                    if (snapshot != null) {
+                        val list = snapshot.documents.map { doc ->
+                            mapOf(
+                                "linkId" to doc.id,
+                                "name" to (doc.getString("caregiverName") ?: "Caregiver"),
+                                "createdAt" to (doc.getLong("createdAt") ?: System.currentTimeMillis())
+                            )
                         }
+                        _pendingRequests.value = list
+                        _pendingCount.value = list.size
                     }
+                }
 
-                activeListener = firestore.collection("links")
-                    .whereEqualTo("patientId", uid)
-                    .whereEqualTo("status", "active")
-                    .addSnapshotListener { snapshot, _ ->
-                        if (snapshot != null) {
-                            _activeCaregivers.value = snapshot.documents.map { doc ->
-                                mapOf(
-                                    "linkId" to doc.id,
-                                    "name" to (doc.getString("caregiverName") ?: "Caregiver")
-                                )
-                            }
+            activeListener = firestore.collection("links")
+                .whereEqualTo("patientId", uid)
+                .whereEqualTo("status", "active")
+                .addSnapshotListener { snapshot, _ ->
+                    if (snapshot != null) {
+                        _activeCaregivers.value = snapshot.documents.map { doc ->
+                            mapOf(
+                                "linkId" to doc.id,
+                                "name" to (doc.getString("caregiverName") ?: "Caregiver")
+                            )
                         }
                     }
-            }
-            2 -> { // Tab 3: Received Instructions
-                instructionsListener = firestore.collection("patients")
-                    .document(uid)
-                    .collection("instructions")
-                    .orderBy("sentAt", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                    .addSnapshotListener { snapshot, _ ->
-                        if (snapshot != null) {
-                            val items = snapshot.documents.mapNotNull { doc ->
-                                val text = doc.getString("text") ?: return@mapNotNull null
-                                val sentAt = doc.getLong("sentAt") ?: 0L
-                                val seen = doc.getBoolean("seen") ?: false
-                                InstructionItem(id = doc.id, text = text, sentAt = sentAt, seen = seen)
-                            }
-                            _instructions.value = items
-                            _unreadInstructionsCount.value = items.count { !it.seen }
-                        }
-                    }
-            }
-        }
-    }
-
-    fun markInstructionAsSeen(instructionId: String) {
-        val uid = auth.currentUser?.uid ?: return
-        viewModelScope.launch {
-            try {
-                instructionsRepo.markAsSeen(uid, instructionId)
-                refreshBadgeCounts()
-            } catch (_: Exception) {}
+                }
         }
     }
 
@@ -185,8 +192,6 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
         pendingListener = null
         activeListener?.remove()
         activeListener = null
-        instructionsListener?.remove()
-        instructionsListener = null
     }
 
     override fun onCleared() {
@@ -197,11 +202,10 @@ class PatientLinkHubViewModel(application: Application) : AndroidViewModel(appli
     companion object {
         fun parseTabValue(tabExtra: Any?): Int {
             return when (tabExtra) {
-                is Int -> if (tabExtra in 0..2) tabExtra else 0
+                is Int -> if (tabExtra in 0..1) tabExtra else 0
                 is String -> when (tabExtra.uppercase()) {
                     "LINK", "PAIRING", "0" -> 0
                     "PERMISSIONS", "WHO_CAN_SEE", "1" -> 1
-                    "INSTRUCTIONS", "2" -> 2
                     else -> 0
                 }
                 else -> 0

@@ -325,7 +325,7 @@ fun InfoCard(data: InfoCardData, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 120.dp, max = 160.dp)
+            .heightIn(min = 120.dp)
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale

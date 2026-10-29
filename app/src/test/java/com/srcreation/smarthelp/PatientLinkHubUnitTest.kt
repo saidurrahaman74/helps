@@ -13,14 +13,14 @@ class PatientLinkHubUnitTest {
         assertEquals(0, PatientLinkHubViewModel.parseTabValue("PAIRING"))
         assertEquals(1, PatientLinkHubViewModel.parseTabValue("PERMISSIONS"))
         assertEquals(1, PatientLinkHubViewModel.parseTabValue("WHO_CAN_SEE"))
-        assertEquals(2, PatientLinkHubViewModel.parseTabValue("INSTRUCTIONS"))
+        assertEquals(0, PatientLinkHubViewModel.parseTabValue("INSTRUCTIONS")) // Clamps/defaults to 0 for valid 2-tab hub
     }
 
     @Test
     fun testTabParsing_IntegerValues() {
         assertEquals(0, PatientLinkHubViewModel.parseTabValue(0))
         assertEquals(1, PatientLinkHubViewModel.parseTabValue(1))
-        assertEquals(2, PatientLinkHubViewModel.parseTabValue(2))
+        assertEquals(0, PatientLinkHubViewModel.parseTabValue(2)) // Clamps/defaults to 0 for valid 2-tab hub
     }
 
     @Test

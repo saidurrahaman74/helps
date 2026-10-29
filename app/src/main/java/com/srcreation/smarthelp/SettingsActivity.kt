@@ -272,6 +272,22 @@ fun SettingsScreen(onBack: () -> Unit) {
                         }
                     }
 
+                    SettingsSection(if (isBnSetting) "কানেক্ট হাব" else "Connect Hub")
+                    SettingsItem(
+                        title = if (isBnSetting) "কেয়ারগিভার কানেক্ট" else "Connect Caregiver",
+                        icon = Icons.Default.SupervisorAccount
+                    ) {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        context.startActivity(Intent(context, PatientLinkHubActivity::class.java))
+                    }
+                    SettingsItem(
+                        title = if (isBnSetting) "পেশেন্ট কানেক্ট" else "Connect Patient",
+                        icon = Icons.Default.Dashboard
+                    ) {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        context.startActivity(Intent(context, CaregiverLinkHubActivity::class.java))
+                    }
+
                     SettingsSection(stringResource(id = R.string.settings_general))
                     SettingsItem(stringResource(id = R.string.settings_app_language), Icons.Default.Language) {
                         showLanguageDialog = true

@@ -53,6 +53,9 @@ interface MedicineDoseDao {
     @Query("SELECT * FROM medicine_doses")
     suspend fun getFullDoseList(): List<MedicineDoseEntity>
 
+    @Query("SELECT * FROM medicine_doses WHERE date = :targetDate")
+    suspend fun getDosesByDate(targetDate: String): List<MedicineDoseEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDose(dose: MedicineDoseEntity)
 

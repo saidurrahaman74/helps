@@ -6,14 +6,6 @@
         <entry key="Firebase Crashlytics">
           <value>
             <InsightsFilterSettings>
-              <option name="connection">
-                <ConnectionSetting>
-                  <option name="appId" value="com.srcreation.smarthelp" />
-                  <option name="mobileSdkAppId" value="1:871291565472:android:4d3b89c68386d225c660c5" />
-                  <option name="projectId" value="helps-app-1371" />
-                  <option name="projectNumber" value="871291565472" />
-                </ConnectionSetting>
-              </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
               <option name="timeIntervalDays" value="THIRTY_DAYS" />
               <option name="visibilityType" value="ALL" />

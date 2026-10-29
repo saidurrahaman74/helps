@@ -33,13 +33,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.srcreation.smarthelp.ui.theme.HelpsTheme
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PatientLinkHubActivity : ComponentActivity() {
+class PatientLinkHubActivity : AppCompatActivity() {
 
     private val viewModel: PatientLinkHubViewModel by viewModels()
 
@@ -106,17 +107,14 @@ fun PatientLinkHubScreen(
 
     val selectedTab by viewModel.selectedTab.collectAsState()
     val pendingCount by viewModel.pendingCount.collectAsState()
-    val unreadCount by viewModel.unreadInstructionsCount.collectAsState()
 
     val tabTitles = remember(isBn) {
         if (isBn) listOf(
-            "🔗 লিংক কেয়ারগিভার",
-            "👁️ ডেটা পারমিশন",
-            "📩 বার্তা/নির্দেশনা"
+            "🔗 কোড পাঠান (Step-1)",
+            "👁️ রিকোয়েস্ট গ্রহণ (Step-2)"
         ) else listOf(
-            "🔗 Link Caregiver",
-            "👁️ Permissions",
-            "📩 Instructions"
+            "🔗 Code Send (Step-1)",
+            "👁️ Accept Request (Step-2)"
         )
     }
 
@@ -130,7 +128,7 @@ fun PatientLinkHubScreen(
                             Icon(Icons.Default.SupervisorAccount, null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                text = if (isBn) "কেয়ারগিভার কানেক্ট হাব" else "Caregiver Connect Hub",
+                                text = if (isBn) "কেয়ারগিভার কানেক্ট" else "Connect Caregiver",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -146,6 +144,28 @@ fun PatientLinkHubScreen(
                         }
                     },
                     actions = {
+                        val authRepo = remember { AuthRepository() }
+                        val instructionsRepo = remember { InstructionsRepository() }
+                        val patientUid = authRepo.uid() ?: ""
+                        val unreadCount by instructionsRepo.getUnreadCountFlow(patientUid).collectAsState(initial = 0)
+
+                        Box {
+                            IconButton(onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                context.startActivity(Intent(context, PatientInstructionsActivity::class.java))
+                            }) {
+                                Icon(imageVector = Icons.Default.ChatBubbleOutline, contentDescription = "Instructions", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                            }
+                            if (unreadCount > 0) {
+                                Badge(
+                                    modifier = Modifier.align(Alignment.TopEnd).offset(x = (-4).dp, y = 4.dp),
+                                    containerColor = Color(0xFFEF4444)
+                                ) {
+                                    Text(unreadCount.toString(), color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                        Spacer(Modifier.width(4.dp))
                         LanguageToggleButton()
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -180,7 +200,6 @@ fun PatientLinkHubScreen(
                                     )
                                     val badgeCount = when (index) {
                                         1 -> pendingCount
-                                        2 -> unreadCount
                                         else -> 0
                                     }
                                     if (badgeCount > 0) {
@@ -204,8 +223,79 @@ fun PatientLinkHubScreen(
                 Box(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
                     when (selectedTab) {
                         0 -> TabLinkCaregiverContent(viewModel = viewModel, isBn = isBn)
-                        1 -> TabWhoCanSeeMyDataContent(viewModel = viewModel, isBn = isBn)
-                        2 -> TabReceivedInstructionsContent(viewModel = viewModel, isBn = isBn)
+                        else -> TabWhoCanSeeMyDataContent(viewModel = viewModel, isBn = isBn)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ConnectionStepGuideBar(stepState: StepGuideState, isBn: Boolean) {
+    val steps = remember(isBn) {
+        if (isBn) listOf("১. কোড তৈরি", "২. কোড পাঠান", "৩. রিকোয়েস্ট একসেপ্ট")
+        else listOf("1. Generate", "2. Share Code", "3. Accept Request")
+    }
+
+    val activeStepIndex = when (stepState) {
+        StepGuideState.STEP1 -> 0
+        StepGuideState.STEP2 -> 1
+        StepGuideState.STEP3 -> 2
+        StepGuideState.DONE -> 3
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                steps.forEachIndexed { index, title ->
+                    val isActive = index == activeStepIndex
+                    val isCompleted = index < activeStepIndex || stepState == StepGuideState.DONE
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Surface(
+                            modifier = Modifier.size(28.dp),
+                            shape = CircleShape,
+                            color = when {
+                                isCompleted -> Color(0xFF10B981)
+                                isActive -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.surfaceVariant
+                            }
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                if (isCompleted) {
+                                    Icon(Icons.Default.Check, null, tint = Color.White, modifier = Modifier.size(16.dp))
+                                } else {
+                                    Text(
+                                        text = "${index + 1}",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = title,
+                            fontSize = 10.sp,
+                            fontWeight = if (isActive || isCompleted) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isActive || isCompleted) MaterialTheme.colorScheme.primary else Color.Gray,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1
+                        )
                     }
                 }
             }
@@ -221,13 +311,25 @@ fun TabLinkCaregiverContent(viewModel: PatientLinkHubViewModel, isBn: Boolean) {
     val pairingCode by viewModel.pairingCode.collectAsState()
     val codeGenerated by viewModel.codeGenerated.collectAsState()
     val isLoading by viewModel.isGeneratingCode.collectAsState()
+    val stepState by viewModel.stepState.collectAsState()
 
-    Box(
+    // 15-second polling while Tab 0 is active & code is valid
+    LaunchedEffect(pairingCode, codeGenerated) {
+        if (!codeGenerated || pairingCode.isBlank()) return@LaunchedEffect
+        while (coroutineContext[kotlinx.coroutines.Job]?.isActive == true) {
+            viewModel.checkStatusForCurrentCode(pairingCode)
+            kotlinx.coroutines.delay(15000)
+        }
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        contentAlignment = Alignment.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        ConnectionStepGuideBar(stepState = stepState, isBn = isBn)
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(28.dp),
@@ -497,121 +599,6 @@ fun TabWhoCanSeeMyDataContent(viewModel: PatientLinkHubViewModel, isBn: Boolean)
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun TabReceivedInstructionsContent(viewModel: PatientLinkHubViewModel, isBn: Boolean) {
-    val instructions by viewModel.instructions.collectAsState()
-
-    var expandedItem by remember { mutableStateOf<InstructionItem?>(null) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        if (instructions.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(28.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(Icons.Default.MarkEmailRead, null, modifier = Modifier.size(56.dp), tint = MaterialTheme.colorScheme.primary)
-                        Text(
-                            text = if (isBn) "কোনো নতুন নির্দেশ নেই" else "No Instructions Yet",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = if (isBn) "আপনার যুক্ত থাকা কেয়ারগিভার কোনো বার্তা বা নির্দেশ পাঠালে তা এখানে দেখা যাবে।" else "Instructions sent by your linked caregiver will appear here.",
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(instructions, key = { it.id }) { item ->
-                    PatientInstructionCard(
-                        item = item,
-                        onOpen = {
-                            expandedItem = item
-                            if (!item.seen) {
-                                viewModel.markInstructionAsSeen(item.id)
-                            }
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun PatientInstructionCard(item: InstructionItem, onOpen: () -> Unit) {
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-    val sdf = remember { SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault()) }
-    val formattedTime = if (item.sentAt > 0L) sdf.format(Date(item.sentAt)) else "N/A"
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onOpen() },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF1E293B).copy(alpha = 0.9f) else Color.White.copy(alpha = 0.85f)),
-        border = BorderStroke(1.dp, if (isDark) Color.White.copy(alpha = 0.15f) else Color(0xFFE2E8F0))
-    ) {
-        Column(modifier = Modifier.padding(18.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = if (item.seen) Icons.Default.MarkEmailRead else Icons.Default.MarkEmailUnread,
-                        contentDescription = null,
-                        tint = if (item.seen) Color(0xFF10B981) else Color(0xFFEF4444),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = if (item.seen) "Read" else "New Instruction",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (item.seen) Color(0xFF10B981) else Color(0xFFEF4444)
-                    )
-                }
-
-                Text(formattedTime, fontSize = 11.sp, color = Color.Gray)
-            }
-
-            Spacer(Modifier.height(10.dp))
-            Text(
-                text = item.text,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = if (isDark) Color.White else Color(0xFF1A237E),
-                lineHeight = 22.sp
-            )
         }
     }
 }

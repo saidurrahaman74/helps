@@ -174,9 +174,9 @@ class CaregiverCheckWorker(
                     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).apply { this.timeZone = tz }
                     val todayDate = dateFormat.format(calendar.time)
 
-                    val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-                    val currentMinute = calendar.get(Calendar.MINUTE)
-                    val currentTimeInMinutes = currentHour * 60 + currentMinute
+                    val rawHour = calendar.get(Calendar.HOUR_OF_DAY)
+                    val rawMinute = calendar.get(Calendar.MINUTE)
+                    val currentTimeInMinutes = if (rawHour in 0..4) (1440 + rawHour * 60 + rawMinute) else (rawHour * 60 + rawMinute)
 
                     val medsSnap = firestore.collection("patients").document(patientId)
                         .collection("medicines")
@@ -188,6 +188,7 @@ class CaregiverCheckWorker(
                         val medName = medDoc.getString("name") ?: "Medicine"
                         val timeStr = medDoc.getString("time") ?: ""
                         val slotNames = timeStr.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                        val scheduleTimesMap = medDoc.get("scheduleTimes") as? Map<String, String> ?: emptyMap()
 
                         val doseSnap = firestore.collection("patients").document(patientId)
                             .collection("medicines").document(medId)
@@ -206,7 +207,7 @@ class CaregiverCheckWorker(
                         }
 
                         for (slotName in slotNames) {
-                            val status = MedicineScheduleHelper.calculateDoseStatus(slotName, takenSlots.contains(slotName), currentTimeInMinutes)
+                            val status = MedicineScheduleHelper.calculateDoseStatus(slotName, takenSlots.contains(slotName), currentTimeInMinutes, scheduleTimesMap = scheduleTimesMap)
                             if (status == "Missed") {
                                 val missedEventId = "missed_${patientId}_${medId}_${slotName}_$todayDate"
                                 if (!prefs.isAlreadyNotified(missedEventId)) {

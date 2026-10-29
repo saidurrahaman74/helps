@@ -85,7 +85,9 @@ fun CaregiverDashboardScreen(
     viewModel: CaregiverDashboardViewModel,
     onBack: () -> Unit,
     onLogout: () -> Unit,
-    onLinkPatient: () -> Unit
+    onLinkPatient: () -> Unit,
+    showPatientSelectorCard: Boolean = true,
+    showTopBar: Boolean = true
 ) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
@@ -99,6 +101,7 @@ fun CaregiverDashboardScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val isEmpty by viewModel.isEmpty.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val isTzUnknown by viewModel.isPatientTimeZoneUnknown.collectAsState()
 
     var dropdownExpanded by remember { mutableStateOf(false) }
     var hasAutoOpenedLink by remember { mutableStateOf(false) }
@@ -114,43 +117,45 @@ fun CaregiverDashboardScreen(
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.SupervisorAccount, null, tint = MaterialTheme.colorScheme.primary)
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                if (isBn) "কেয়ারগিভার ড্যাশবোর্ড" else "Caregiver Dashboard",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            onBack()
-                        }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = onLinkPatient) {
-                            Icon(Icons.Default.PersonAdd, contentDescription = "Link Patient", tint = MaterialTheme.colorScheme.primary)
-                        }
-                        IconButton(onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            val intent = Intent(context, SettingsActivity::class.java).apply {
-                                putExtra("FROM_NURSE", true)
+                if (showTopBar) {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.SupervisorAccount, null, tint = MaterialTheme.colorScheme.primary)
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    if (isBn) "কেয়ারগিভার ড্যাশবোর্ড" else "Caregiver Dashboard",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
-                            context.startActivity(intent)
-                        }) {
-                            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.primary)
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-                )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onBack()
+                            }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = onLinkPatient) {
+                                Icon(Icons.Default.PersonAdd, contentDescription = "Link Patient", tint = MaterialTheme.colorScheme.primary)
+                            }
+                            IconButton(onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                val intent = Intent(context, SettingsActivity::class.java).apply {
+                                    putExtra("FROM_NURSE", true)
+                                }
+                                context.startActivity(intent)
+                            }) {
+                                Icon(Icons.Default.Settings, contentDescription = "Settings", tint = MaterialTheme.colorScheme.primary)
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                    )
+                }
             }
         ) { innerPadding ->
             if (isLoading) {
@@ -243,20 +248,21 @@ fun CaregiverDashboardScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Patient Selector Spinner / Dropdown Card
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
-                            border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
+                    if (showPatientSelectorCard) {
+                        item {
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = if (isDark) Color(0xFF0F172A).copy(alpha = 0.85f) else Color.White.copy(alpha = 0.85f)),
+                                border = BorderStroke(1.dp, if (isDark) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color(0xFF1A237E).copy(alpha = 0.2f))
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
                                         Text(
                                             text = if (isBn) "সংযুক্ত রোগী:" else "Monitored Patient:",
                                             fontSize = 12.sp,
@@ -341,6 +347,7 @@ fun CaregiverDashboardScreen(
                             }
                         }
                     }
+                    }
 
                     // Section Title: Real-time Vitals
                     if (selectedPatient?.status == "pending") {
@@ -371,6 +378,28 @@ fun CaregiverDashboardScreen(
                             }
                         }
                     } else {
+                        if (isTzUnknown) {
+                            item {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF3C7)),
+                                    border = BorderStroke(1.dp, Color(0xFFF59E0B))
+                                ) {
+                                    Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Warning, null, tint = Color(0xFFD97706), modifier = Modifier.size(20.dp))
+                                        Spacer(Modifier.width(8.dp))
+                                        Text(
+                                            text = if (isBn) "⚠️ রোগীর সময় অঞ্চল অজানা, তারিখগুলো পরিবর্তিত হতে পারে" else "Patient time zone unknown, dates may be shifted",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF92400E)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
                         // 🚨 Top Danger Alert Banner
                         if (vitals.activeDangerAlerts.isNotEmpty()) {
                             item {
@@ -401,6 +430,29 @@ fun CaregiverDashboardScreen(
                                             fontSize = 11.sp,
                                             color = Color.Gray,
                                             fontStyle = FontStyle.Italic
+                                        )
+                                    }
+                                }
+                            }
+                        } else if (!vitals.oldDataDangerNotice.isNullOrBlank()) {
+                            item {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(20.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9)),
+                                    border = BorderStroke(1.2.dp, Color(0xFF94A3B8))
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(Icons.Default.Info, null, tint = Color(0xFF64748B), modifier = Modifier.size(24.dp))
+                                        Spacer(Modifier.width(10.dp))
+                                        Text(
+                                            text = vitals.oldDataDangerNotice!!,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF475569)
                                         )
                                     }
                                 }
@@ -582,17 +634,17 @@ fun RealTimeVitalCard(
     val isImpossible = item?.isImpossible ?: false
 
     val cardBg = when {
-        isImpossible -> if (isDark) Color(0xFF1E293B).copy(alpha = 0.9f) else Color.White.copy(alpha = 0.85f)
-        level == VitalAlertLevel.DANGER -> if (isDark) Color(0xFF7F1D1D).copy(alpha = 0.6f) else Color(0xFFFEE2E2)
-        level == VitalAlertLevel.WARNING -> if (isDark) Color(0xFF78350F).copy(alpha = 0.6f) else Color(0xFFFEF3C7)
-        else -> if (isDark) Color(0xFF1E293B).copy(alpha = 0.9f) else Color.White.copy(alpha = 0.85f)
+        isImpossible -> if (isDark) Color(0xFF1E293B).copy(alpha = 0.95f) else Color.White.copy(alpha = 0.9f)
+        level == VitalAlertLevel.DANGER -> if (isDark) Color(0xFF450A0A).copy(alpha = 0.85f) else Color(0xFFFEF2F2)
+        level == VitalAlertLevel.WARNING -> if (isDark) Color(0xFF451A03).copy(alpha = 0.85f) else Color(0xFFFFFBEB)
+        else -> if (isDark) Color(0xFF0F172A).copy(alpha = 0.9f) else Color.White.copy(alpha = 0.9f)
     }
 
     val cardBorder = when {
         isImpossible -> Color.Gray
         level == VitalAlertLevel.DANGER -> Color(0xFFEF4444)
         level == VitalAlertLevel.WARNING -> Color(0xFFF59E0B)
-        else -> if (isDark) Color.White.copy(alpha = 0.15f) else Color(0xFFE2E8F0)
+        else -> if (isDark) Color(0xFF38BDF8).copy(alpha = 0.25f) else Color(0xFF1A237E).copy(alpha = 0.15f)
     }
 
     val cardColor = when {
@@ -602,42 +654,76 @@ fun RealTimeVitalCard(
         else -> defaultColor
     }
 
+    val statusBadgeText = when {
+        isImpossible -> "Check Value"
+        level == VitalAlertLevel.DANGER -> "Critical"
+        level == VitalAlertLevel.WARNING -> "Caution"
+        else -> "Normal"
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        border = BorderStroke(1.dp, cardBorder)
+        border = BorderStroke(1.2.dp, cardBorder)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier.padding(18.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                Box(
-                    modifier = Modifier.size(42.dp).background(cardColor.copy(alpha = 0.15f), CircleShape),
-                    contentAlignment = Alignment.Center
+                Surface(
+                    modifier = Modifier.size(46.dp),
+                    shape = CircleShape,
+                    color = cardColor.copy(alpha = 0.15f)
                 ) {
-                    Icon(icon, null, tint = cardColor, modifier = Modifier.size(24.dp))
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(icon, null, tint = cardColor, modifier = Modifier.size(24.dp))
+                    }
                 }
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(14.dp))
                 Column {
-                    Text(title, fontSize = 13.sp, color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
-                    Text(value, fontSize = 18.sp, fontWeight = FontWeight.Black, color = if (isDark) Color.White else Color(0xFF1A237E))
+                    Text(
+                        text = title,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.DarkGray
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = value,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        color = if (isDark) Color.White else Color(0xFF1A237E),
+                        letterSpacing = 0.5.sp
+                    )
                     if (isImpossible) {
-                        Text("Check this value", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.Gray)
+                        Text("Check this value", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color.White.copy(alpha = 0.8f) else Color(0xFF334155))
                     } else if (level != VitalAlertLevel.NORMAL && !item?.alertText.isNullOrBlank()) {
-                        Text(item?.alertText ?: "", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = if (level == VitalAlertLevel.DANGER) Color(0xFFEF4444) else Color(0xFFD97706))
+                        Text(item?.alertText ?: "", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = if (level == VitalAlertLevel.DANGER) Color(0xFFDC2626) else Color(0xFFB45309))
                     }
                 }
             }
 
-            Column(horizontalAlignment = Alignment.End) {
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = cardColor.copy(alpha = 0.15f)
+                ) {
+                    Text(
+                        text = statusBadgeText,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Black,
+                        color = if (level == VitalAlertLevel.WARNING) Color(0xFFB45309) else cardColor,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
                 Text(
                     text = timeAgo,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (timeAgo == "No recent data") Color.Gray else (if (isDark) Color.White.copy(alpha = 0.8f) else Color.DarkGray)
+                    color = if (timeAgo == "No recent data") (if (isDark) Color.White.copy(alpha = 0.7f) else Color(0xFF475569)) else (if (isDark) Color.White.copy(alpha = 0.9f) else Color(0xFF1E293B))
                 )
             }
         }

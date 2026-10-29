@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
         if (authRepo.isUserLoggedIn()) {
             setLoading(true)
             BackgroundCheckScheduler.scheduleWorkers(this)
-            checkRoleAndNavigate()
+            navigateToMain()
             return
         }
 
@@ -63,12 +63,11 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 val result = authRepo.login(email, pass)
                 if (result.isSuccess) {
-                    authRepo.uid()?.let { LocalDataOwnership.claimByUserChoice(this@LoginActivity, it) }
                     com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
                         authRepo.updateFcmToken(token)
                     }
                     BackgroundCheckScheduler.scheduleWorkers(this@LoginActivity)
-                    checkRoleAndNavigate()
+                    navigateToMain()
                 } else {
                     setLoading(false)
                     val failMsg = if (isBangla) "লগইন ব্যর্থ হয়েছে: " else "Login Failed: "
@@ -152,26 +151,12 @@ class LoginActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun checkRoleAndNavigate() {
-        lifecycleScope.launch {
-            val role = try {
-                authRepo.getRole()
-            } catch (e:Exception) {
-                Log.e("Caregiver", "Error reading role in LoginActivity", e)
-                null
-            }
-
-            val targetActivity = if (!role.isNullOrBlank() && role.equals("caregiver", ignoreCase = true)) {
-                CaregiverDashboardActivity::class.java
-            } else {
-                MainActivity::class.java
-            }
-            val intent = Intent(this@LoginActivity, targetActivity).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-            startActivity(intent)
-            finish()
+    private fun navigateToMain() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
+        startActivity(intent)
+        finish()
     }
 
     private fun setLoading(loading: Boolean) {

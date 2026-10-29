@@ -50,7 +50,6 @@ class SignupActivity : AppCompatActivity() {
                 val result = authRepo.signUp(email, pass, name, "user")
                 setLoading(false)
                 if (result.isSuccess) {
-                    authRepo.uid()?.let { LocalDataOwnership.claimByUserChoice(this@SignupActivity, it) }
                     com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
                         authRepo.updateFcmToken(token)
                     }
@@ -62,8 +61,43 @@ class SignupActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 } else {
-                    val msg = if (isBangla) "সাইন আপ ব্যর্থ হয়েছে: " else "Signup Failed: "
-                    Toast.makeText(this@SignupActivity, msg + result.exceptionOrNull()?.localizedMessage, Toast.LENGTH_LONG).show()
+                    val exception = result.exceptionOrNull()
+                    val isCollision = exception is com.google.firebase.auth.FirebaseAuthUserCollisionException ||
+                            exception?.message?.contains("already exists", ignoreCase = true) == true ||
+                            exception?.message?.contains("already in use", ignoreCase = true) == true
+
+                    if (isCollision) {
+                        val title = if (isBangla) "রেজিস্ট্রেশন বার্তা" else "Registration Notice"
+                        val message = if (isBangla)
+                            "যদি এই ইমেইলটি ব্যবহার করা সম্ভব হয়, তবে ইনবক্স চেক করুন অথবা লগইন করার চেষ্টা করুন।"
+                        else
+                            "If this email can be used, check your inbox or try logging in."
+
+                        androidx.appcompat.app.AlertDialog.Builder(this@SignupActivity)
+                            .setTitle(title)
+                            .setMessage(message)
+                            .setPositiveButton(if (isBangla) "লগইন স্ক্রিনে যান" else "Try Logging In") { _, _ ->
+                                finish()
+                            }
+                            .setNeutralButton(if (isBangla) "পাসওয়ার্ড রিসেট" else "Reset Password") { _, _ ->
+                                setLoading(true)
+                                lifecycleScope.launch {
+                                    authRepo.sendPasswordResetEmail(email)
+                                    setLoading(false)
+                                    Toast.makeText(
+                                        this@SignupActivity,
+                                        if (isBangla) "যদি অ্যাকাউন্টটি নিবন্ধিত থাকে তবে রিসেট ইমেইল পাঠানো হয়েছে।" else "If the account exists, a reset email has been sent.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    finish()
+                                }
+                            }
+                            .setNegativeButton(if (isBangla) "বাতিল" else "Cancel", null)
+                            .show()
+                    } else {
+                        val msg = if (isBangla) "সাইন আপ ব্যর্থ হয়েছে: " else "Signup Failed: "
+                        Toast.makeText(this@SignupActivity, msg + exception?.localizedMessage, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }

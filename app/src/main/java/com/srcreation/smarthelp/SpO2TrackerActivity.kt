@@ -197,7 +197,13 @@ fun SpO2TrackerScreen(viewModel: SpO2ViewModel = viewModel(), onBack: () -> Unit
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        val spo2Val = spo2Input.toDoubleOrNull() ?: 0.0
+                        if (spo2Val > 0.0) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            VisualRangeMeter(vitalType = "SPO2", val1 = spo2Val, unit = "%")
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
                             onClick = {

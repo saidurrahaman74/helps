@@ -7,6 +7,7 @@ import com.srcreation.smarthelp.db.PendingDeletionEntity
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 
 class SyncRepository(private val context: Context) {
     private val db = AppDatabase.getDatabase(context)
@@ -28,7 +29,7 @@ class SyncRepository(private val context: Context) {
         val uid = authRepo.uid() ?: return false
         val ownerUid = LocalDataOwnership.getOwnerUid(context)
         if (ownerUid.isNullOrBlank()) {
-            LocalDataOwnership.claimByUserChoice(context, uid)
+            LocalDataOwnership.claimIfFresh(context, uid)
         } else if (ownerUid != uid) {
             // Local data owner mismatch guard: do NOT upload another user's local data
             return false
@@ -178,12 +179,24 @@ class SyncRepository(private val context: Context) {
                     firestore.collection("patients").document(uid).collection("medicines").document(med.id).delete().await()
                     continue
                 }
+                val scheduleMap = mutableMapOf<String, String>()
+                val slots = med.selectedTimes.split(",").map { it.trim() }.filter { it.isNotBlank() }
+                for (slot in slots) {
+                    val mins = MedicineScheduleHelper.getScheduledMinutesForSlot(slot, med.customTime)
+                    if (mins != null) {
+                        val h = mins / 60
+                        val m = mins % 60
+                        scheduleMap[slot] = String.format(Locale.ROOT, "%02d:%02d", h, m)
+                    }
+                }
+
                 val data = hashMapOf(
                     "name" to med.name,
                     "dose" to "${med.dosageValue} ${med.dosageUnit}".trim(),
                     "time" to med.selectedTimes,
                     "taken" to (med.lastTakenTimestamp > 0),
-                    "takenAt" to med.lastTakenTimestamp
+                    "takenAt" to med.lastTakenTimestamp,
+                    "scheduleTimes" to scheduleMap
                 )
                 firestore.collection("patients").document(uid)
                     .collection("medicines").document(med.id).set(data).await()

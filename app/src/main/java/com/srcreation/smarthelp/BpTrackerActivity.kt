@@ -228,6 +228,13 @@ fun BpTrackerScreen(viewModel: BpViewModel = viewModel(), onBack: () -> Unit) {
                                 )
                             )
                         }
+
+                        val sysVal = systolic.toIntOrNull() ?: 0
+                        val diaVal = diastolic.toIntOrNull() ?: 0
+                        if (sysVal > 0 && diaVal > 0) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            VisualRangeMeter(vitalType = "BP", val1 = sysVal.toDouble(), val2 = diaVal.toDouble(), unit = "mmHg")
+                        }
                         
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(

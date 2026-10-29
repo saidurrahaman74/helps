@@ -189,7 +189,13 @@ fun PulseTrackerScreen(viewModel: PulseViewModel = viewModel(), onBack: () -> Un
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        val bpmVal = pulseBpmInput.toIntOrNull() ?: 0
+                        if (bpmVal > 0) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            VisualRangeMeter(vitalType = "PULSE", val1 = bpmVal.toDouble(), unit = "BPM")
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
                             onClick = {

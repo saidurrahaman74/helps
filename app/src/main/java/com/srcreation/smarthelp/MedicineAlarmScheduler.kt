@@ -23,7 +23,6 @@ object MedicineAlarmScheduler {
             }
 
             val is4Times = timeKey.contains("4", ignoreCase = true) || timeKey.contains("6", ignoreCase = true)
-            val isCustom = timeKey.contains("Set", ignoreCase = true) || timeKey.contains("Custom", ignoreCase = true)
 
             if (is4Times) {
                 scheduleSpecificAlarm(context, med, 6, 0, "4t_1", "Morning")
@@ -33,46 +32,14 @@ object MedicineAlarmScheduler {
                 return@forEach
             }
 
-            if (isCustom) {
-                med.customTime?.let { custom ->
-                    val parts = custom.trim().split(":")
-                    if (parts.size >= 2) {
-                        var h = parts[0].trim().toIntOrNull() ?: 8
-                        val mAndAmPm = parts[1].trim()
-                        val spaceParts = mAndAmPm.split(" ")
-                        val m = spaceParts[0].trim().toIntOrNull() ?: 0
-                        if (spaceParts.size > 1) {
-                            val ampm = spaceParts[1].trim().uppercase(Locale.ROOT)
-                            if (ampm == "PM" && h < 12) h += 12
-                            if (ampm == "AM" && h == 12) h = 0
-                        }
-                        calendar.set(Calendar.HOUR_OF_DAY, h)
-                        calendar.set(Calendar.MINUTE, m)
-                    }
-                }
-            } else {
-                when {
-                    timeKey.equals("Morning", ignoreCase = true) -> {
-                        calendar.set(Calendar.HOUR_OF_DAY, 8)
-                        calendar.set(Calendar.MINUTE, 0)
-                    }
-                    timeKey.equals("Noon", ignoreCase = true) -> {
-                        calendar.set(Calendar.HOUR_OF_DAY, 14)
-                        calendar.set(Calendar.MINUTE, 0)
-                    }
-                    timeKey.equals("Evening", ignoreCase = true) -> {
-                        calendar.set(Calendar.HOUR_OF_DAY, 20)
-                        calendar.set(Calendar.MINUTE, 0)
-                    }
-                    timeKey.equals("Night", ignoreCase = true) -> {
-                        calendar.set(Calendar.HOUR_OF_DAY, 22)
-                        calendar.set(Calendar.MINUTE, 0)
-                    }
-                    else -> {
-                        calendar.set(Calendar.HOUR_OF_DAY, 8)
-                        calendar.set(Calendar.MINUTE, 0)
-                    }
-                }
+            val totalMins = MedicineScheduleHelper.getScheduledMinutesForSlot(timeKey, med.customTime) ?: (8 * 60)
+            val normalizedMins = if (totalMins >= 1440) totalMins - 1440 else totalMins
+            val h = normalizedMins / 60
+            val m = normalizedMins % 60
+            calendar.set(Calendar.HOUR_OF_DAY, h)
+            calendar.set(Calendar.MINUTE, m)
+            if (totalMins >= 1440) {
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
 
             if (calendar.timeInMillis <= System.currentTimeMillis() + 1000L) {

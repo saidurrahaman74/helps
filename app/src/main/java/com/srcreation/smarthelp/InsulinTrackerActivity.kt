@@ -270,7 +270,14 @@ fun InsulinTrackerScreen(viewModel: InsulinViewModel = viewModel(), onBack: () -
                                 )
                             )
                         }
-                        Spacer(modifier = Modifier.height(20.dp))
+
+                        val glucoseVal = glucoseLevel.toDoubleOrNull() ?: 0.0
+                        if (glucoseVal > 0.0) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            VisualRangeMeter(vitalType = "GLUCOSE", val1 = glucoseVal, unit = glucoseUnit)
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)

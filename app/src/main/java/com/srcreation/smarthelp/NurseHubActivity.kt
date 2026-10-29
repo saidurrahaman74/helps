@@ -171,8 +171,6 @@ fun NurseHubScreen(onBack: () -> Unit) {
 
     val isDark = isSystemInDarkTheme()
 
-    var showQuickActionSheet by remember { mutableStateOf(false) }
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -257,20 +255,9 @@ fun NurseHubScreen(onBack: () -> Unit) {
                     )
                 }
             },
-            bottomBar = { AppBottomBar(context = context, currentTab = 2, isNurseMode = true, backgroundBrush = AppGradientBrush) },
-            floatingActionButton = {
-                    val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
-                    PremiumLinkHubFab(
-                        title = if (isBn) "রোগী লিঙ্ক" else "Link Patient",
-                        onClick = { showQuickActionSheet = true },
-                        isDark = isDark
-                    )
-                }
+            bottomBar = { AppBottomBar(context = context, currentTab = 2, isNurseMode = true, backgroundBrush = AppGradientBrush) }
         ) { innerPadding ->
             Box(modifier = Modifier.fillMaxSize().background(brush = AppGradientBrush).padding(innerPadding)) {
-                if (showQuickActionSheet) {
-                    NurseQuickActionBottomSheet(onDismiss = { showQuickActionSheet = false })
-                }
                 var isLoading by remember { mutableStateOf(true) }
                 LaunchedEffect(Unit) {
                     delay(800) // Brief shimmer for UX consistency
@@ -529,117 +516,5 @@ fun handleToolClick(context: Context, id: String) {
 }
 
 data class NurseToolData(val id: String, val title: String, val desc: String, val icon: ImageVector, val color: Color)
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NurseQuickActionBottomSheet(onDismiss: () -> Unit) {
-    val context = LocalContext.current
-    val isBn = remember { Locale.getDefault().language == "bn" }
-    val isDark = isSystemInDarkTheme()
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = if (isDark) Color(0xFF0F172A) else MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = if (isBn) "⚡ কেয়ারগিভার লিঙ্ক হাব (Caregiver Link Hub)" else "⚡ Caregiver Link Hub",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Black,
-                color = if (isDark) Color(0xFF38BDF8) else MaterialTheme.colorScheme.primary
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                NurseQuickActionButtonPill(
-                    title = if (isBn) "রোগী লিঙ্ক করুন" else "Link Patient",
-                    icon = Icons.Default.Link,
-                    color = Color(0xFF0284C7),
-                    modifier = Modifier.weight(1f),
-                    isDark = isDark
-                ) {
-                    onDismiss()
-                    context.startActivity(Intent(context, LinkPatientActivity::class.java))
-                }
-
-                NurseQuickActionButtonPill(
-                    title = if (isBn) "কেয়ারগিভার ড্যাশবোর্ড" else "Caregiver Dashboard",
-                    icon = Icons.Default.Dashboard,
-                    color = Color(0xFF0284C7),
-                    modifier = Modifier.weight(1f),
-                    isDark = isDark
-                ) {
-                    onDismiss()
-                    context.startActivity(Intent(context, CaregiverDashboardActivity::class.java))
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                NurseQuickActionButtonPill(
-                    title = if (isBn) "নির্দেশনা পাঠান" else "Send Instruction",
-                    icon = Icons.Default.Send,
-                    color = Color(0xFF7C4DFF),
-                    modifier = Modifier.weight(1f),
-                    isDark = isDark
-                ) {
-                    onDismiss()
-                    context.startActivity(Intent(context, CaregiverInstructionsActivity::class.java))
-                }
-
-                NurseQuickActionButtonPill(
-                    title = if (isBn) "হিস্ট্রি ও চার্ট" else "History & Charts",
-                    icon = Icons.Default.History,
-                    color = Color(0xFF22C55E),
-                    modifier = Modifier.weight(1f),
-                    isDark = isDark
-                ) {
-                    onDismiss()
-                    context.startActivity(Intent(context, CaregiverHistoryActivity::class.java))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-    }
-}
-
-@Composable
-fun NurseQuickActionButtonPill(
-    title: String,
-    icon: ImageVector,
-    color: Color,
-    modifier: Modifier = Modifier,
-    isDark: Boolean,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = modifier
-            .height(85.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = if (isDark) 0.2f else 0.12f)),
-        border = BorderStroke(1.dp, color.copy(alpha = 0.4f))
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(icon, contentDescription = title, tint = color, modifier = Modifier.size(24.dp))
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color.White else color, textAlign = TextAlign.Center, maxLines = 1)
-        }
-    }
-}
 
 

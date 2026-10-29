@@ -292,6 +292,11 @@ fun TempInputContent(viewModel: TempViewModel, lastRecord: TempEntity?, totalCou
                     }
                 }
 
+                val tempVal = tempInput.toDoubleOrNull() ?: 0.0
+                if (tempVal > 0.0) {
+                    VisualRangeMeter(vitalType = "TEMPERATURE", val1 = tempVal, unit = unit)
+                }
+
                 // Measurement Method
                 Text(stringResource(id = R.string.temp_method_select), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = if (isDark) Color.White.copy(alpha = 0.7f) else Color.Gray)
                 FlowRow(

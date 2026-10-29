@@ -311,4 +311,16 @@ class PreferenceManager(private val context: Context) {
     fun markNotified(eventId: String) {
         sharedPreferences.edit().putBoolean("${getUidPrefix()}notified_$eventId", true).apply()
     }
+
+    fun setUserRole(role: String) {
+        sharedPreferences.edit().putString("${getUidPrefix()}user_role", role).apply()
+    }
+
+    fun getUserRole(): String? {
+        return sharedPreferences.getString("${getUidPrefix()}user_role", null)
+    }
+
+    fun clearUserRole() {
+        sharedPreferences.edit().remove("${getUidPrefix()}user_role").apply()
+    }
 }

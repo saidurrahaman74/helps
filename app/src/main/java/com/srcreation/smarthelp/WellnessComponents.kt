@@ -129,7 +129,9 @@ fun LanguageToggleButton() {
             val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(newLocale)
             AppCompatDelegate.setApplicationLocales(appLocale)
         },
-        modifier = Modifier.padding(end = 4.dp)
+        modifier = Modifier
+            .minimumInteractiveComponentSize()
+            .padding(end = 4.dp)
     ) {
         Surface(
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),

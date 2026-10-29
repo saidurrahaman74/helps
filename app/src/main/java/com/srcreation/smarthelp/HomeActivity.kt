@@ -14,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import java.util.Locale
+import java.text.SimpleDateFormat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.*
@@ -74,6 +75,8 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        AuthRepository().updateTimeZoneOnAppStart()
+
         val pref = PreferenceManager(this)
         pref.setActiveProfile(1) // Ensure Patient mode is active
 
@@ -107,7 +110,6 @@ fun HomeScreen(wellnessViewModel: WellnessViewModel = viewModel()) {
     
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var showQuickActionSheet by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
         wellnessViewModel.fetchCurrentProfile()
@@ -233,7 +235,7 @@ fun HomeScreen(wellnessViewModel: WellnessViewModel = viewModel()) {
                                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     context.startActivity(Intent(context, PatientInstructionsActivity::class.java))
                                 }) {
-                                    Icon(imageVector = Icons.Default.ChatBubbleOutline, contentDescription = "Instructions", tint = if (isDark) Color.White else Color(0xFF1A237E), modifier = Modifier.size(24.dp))
+                                    Icon(imageVector = Icons.Default.ChatBubbleOutline, contentDescription = "Caregiver Instructions", tint = if (isDark) Color.White else Color(0xFF1A237E), modifier = Modifier.size(24.dp))
                                 }
                                 if (unreadCount > 0) {
                                     Badge(
@@ -248,20 +250,13 @@ fun HomeScreen(wellnessViewModel: WellnessViewModel = viewModel()) {
                             IconButton(onClick = { haptic.performHapticFeedback(HapticFeedbackType.LongPress); context.startActivity(Intent(context, NotificationActivity::class.java)) }) {
                                 Icon(imageVector = Icons.Default.NotificationsNone, contentDescription = "Notifications", tint = if (isDark) Color.White else Color(0xFF1A237E), modifier = Modifier.size(26.dp))
                             }
+
                             LanguageToggleButton()
                         },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                     )
                 },
-                bottomBar = { AppBottomBar(context = context, currentTab = 1, isNurseMode = false, backgroundBrush = AppGradientBrush) },
-                floatingActionButton = {
-                    val isBn = remember { Locale.getDefault().language == "bn" || AppCompatDelegate.getApplicationLocales().toLanguageTags().contains("bn") }
-                    PremiumLinkHubFab(
-                        title = if (isBn) "কেয়ারগিভার লিঙ্ক" else "Link Caregiver",
-                        onClick = { showQuickActionSheet = true },
-                        isDark = isDark
-                    )
-                }
+                bottomBar = { AppBottomBar(context = context, currentTab = 1, isNurseMode = false, backgroundBrush = AppGradientBrush) }
             ) { innerPadding ->
                 Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                     val smartInsights by wellnessViewModel.smartInsights.collectAsState(initial = null)
@@ -306,115 +301,6 @@ fun HomeScreen(wellnessViewModel: WellnessViewModel = viewModel()) {
                     }
                 }
             }
-        }
-
-        if (showQuickActionSheet) {
-            QuickActionBottomSheet(onDismiss = { showQuickActionSheet = false })
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun QuickActionBottomSheet(onDismiss: () -> Unit) {
-    val context = LocalContext.current
-    val isBn = remember { Locale.getDefault().language == "bn" }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text(
-                text = if (isBn) "⚡ পেশেন্ট লিঙ্ক হাব (Patient Link Hub)" else "⚡ Patient Link Hub",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Black,
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                QuickActionButtonPill(
-                    title = if (isBn) "কেয়ারগিভার লিঙ্ক" else "Link Caregiver",
-                    icon = Icons.Default.GroupAdd,
-                    color = Color(0xFF0284C7),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    onDismiss()
-                    val intent = Intent(context, PatientLinkHubActivity::class.java).apply {
-                        putExtra("TAB", "LINK")
-                    }
-                    context.startActivity(intent)
-                }
-
-                QuickActionButtonPill(
-                    title = if (isBn) "কে ডেটা দেখতে পারে" else "Who Can See Data",
-                    icon = Icons.Default.Visibility,
-                    color = Color(0xFF0284C7),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    onDismiss()
-                    val intent = Intent(context, PatientLinkHubActivity::class.java).apply {
-                        putExtra("TAB", "PERMISSIONS")
-                    }
-                    context.startActivity(intent)
-                }
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                QuickActionButtonPill(
-                    title = if (isBn) "প্রাপ্ত নির্দেশনা" else "Received Instructions",
-                    icon = Icons.Default.ChatBubbleOutline,
-                    color = Color(0xFF7C4DFF),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    onDismiss()
-                    val intent = Intent(context, PatientLinkHubActivity::class.java).apply {
-                        putExtra("TAB", "INSTRUCTIONS")
-                    }
-                    context.startActivity(intent)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-    }
-}
-
-@Composable
-fun QuickActionButtonPill(
-    title: String,
-    icon: ImageVector,
-    color: Color,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = modifier
-            .height(85.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.12f)),
-        border = BorderStroke(1.dp, color.copy(alpha = 0.3f))
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(icon, contentDescription = title, tint = color, modifier = Modifier.size(24.dp))
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = color, textAlign = TextAlign.Center, maxLines = 1)
         }
     }
 }
@@ -723,6 +609,8 @@ fun DashboardContent(smartInsights: List<SmartInsight>, viewModel: WellnessViewM
                     }
                 }
 
+                GlanceableDailySummaryCard()
+
                 SmartDashboardHeader(
                     wellnessScore = wellnessScore, 
                     nextMed = nextMed,
@@ -865,6 +753,109 @@ fun QuickVitalsPill(title: String, color: Color, onClick: () -> Unit) {
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = color
+            )
+        }
+    }
+}
+
+@Composable
+fun GlanceableDailySummaryCard() {
+    val context = LocalContext.current
+    val isDark = isSystemInDarkTheme()
+    val isBn = Locale.getDefault().language == "bn"
+
+    val db = remember { com.srcreation.smarthelp.db.AppDatabase.getDatabase(context) }
+    var summaryResult by remember { mutableStateOf<DailySummaryResult>(DailySummaryResult.NoReadings("No readings today")) }
+
+    LaunchedEffect(Unit) {
+        val isBlocked = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            LocalDataOwnership.isOwnershipBlocked(context)
+        }
+        if (isBlocked) {
+            summaryResult = DailySummaryResult.Hidden
+            return@LaunchedEffect
+        }
+
+        val now = System.currentTimeMillis()
+        val tzId = java.util.TimeZone.getDefault().id
+
+        val bpList = db.bpDao().getFullBpList()
+        val pulseList = db.pulseDao().getFullPulseList()
+        val spo2List = db.spo2Dao().getFullSpO2List()
+        val medicines = db.medicineDao().getFullMedicineList()
+
+        val cal = Calendar.getInstance().apply { timeInMillis = now }
+        val hour = cal.get(Calendar.HOUR_OF_DAY)
+        if (hour in 0..4) cal.add(Calendar.DAY_OF_YEAR, -1)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val targetDate = dateFormat.format(cal.time)
+
+        val todayDoses = db.medicineDoseDao().getDosesByDate(targetDate)
+
+        val readings = VitalsReadings(
+            bpSys = bpList.lastOrNull()?.systolic,
+            bpDia = bpList.lastOrNull()?.diastolic,
+            pulseBpm = pulseList.lastOrNull()?.pulseBpm,
+            spo2Percentage = spo2List.lastOrNull()?.spo2Percentage
+        )
+
+        summaryResult = DailySummaryLogic.computeDailySummary(
+            now = now,
+            timeZoneId = tzId,
+            medicines = medicines,
+            todayDoses = todayDoses,
+            readings = readings,
+            isGateBlocked = false,
+            isBn = isBn
+        )
+    }
+
+    if (summaryResult == DailySummaryResult.Hidden) return
+
+    val (bgColor, borderColor, textColor) = when (summaryResult) {
+        is DailySummaryResult.Danger -> Triple(Color(0xFFFEF2F2), Color(0xFFEF4444), Color(0xFF991B1B))
+        is DailySummaryResult.Warning -> Triple(Color(0xFFFEF3C7), Color(0xFFF59E0B), Color(0xFF92400E))
+        is DailySummaryResult.WithinLimits -> Triple(Color(0xFFECFDF5), Color(0xFF10B981), Color(0xFF047857))
+        is DailySummaryResult.NoReadings, DailySummaryResult.Hidden -> Triple(
+            if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+            if (isDark) Color(0xFF334155) else Color(0xFFCBD5E1),
+            if (isDark) Color.White.copy(alpha = 0.8f) else Color(0xFF334155)
+        )
+    }
+
+    val summaryText = when (val res = summaryResult) {
+        is DailySummaryResult.Danger -> res.msg
+        is DailySummaryResult.Warning -> res.msg
+        is DailySummaryResult.WithinLimits -> res.msg
+        is DailySummaryResult.NoReadings -> res.msg
+        DailySummaryResult.Hidden -> ""
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = bgColor),
+        border = BorderStroke(1.dp, borderColor)
+    ) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = when (summaryResult) {
+                    is DailySummaryResult.Danger -> Icons.Default.Warning
+                    is DailySummaryResult.Warning -> Icons.Default.Info
+                    is DailySummaryResult.WithinLimits -> Icons.Default.CheckCircle
+                    else -> Icons.Default.HealthAndSafety
+                },
+                contentDescription = null,
+                tint = textColor,
+                modifier = Modifier.size(22.dp)
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = summaryText,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = textColor,
+                lineHeight = 18.sp
             )
         }
     }

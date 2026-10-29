@@ -23,6 +23,8 @@ class AuthRepository {
 
             firestore.collection("users").document(userId).set(userMap).await()
             Result.success(Unit)
+        } catch (e: com.google.firebase.auth.FirebaseAuthUserCollisionException) {
+            Result.failure(Exception("এই ইমেইল দিয়ে ইতিমধ্যেই একটি অ্যাকাউন্ট তৈরি করা রয়েছে। (An account with this email already exists)"))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -39,6 +41,16 @@ class AuthRepository {
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    fun updateTimeZoneOnAppStart() {
+        val userId = auth.currentUser?.uid ?: return
+        try {
+            firestore.collection("users").document(userId)
+                .set(mapOf("timeZone" to TimeZone.getDefault().id), com.google.firebase.firestore.SetOptions.merge())
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -80,5 +92,46 @@ class AuthRepository {
             firestore.collection("users").document(userId)
                 .update("fcmToken", token)
         } catch (_: Exception) {}
+    }
+
+    suspend fun deleteAccount(): Result<Unit> {
+        val user = auth.currentUser ?: return Result.failure(Exception("No user is currently logged in"))
+        val userId = user.uid
+        return try {
+            try {
+                firestore.collection("users").document(userId).delete().await()
+            } catch (_: Exception) {}
+
+            user.delete().await()
+            Result.success(Unit)
+        } catch (e: com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException) {
+            Result.failure(Exception("REQUIRES_RECENT_LOGIN"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun deleteAccountWithPassword(password: String): Result<Unit> {
+        val user = auth.currentUser ?: return Result.failure(Exception("No user is currently logged in"))
+        val userId = user.uid
+        val email = user.email
+
+        return try {
+            if (!email.isNullOrEmpty() && password.isNotEmpty()) {
+                val credential = com.google.firebase.auth.EmailAuthProvider.getCredential(email, password)
+                user.reauthenticate(credential).await()
+            }
+
+            try {
+                firestore.collection("users").document(userId).delete().await()
+            } catch (_: Exception) {}
+
+            user.delete().await()
+            Result.success(Unit)
+        } catch (e: com.google.firebase.auth.FirebaseAuthInvalidCredentialsException) {
+            Result.failure(Exception("WRONG_PASSWORD"))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
